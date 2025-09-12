@@ -24,7 +24,7 @@ connectDB();
 app.use("/api/courses", courseRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/category", categoryRoutes);
-app.use("/api/teacherRoutes", teacherRoutes);
+app.use("/api/teachers", teacherRoutes);
 app.use("/api/userRegisterRoute", userRegisterRoute);
 // app.use("/api/news", newsRoutes);
 // app.use("/api/activities", activityRoutes);

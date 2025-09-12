@@ -38,16 +38,14 @@ const TeacherDetails = () => {
   const { t, i18n } = useTranslation();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Courses");
-
   const toggleFavorite = (courseId: string) => {
-    setFavorites(prev => 
+    setFavorites(prev =>
       prev.includes(courseId) 
         ? prev.filter(id => id !== courseId)
         : [...prev, courseId]
     );
   };
 
-  // Sample teacher data
   const teacher = {
     name: "د. محمد أحمد",
     nameEn: "Dr. Mohammad Ahmad",
