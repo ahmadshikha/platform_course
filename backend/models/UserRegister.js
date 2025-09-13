@@ -91,7 +91,7 @@ const courseRegistrationSchema = new mongoose.Schema({
 courseRegistrationSchema.index({ email: 1, courseNumber: 1 });
 courseRegistrationSchema.index({ status: 1, registrationDate: -1 });
 
-
+//hi
 courseRegistrationSchema.pre('save', function(next) {
   if (this.email !== this.confirmEmail) {
     return next(new Error('البريد الإلكتروني غير متطابق'));
