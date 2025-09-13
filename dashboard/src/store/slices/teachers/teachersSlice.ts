@@ -44,9 +44,22 @@ export interface ITeacher {
 interface IAddTeacher {
   name: string;
   nameEn: string;
+  title: string;
+  titleEn: string;
   bio: string;
   bioEn: string;
   experience: string;
+  image: string;
+  specialties: string[];
+  specialtiesEn: string[];
+  education: Education[];
+  contact: Contact;
+  social: Social;
+  rating: number;
+  review: number;
+  students: number;
+  course: number;
+  isActive: boolean;
 }
 
 export type TeachersState = {
@@ -133,24 +146,51 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
     }
 });
 
-export const updateTeacher = createAsyncThunk('teachers/updateTeacher', async (updatedTeacher: ITeacher) => {
-  const response = await fetch(`/api/teachers/${updatedTeacher._id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(updatedTeacher),
-  });
-  const data = await response.json();
-  return data;
-});
+export const updateTeacher = createAsyncThunk<ITeacher, ITeacher, {rejectValue: string}>('teachers/updateTeacher', 
+  async (updatedTeacher, {rejectWithValue}) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/teachers/${updatedTeacher._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedTeacher),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        return rejectWithValue(errorData.message || 'Failed to update teacher');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message || 'Failed to update teacher');
+    }
+  }
+);
 
-export const deleteTeacher = createAsyncThunk('teachers/deleteTeacher', async (teacherId: string) => {
-  await fetch(`/api/teachers/${teacherId}`, {
-    method: 'DELETE',
-  });
-  return teacherId;
-});
+export const deleteTeacher = createAsyncThunk<string, string, {rejectValue: string}>('teachers/deleteTeacher', 
+  async (teacherId, {rejectWithValue}) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/teachers/${teacherId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        return rejectWithValue(errorData.message || 'Failed to delete teacher');
+      }
+      
+      return teacherId;
+    } catch (error) {
+      return rejectWithValue(error.message || 'Failed to delete teacher');
+    }
+  }
+);
 
 const teachersSlice = createSlice({
   name: 'teachers',
@@ -169,6 +209,9 @@ const teachersSlice = createSlice({
     },
     deleteTeacherLocally(state, action: PayloadAction<string>) {
       state.items = state.items.filter(t => t._id !== action.payload);
+    },
+    clearError(state) {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -199,11 +242,17 @@ const teachersSlice = createSlice({
           state.items[index] = action.payload;
         }
       })
+      .addCase(updateTeacher.rejected, (state, action) => {
+        state.error = (action.payload as string) || action.error.message || 'Failed to update teacher';
+      })
       .addCase(deleteTeacher.fulfilled, (state, action: PayloadAction<string>) => {
         state.items = state.items.filter(teacher => teacher._id !== action.payload);
+      })
+      .addCase(deleteTeacher.rejected, (state, action) => {
+        state.error = (action.payload as string) || action.error.message || 'Failed to delete teacher';
       });
   },
 });
 
-export const { setTeachers, updateTeacherLocally, deleteTeacherLocally } = teachersSlice.actions;
+export const { setTeachers, updateTeacherLocally, deleteTeacherLocally, clearError } = teachersSlice.actions;
 export default teachersSlice.reducer;

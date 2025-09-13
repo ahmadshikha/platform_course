@@ -6,7 +6,7 @@ export const createCategory = async (req, res) => {
   try {
     console.log("test");
     
-    const { name, description } = req.body;
+    const { name, nameEn, description, descriptionEn } = req.body;
     
     // التحقق من وجود الفئة مسبقاً
     const existingCategory = await Category.findOne({ name });
@@ -17,7 +17,7 @@ export const createCategory = async (req, res) => {
       });
     }
     
-    const category = new Category({ name, description });
+    const category = new Category({ name, nameEn, description, descriptionEn });
     await category.save();
     
     res.status(201).json({

@@ -39,6 +39,7 @@ export default function Layout({ children }: PropsWithChildren) {
 						<nav className="space-y-2">
 							<NavLink to="/users" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>Users</NavLink>
 							<NavLink to="/teachers" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>Teachers</NavLink>
+							<NavLink to="/categories" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>Categories</NavLink>
 						</nav>
 					</aside>
 				</div>
@@ -52,6 +53,7 @@ export default function Layout({ children }: PropsWithChildren) {
 						<nav className="space-y-1">
 							<NavLink to="/users" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>Users</NavLink>
 							<NavLink to="/teachers" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>Teachers</NavLink>
+							<NavLink to="/categories" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>Categories</NavLink>
 						</nav>
 					</div>
 				</aside>

@@ -22,8 +22,8 @@ const socialSchema = new mongoose.Schema({
 const TeacherSchema = new mongoose.Schema({
   name: { type: String, required: true },
   nameEn: { type: String, required: true },
-  // title: { type: String, required: true },
-  // titleEn: { type: String, required: true },
+  title: { type: String, required: true },
+  titleEn: { type: String, required: true },
   image: { type: String, default: "/placeholder.svg" },
   bio: { type: String, required: true },
   bioEn: { type: String, required: true },

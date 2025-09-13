@@ -2,18 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../store/store';
-import { deleteTeacher, fetchTeachers, clearError } from '../store/slices/teachers/teachersSlice';
+import { deleteCategory, fetchCategories, clearError } from '../store/slices/categories/categoriesSlice';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 
-function TeachersList() {
-  const teachers = useSelector((s: RootState) => {
-    const activTeachers = s.teachers.items.filter(t => t.isActive);
-    return activTeachers;
-  });
-  const pagination = useSelector((s: RootState) => s.teachers.pagination);
-  const status = useSelector((s: RootState) => s.teachers.status);
-  const error = useSelector((s: RootState) => s.teachers.error);
+function CategoriesList() {
+  const categories = useSelector((s: RootState) => s.categories.items);
+  const pagination = useSelector((s: RootState) => s.categories.pagination);
+  const status = useSelector((s: RootState) => s.categories.status);
+  const error = useSelector((s: RootState) => s.categories.error);
   const { lang } = useSelector((s: RootState) => s.lang);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -30,13 +27,12 @@ function TeachersList() {
   const itemsPerPage = 10;
   
   // Delete state
-  const [deletingTeacherId, setDeletingTeacherId] = useState<string | null>(null);
+  const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   
   useEffect(() => {
-    dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }));
-    console.log(pagination.currentPage === pagination.totalPages)
+    dispatch(fetchCategories({ page: currentPage, limit: itemsPerPage }));
     // Clear any existing errors when component mounts
     dispatch(clearError());
   }, [currentPage, itemsPerPage, dispatch]);
@@ -50,19 +46,19 @@ function TeachersList() {
     setDeleteError(null);
   };
 
-  // Handle delete teacher
-  const handleDeleteTeacher = async (teacherId: string) => {
-    setDeletingTeacherId(teacherId);
+  // Handle delete category
+  const handleDeleteCategory = async (categoryId: string) => {
+    setDeletingCategoryId(categoryId);
     setDeleteError(null);
     
     try {
-      await dispatch(deleteTeacher(teacherId)).unwrap();
+      await dispatch(deleteCategory(categoryId)).unwrap();
       setShowDeleteConfirm(null);
       // Clear Redux errors after successful operation
       dispatch(clearError());
       
       // Handle pagination after delete
-      const remainingItems = pagination.total - 1; // Total items minus the deleted one
+      const remainingItems = pagination.totalItems - 1; // Total items minus the deleted one
       const totalPages = Math.ceil(remainingItems / itemsPerPage);
       
       // If current page is empty and not the first page, go to previous page
@@ -73,18 +69,18 @@ function TeachersList() {
         setCurrentPage(totalPages);
       } else {
         // Refresh current page data
-        dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }));
+        dispatch(fetchCategories({ page: currentPage, limit: itemsPerPage }));
       }
     } catch (error: any) {
-      setDeleteError(error || 'Failed to delete teacher');
+      setDeleteError(error || 'Failed to delete category');
     } finally {
-      setDeletingTeacherId(null);
+      setDeletingCategoryId(null);
     }
   };
 
   // Handle delete confirmation
-  const confirmDelete = (teacherId: string) => {
-    setShowDeleteConfirm(teacherId);
+  const confirmDelete = (categoryId: string) => {
+    setShowDeleteConfirm(categoryId);
   };
 
   const cancelDelete = () => {
@@ -92,20 +88,19 @@ function TeachersList() {
     setDeleteError(null);
   };
 
-  // Helper function to get language-specific properties
-  const getLocalizedProperty = (teacher: any, property: string) => {
+  const getLocalizedProperty = (category: any, property: string) => {
     if (lang === 'ar') {
-      return teacher[property] || teacher[property + 'En'] || '';
+      return category[property] || category[property + 'En'] || '';
     } else {
-      return teacher[property + 'En'] || teacher[property] || '';
+      return category[property + 'En'] || category[property] || '';
     }
   };
 
   return (
     <div className={`space-y-4 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{translations.teachers.title}</h1>
-        <Link to="/teachers/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">{translations.teachers.addTeacher}</Link>
+        <h1 className="text-xl font-semibold">{translations.categories.title}</h1>
+        <Link to="/categories/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">{translations.categories.addCategory}</Link>
       </div>
 
       {/* Global error message */}
@@ -113,7 +108,7 @@ function TeachersList() {
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{translations.teachers.error}</h3>
+              <h3 className="text-sm font-medium text-red-800">{translations.categories.error}</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
               </div>
@@ -122,7 +117,7 @@ function TeachersList() {
                   onClick={clearErrors}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {translations.teachers.dismiss}
+                  {translations.categories.dismiss}
                 </button>
               </div>
             </div>
@@ -135,7 +130,7 @@ function TeachersList() {
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{translations.teachers.deleteError}</h3>
+              <h3 className="text-sm font-medium text-red-800">{translations.categories.deleteError}</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{deleteError}</p>
               </div>
@@ -144,7 +139,7 @@ function TeachersList() {
                   onClick={clearErrors}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {translations.teachers.dismiss}
+                  {translations.categories.dismiss}
                 </button>
               </div>
             </div>
@@ -153,75 +148,56 @@ function TeachersList() {
       )}
 
     {status === 'loading' && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">{translations.teachers.loading}</div>
+      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">{translations.categories.loading}</div>
     )}
 
     {status === 'failed' && (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">{translations.teachers.failed}</div>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">{translations.categories.failed}</div>
     )}
 
-    {status === 'succeeded' && teachers.length === 0 && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">{translations.teachers.noTeachers}</div>
+    {status === 'succeeded' && categories.length === 0 && (
+      <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">{translations.categories.noCategories}</div>
     )}
 
-    {status === 'succeeded' && teachers.length > 0 && (
+    {status === 'succeeded' && categories.length > 0 && (
       <>
         {/* Pagination info */}
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-700">
-            {translations.teachers.showing} {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.total)} {translations.teachers.of} {pagination.total} {translations.teachers.teachers}
+            {translations.categories.showing} {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)} {translations.categories.of} {pagination.totalItems} {translations.categories.categories}
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {teachers.map(t => (
-          <div key={t._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div className={`flex items-center gap-4 p-4 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-              <img src={t.image || '/placeholder.svg'} alt={getLocalizedProperty(t, 'name')} className="h-16 w-16 rounded-full object-cover" />
-              <div className="min-w-0 flex-1">
-                <div className={`flex items-center justify-between ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-                  <h3 className="truncate text-base font-semibold text-gray-900">{getLocalizedProperty(t, 'name')}</h3>
-                  <span className={`${lang === 'ar' ? 'mr-2' : 'ml-2'} inline-flex items-center rounded-full px-2 py-0.5 text-xs ${t.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>{t.isActive ? translations.teachers.active : translations.teachers.inactive}</span>
-                </div>
-                {getLocalizedProperty(t, 'title') && <p className="truncate text-sm text-gray-600">{getLocalizedProperty(t, 'title')}</p>}
+          {categories.map(category => (
+          <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">{getLocalizedProperty(category, 'name')}</h3>
               </div>
-            </div>
-            <div className="px-4 pb-4 text-sm text-gray-700">
-              {getLocalizedProperty(t, 'bio') && <p className="line-clamp-3">{getLocalizedProperty(t, 'bio')}</p>}
-              {(() => {
-                const specialties = lang === 'ar' ? t.specialties : t.specialtiesEn;
-                return specialties && specialties.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {specialties.slice(0, 4).map((sp, i) => (
-                      <span key={i} className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">{sp}</span>
-                    ))}
-                  </div>
-                );
-              })()}
+              <p className="mt-2 text-sm text-gray-600 line-clamp-3">{getLocalizedProperty(category, 'description')}</p>
             </div>
             <div className={`flex items-center justify-between border-t border-gray-100 px-4 py-3 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-              <div className="flex items-center gap-3 text-xs text-gray-600">
-                <span>⭐ {t.rating ?? 0}</span>
-                <span>👥 {t.students ?? 0}</span>
-                <span>📚 {t.course ?? 0}</span>
-              </div>
+              {/* <div className="text-xs text-gray-500">
+                {new Date(category.createdAt).toLocaleDateString()}
+              </div> */}
               <div className={`space-x-2 ${lang === 'ar' ? 'space-x-reverse' : ''}`}>
-                <button 
-                  onClick={() => navigate(`/teachers/id=${t._id}/edit`)} 
+                {/* <button 
+                  onClick={() => navigate(`/categories/id=${category._id}/edit`)} 
                   className="rounded-md border border-green-300 px-2 py-1 text-sm text-green-600 hover:bg-gray-50"
                 >
-                  {translations.teachers.edit}
-                </button>
+                  {translations.categories.edit}
+                </button> */}
                 <button 
-                  onClick={() => confirmDelete(t._id)} 
-                  disabled={deletingTeacherId === t._id}
+                  onClick={() => confirmDelete(category._id)} 
+                  disabled={deletingCategoryId === category._id}
                   className={`rounded-md border px-2 py-1 text-sm ${
-                    deletingTeacherId === t._id 
+                    deletingCategoryId === category._id 
                       ? 'border-gray-300 text-gray-400 cursor-not-allowed' 
                       : 'border-red-300 text-red-600 hover:bg-red-50'
                   }`}
                 >
-                  {deletingTeacherId === t._id ? translations.teachers.deleting : translations.teachers.delete}
+                  {deletingCategoryId === category._id ? translations.categories.deleting : translations.categories.delete}
                 </button>
               </div>
             </div>
@@ -237,7 +213,7 @@ function TeachersList() {
               disabled={pagination.currentPage == 1}
               className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translations.teachers.previous}
+              {translations.categories.previous}
             </button>
             
             {/* Page numbers */}
@@ -262,7 +238,7 @@ function TeachersList() {
               disabled={pagination.currentPage == pagination.totalPages}
               className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translations.teachers.next}
+              {translations.categories.next}
             </button>
           </div>
         )}
@@ -284,10 +260,10 @@ function TeachersList() {
                   </svg>
                 </div>
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900">{translations.teachers.deleteConfirm}</h3>
+                  <h3 className="text-lg font-medium leading-6 text-gray-900">{translations.categories.deleteConfirm}</h3>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      {translations.teachers.deleteMessage}
+                      {translations.categories.deleteMessage}
                     </p>
                   </div>
                 </div>
@@ -296,23 +272,23 @@ function TeachersList() {
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
                 type="button"
-                onClick={() => handleDeleteTeacher(showDeleteConfirm)}
-                disabled={deletingTeacherId === showDeleteConfirm}
+                onClick={() => handleDeleteCategory(showDeleteConfirm)}
+                disabled={deletingCategoryId === showDeleteConfirm}
                 className={`inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm sm:ml-3 sm:w-auto sm:text-sm ${
-                  deletingTeacherId === showDeleteConfirm
+                  deletingCategoryId === showDeleteConfirm
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-red-600 hover:bg-red-700'
                 }`}
               >
-                {deletingTeacherId === showDeleteConfirm ? translations.teachers.deleting : translations.teachers.delete}
+                {deletingCategoryId === showDeleteConfirm ? translations.categories.deleting : translations.categories.delete}
               </button>
               <button
                 type="button"
                 onClick={cancelDelete}
-                disabled={deletingTeacherId === showDeleteConfirm}
+                disabled={deletingCategoryId === showDeleteConfirm}
                 className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {translations.teachers.cancel}
+                {translations.categories.cancel}
               </button>
             </div>
           </div>
@@ -323,4 +299,4 @@ function TeachersList() {
   );
 }
 
-export default TeachersList;
+export default CategoriesList;

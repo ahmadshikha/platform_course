@@ -1,4 +1,3 @@
-// importing modules and methods
 import React from "react";
 import './App.css';
 import { Routes, HashRouter, Route, Navigate } from "react-router-dom";
@@ -9,6 +8,8 @@ import CourseList from "./pages/CourseList";
 import { CourseForm } from "./pages/CouresForm";
 import { TeachersForm } from "./pages/TeachersForm";
 import TeachersList from "./pages/TeachersList";
+import CategoriesList from "./pages/CategoriesList";
+import { CategoryForm } from "./pages/CategoryForm";
 
 function App() {
 	return <>
@@ -21,9 +22,12 @@ function App() {
 					<Route path="/courses/new" element={<CourseForm />} />
 					<Route path="/teachers/" element={<TeachersList />} />
 					<Route path="/teachers/new" element={<TeachersForm />} />
+					<Route path="/categories" element={<CategoriesList />} />
+					<Route path="/categories/new" element={<CategoryForm />} />
 					<Route path="/users/new" element={<UserForm />} />
 					<Route path="/teachers/:id/edit" element={<TeachersForm />} />
 					<Route path="/users/:id/edit" element={<UserForm />} />
+					<Route path="/categories/:id/edit" element={<CategoryForm />} />
 				</Routes>
 			</Layout>
 		</HashRouter>

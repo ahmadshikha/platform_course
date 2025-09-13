@@ -23,7 +23,7 @@ connectDB();
 // Routes
 app.use("/api/courses", courseRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/category", categoryRoutes);
+app.use("/api/categories", categoryRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/userRegisterRoute", userRegisterRoute);
 // app.use("/api/news", newsRoutes);
