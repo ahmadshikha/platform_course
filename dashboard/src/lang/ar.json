@@ -116,5 +116,56 @@
         "descriptionEnRequired": "الوصف بالانجليزية مطلوب",
         "categoryNotFound": "الفئة غير موجودة",
         "saveError": "حدث خطأ أثناء حفظ الفئة"
+    },
+    "navigation": {
+        "dashboard": "لوحة التحكم",
+        "users": "المستخدمين",
+        "teachers": "الاساتذة",
+        "categories": "الفئات",
+        "courses": "الكورسات",
+        "menu": "القائمة"
+    },
+    "courses": {
+        "title": "الكورسات",
+        "addCourse": "إضافة كورس",
+        "editCourse": "تعديل الكورس",
+        "loading": "جاري تحميل الكورسات...",
+        "failed": "فشل في تحميل الكورسات. يرجى المحاولة مرة أخرى.",
+        "noCourses": "لا توجد كورسات بعد.",
+        "showing": "عرض",
+        "of": "من",
+        "courses": "كورسات",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "deleting": "جاري الحذف...",
+        "deleteConfirm": "حذف الكورس",
+        "deleteMessage": "هل أنت متأكد من حذف هذا الكورس؟ لا يمكن التراجع عن هذا الإجراء.",
+        "cancel": "إلغاء",
+        "error": "خطأ",
+        "deleteError": "خطأ في الحذف",
+        "dismiss": "تجاهل",
+        "previous": "السابق",
+        "next": "التالي",
+        "card": {
+            "title": "العنوان",
+            "date": "التاريخ",
+            "time": "الوقت",
+            "location": "الموقع",
+            "price": "السعر",
+            "seats": "المقاعد",
+            "enrolled": "المسجلين",
+            "status": "الحالة",
+            "rating": "التقييم",
+            "reviews": "التقييمات",
+            "description": "الوصف",
+            "type": "النوع",
+            "duration": "المدة"
+        },
+        "status": {
+            "available": "متاح",
+            "full": "مكتمل",
+            "cancelled": "ملغي",
+            "completed": "مكتمل"
+        }
     }
 }
