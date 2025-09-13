@@ -1,20 +1,3 @@
-// // models/Course.js
-// import mongoose from "mongoose";
-
-// const CourseSchema = new mongoose.Schema({
-//   name: { type: String, required: true },
-//   description: String,
-//   teacherId: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher" },
-//   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
-//   price: Number,
-//   spots: Number
-// });
-
-// const Course = mongoose.model("Course", CourseSchema);
-// export default Course;
-
-
-
 
 
 // models/Course.js
@@ -50,7 +33,9 @@ const CourseSchema = new mongoose.Schema({
     required: true 
   },
   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
-
+  startDate: Date,
+  endDate: Date,
+  times: String,
   isActive: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

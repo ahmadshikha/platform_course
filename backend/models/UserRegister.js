@@ -98,5 +98,6 @@ courseRegistrationSchema.pre('save', function(next) {
   }
   next();
 });
+
 const UserRegister = mongoose.model("UserRegister", courseRegistrationSchema);
 export default UserRegister;
