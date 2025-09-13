@@ -1,39 +1,44 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
-import {Course} from "../store/slices/courses/coursesSlice";
+import { Course } from "../store/slices/courses/coursesSlice";
 import { fetchTeachers } from '../store/slices/teachers/teachersSlice';
 import { fetchCategories } from '../store/slices/categories/categoriesSlice';
-import { addCourse } from '../store/slices/courses/coursesSlice';
+import { addCourse, updateCourse } from '../store/slices/courses/coursesSlice';
 
 export function CourseForm() {
+    const { id: idww } = useParams<{ id?: string }>();
+	const courseId = idww; // Rename `id` to `courseId` for consistency
+    const isEditMode = true;
+    
     const [id, setId] = useState('');
     const [title, setTitle] = useState('');
     const [titleEn, setTitleEn] = useState('');
-	const [type, setType] = useState('');
-	const [typeEn, setTypeEn] = useState('');
-	const [date, setDate] = useState('');
-	const [time, setTime] = useState("");
-	const [duration, setDuration] = useState("");
-	const [location, setLocation] = useState("");
-	const [locationEn, setLocationEn] = useState("");
-	const [status, setStatus] = useState<"available" | "full" | "cancelled" | "completed">("available");
-	const [price, setPrice] = useState('');
-	const [seats, setSeats] = useState(1);
-	const [description, setDescription] = useState("");
-	const [descriptionEn, setDescriptionEn] = useState("");
-	const [teacher, setTeacher] = useState("");
-	const [categoryId, setCategoryId] = useState("");
-	const [isActive, setActive] = useState(true);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [submitError, setSubmitError] = useState<string | null>(null);
+    const [type, setType] = useState('');
+    const [typeEn, setTypeEn] = useState('');
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState("");
+    const [duration, setDuration] = useState("");
+    const [location, setLocation] = useState("");
+    const [locationEn, setLocationEn] = useState("");
+    const [status, setStatus] = useState<"available" | "full" | "cancelled" | "completed">("available");
+    const [price, setPrice] = useState('');
+    const [seats, setSeats] = useState(1);
+    const [description, setDescription] = useState("");
+    const [descriptionEn, setDescriptionEn] = useState("");
+    const [teacher, setTeacher] = useState("");
+    const [categoryId, setCategoryId] = useState("");
+    const [isActive, setActive] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
     const { lang } = useSelector((s: RootState) => s.lang);
     const teachers = useSelector((s: RootState) => s.teachers.items);
     const categories = useSelector((s: RootState) => s.categories.items);
+    const courses = useSelector((s: RootState) => s.courses);
     const teachersStatus = useSelector((s: RootState) => s.teachers.status);
     const categoriesStatus = useSelector((s: RootState) => s.categories.status);
     const coursesStatus = useSelector((s: RootState) => s.courses.status);
@@ -49,6 +54,34 @@ export function CourseForm() {
         }
     }, [dispatch, teachersStatus, categoriesStatus]);
 
+    // Load course data in edit mode
+    useEffect(() => {
+        if (isEditMode) {
+			console.log(11111, courseId)
+            const course = courses.items.find(c => c._id === courseId);
+            if (course) {
+                setId(course.id);
+                setTitle(course.title);
+                setTitleEn(course.titleEn);
+                setType(course.type);
+                setTypeEn(course.typeEn);
+                setDate(course.date);
+                setTime(course.time);
+                setDuration(course.duration);
+                setLocation(course.location);
+                setLocationEn(course.locationEn);
+                setStatus(course.status);
+                setPrice(course.price);
+                setSeats(course.seats);
+                setDescription(course.description);
+                setDescriptionEn(course.descriptionEn);
+                setTeacher(course.teacher);
+                setCategoryId(course.categoryId || '');
+                setActive(course.isActive);
+            }
+        }
+    }, [isEditMode, courseId, courses.items]);
+
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,7 +89,7 @@ export function CourseForm() {
         setSubmitError(null);
 
         // Basic validation
-        if (!id.trim() || !title.trim() || !titleEn.trim() || !type.trim() || !typeEn.trim() || 
+        if (!idww.trim() || !title.trim() || !titleEn.trim() || !type.trim() || !typeEn.trim() || 
             !date.trim() || !time.trim() || !duration.trim() || !location.trim() || !locationEn.trim() || 
             !price.trim() || !description.trim() || !descriptionEn.trim() || !teacher.trim()) {
             setSubmitError('Please fill in all required fields');
@@ -85,9 +118,6 @@ export function CourseForm() {
                 status,
                 price: price.trim(),
                 seats,
-                enrolled: 0,
-                rating: 0,
-                reviews: 0,
                 description: description.trim(),
                 descriptionEn: descriptionEn.trim(),
                 teacher: teacher.trim(),
@@ -95,7 +125,18 @@ export function CourseForm() {
                 isActive
             };
 
-            await dispatch(addCourse(courseData));
+            if (isEditMode && courseId) {
+                await dispatch(updateCourse({ courseId, courseData }));
+            } else {
+                // Add additional fields only needed for new courses
+                const newCourseData = {
+                    ...courseData,
+                    enrolled: 0,
+                    rating: 0,
+                    reviews: 0,
+                };
+                await dispatch(addCourse(newCourseData));
+            }
             navigate('/courses');
         } catch (error) {
             setSubmitError('Failed to create course. Please try again.');
@@ -131,7 +172,7 @@ export function CourseForm() {
 		<form onSubmit={handleSubmit} className="space-y-4">
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Course ID *</label>
-					<input value={id} onChange={e => setId(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					<input value={id} onChange={e => {setId(e.target.value); console.log(id)}} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
 					<p className="mt-1 text-xs text-gray-500">Unique identifier for the course</p>
 				</div>
 				<div>

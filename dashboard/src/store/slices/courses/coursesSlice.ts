@@ -100,6 +100,37 @@ const addCourse = createAsyncThunk(
   }
 );
 
+const updateCourse = createAsyncThunk(
+  'courses/updateCourse',
+  async ({ courseId, courseData }: { courseId: string, courseData: Partial<Course> }, { rejectWithValue }) => {
+    console.log('Updating course:', courseId, courseData);
+    try {
+      const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(courseData),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update course');
+      }
+      
+      const result = await response.json();
+      
+      if (result.success === false) {
+        throw new Error(result.message || 'Failed to update course');
+      }
+      
+      return result.data;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'An error occurred');
+    }
+  }
+);
+
 const deleteCourse = createAsyncThunk(
   'courses/deleteCourse',
   async (courseId: string, { rejectWithValue }) => {
@@ -181,10 +212,26 @@ const coursesSlice = createSlice({
       .addCase(deleteCourse.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+      .addCase(updateCourse.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(updateCourse.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const index = state.items.findIndex(c => c._id === action.payload._id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(updateCourse.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { clearError, updateCourse } = coursesSlice.actions;
-export { fetchCourses, addCourse, deleteCourse };
+export const { clearError } = coursesSlice.actions;
+export { fetchCourses, addCourse, deleteCourse, updateCourse };
 export default coursesSlice.reducer;

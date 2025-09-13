@@ -20,6 +20,7 @@ function App() {
 					<Route path="/users" element={<UsersList />} />
 					<Route path="/courses" element={<CourseList />} />
 					<Route path="/courses/new" element={<CourseForm />} />
+					<Route path="/courses/:id/edit" element={<CourseForm />} />
 					<Route path="/teachers/" element={<TeachersList />} />
 					<Route path="/teachers/new" element={<TeachersForm />} />
 					<Route path="/categories" element={<CategoriesList />} />

@@ -180,7 +180,7 @@ export const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    
+    console.log(req.body)
     // التحقق من وجود المعلم إذا تم تحديثه
     if (updateData.teacher) {
       const teacher = await Teacher.findById(updateData.teacher);
