@@ -6,6 +6,7 @@ import { Course } from "../store/slices/courses/coursesSlice";
 import { fetchTeachers } from '../store/slices/teachers/teachersSlice';
 import { fetchCategories } from '../store/slices/categories/categoriesSlice';
 import { addCourse, updateCourse } from '../store/slices/courses/coursesSlice';
+import { ITeacher } from '../store/slices/teachers/teachersSlice';
 
 export function CourseForm() {
     const { id: idww } = useParams<{ id?: string }>();
@@ -27,11 +28,13 @@ export function CourseForm() {
     const [seats, setSeats] = useState(1);
     const [description, setDescription] = useState("");
     const [descriptionEn, setDescriptionEn] = useState("");
-    const [teacher, setTeacher] = useState("");
-    const [categoryId, setCategoryId] = useState("");
+    const [teacher, setTeacher] = useState<ITeacher | null>(null);
+    // store selected category id as a string (or empty when none)
+    const [categoryId, setCategoryId] = useState<string>("");
     const [isActive, setActive] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
@@ -75,35 +78,87 @@ export function CourseForm() {
                 setSeats(course.seats);
                 setDescription(course.description);
                 setDescriptionEn(course.descriptionEn);
-                setTeacher(course.teacher);
-                setCategoryId(course.categoryId || '');
+                // set teacher if present on the course
+                setTeacher((course as any).teacher || null);
+                // normalize categoryId to be the category _id string when editing
+                const courseCat = (course as any).categoryId;
+                setCategoryId(courseCat ? (courseCat._id || courseCat) : '');
                 setActive(course.isActive);
             }
         }
     }, [isEditMode, courseId, courses.items]);
+
+    // Add validation logic
+    const validateForm = () => {
+        // clear previous errors before validating to avoid showing stale messages
+        const newErrors: { [key: string]: string } = {};
+        console.log(teacher)
+        if (!id.trim()) {
+            newErrors.id = 'Course ID is required';
+        }
+        if (!title.trim()) {
+            newErrors.title = 'Title (Arabic) is required';
+        }
+        if (!titleEn.trim()) {
+            newErrors.titleEn = 'Title (English) is required';
+        }
+        if (!type.trim()) {
+            newErrors.type = 'Type (Arabic) is required';
+        }
+        if (!typeEn.trim()) {
+            newErrors.typeEn = 'Type (English) is required';
+        }
+        if (!date.trim()) {
+            newErrors.date = 'Date is required';
+        }
+        if (!time.trim()) {
+            newErrors.time = 'Time is required';
+        }
+        if (!duration.trim()) {
+            newErrors.duration = 'Duration is required';
+        }
+        if (!location.trim()) {
+            newErrors.location = 'Location (Arabic) is required';
+        }
+        if (!locationEn.trim()) {
+            newErrors.locationEn = 'Location (English) is required';
+        }
+        if (!price.trim()) {
+            newErrors.price = 'Price is required';
+        }
+        if (!description.trim()) {
+            newErrors.description = 'Description (Arabic) is required';
+        }
+        if (!descriptionEn.trim()) {
+            newErrors.descriptionEn = 'Description (English) is required';
+        }
+        if (!teacher) {
+            newErrors.teacher = 'Teacher is required';
+        }
+
+        setErrors(newErrors);
+        // return whether the form is valid
+        return Object.keys(newErrors).length === 0;
+    };
 
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         setSubmitError(null);
+        // clear any previous errors when starting a submit attempt
+        setErrors({});
 
-        // Basic validation
-        if (!idww.trim() || !title.trim() || !titleEn.trim() || !type.trim() || !typeEn.trim() || 
-            !date.trim() || !time.trim() || !duration.trim() || !location.trim() || !locationEn.trim() || 
-            !price.trim() || !description.trim() || !descriptionEn.trim() || !teacher.trim()) {
-            setSubmitError('Please fill in all required fields');
-            setIsSubmitting(false);
-            return;
-        }
-
-        if (seats < 1) {
-            setSubmitError('Seats must be at least 1');
+        if (!validateForm()) {
             setIsSubmitting(false);
             return;
         }
 
         try {
+            // Update courseData to include the full teacher object
+            // find selected category object (the API/store expects the full object)
+            const selectedCategory = categoryId ? categories.find((c: any) => c._id === categoryId) : undefined;
+
             const courseData = {
                 id: id.trim(),
                 title: title.trim(),
@@ -120,16 +175,17 @@ export function CourseForm() {
                 seats,
                 description: description.trim(),
                 descriptionEn: descriptionEn.trim(),
-                teacher: teacher.trim(),
-                categoryId: categoryId.trim() || undefined,
+                teacher, // Assign the full ITeacher object
+                // if a category is selected, ensure we pass the category object expected by the API/store
+                categoryId: selectedCategory || undefined,
                 isActive
             };
-
+			console.log(courseData)
             if (isEditMode && courseId) {
                 await dispatch(updateCourse({ courseId, courseData }));
             } else {
                 // Add additional fields only needed for new courses
-                const newCourseData = {
+                    const newCourseData = {
                     ...courseData,
                     enrolled: 0,
                     rating: 0,
@@ -137,7 +193,9 @@ export function CourseForm() {
                 };
                 await dispatch(addCourse(newCourseData));
             }
-            navigate('/courses');
+            // On successful submit, clear validation errors and navigate away
+            setErrors({});
+            // navigate('/courses');
         } catch (error) {
             setSubmitError('Failed to create course. Please try again.');
         } finally {
@@ -169,49 +227,59 @@ export function CourseForm() {
 			</div>
 		)}
 
-		<form onSubmit={handleSubmit} className="space-y-4">
+		<form className="space-y-4">
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Course ID *</label>
 					<input value={id} onChange={e => {setId(e.target.value); console.log(id)}} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
 					<p className="mt-1 text-xs text-gray-500">Unique identifier for the course</p>
+					{errors.id && <p className="mt-1 text-xs text-red-600">{errors.id}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Title (Arabic) *</label>
 					<input value={title} onChange={e => setTitle(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.title && <p className="mt-1 text-xs text-red-600">{errors.title}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Title (English) *</label>
 					<input value={titleEn} onChange={e => setTitleEn(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.titleEn && <p className="mt-1 text-xs text-red-600">{errors.titleEn}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Type (Arabic) *</label>
 					<input value={type} onChange={e => setType(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.type && <p className="mt-1 text-xs text-red-600">{errors.type}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Type (English) *</label>
 					<input value={typeEn} onChange={e => setTypeEn(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.typeEn && <p className="mt-1 text-xs text-red-600">{errors.typeEn}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Date *</label>
 					<input type="text" value={date} onChange={e => setDate(e.target.value)} placeholder="e.g., 2024-01-15, January 15, 2024" className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
 					<p className="mt-1 text-xs text-gray-500">Enter date as string (e.g., "2024-01-15" or "January 15, 2024")</p>
+					{errors.date && <p className="mt-1 text-xs text-red-600">{errors.date}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Time *</label>
 					<input type="text" value={time} onChange={e => setTime(e.target.value)} placeholder="e.g., 09:00, 2:30 PM, 14:30" className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
 					<p className="mt-1 text-xs text-gray-500">Enter time as string (e.g., "09:00", "2:30 PM", "14:30")</p>
+					{errors.time && <p className="mt-1 text-xs text-red-600">{errors.time}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Duration *</label>
 					<input value={duration} onChange={e => setDuration(e.target.value)} placeholder="e.g., 2 hours, 3 days" className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.duration && <p className="mt-1 text-xs text-red-600">{errors.duration}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Location (Arabic) *</label>
 					<input value={location} onChange={e => setLocation(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.location && <p className="mt-1 text-xs text-red-600">{errors.location}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Location (English) *</label>
 					<input value={locationEn} onChange={e => setLocationEn(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.locationEn && <p className="mt-1 text-xs text-red-600">{errors.locationEn}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Status</label>
@@ -226,6 +294,7 @@ export function CourseForm() {
 					<label className="block text-sm font-medium text-gray-700">Price *</label>
 					<input type="text" value={price} onChange={e => setPrice(e.target.value)} placeholder="e.g., 100, 150.50" className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
 					<p className="mt-1 text-xs text-gray-500">Enter price as string (e.g., "100" or "150.50")</p>
+					{errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Seats *</label>
@@ -234,28 +303,36 @@ export function CourseForm() {
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Description (Arabic) *</label>
 					<textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.description && <p className="mt-1 text-xs text-red-600">{errors.description}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Description (English) *</label>
 					<textarea value={descriptionEn} onChange={e => setDescriptionEn(e.target.value)} rows={3} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					{errors.descriptionEn && <p className="mt-1 text-xs text-red-600">{errors.descriptionEn}</p>}
+					
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Teacher *</label>
-					<select value={teacher} onChange={e => setTeacher(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
-						<option value="">Select a teacher</option>
-						{teachersStatus === 'loading' ? (
-							<option value="" disabled>Loading teachers...</option>
-						) : (
-							teachers.map((teacherItem) => (
-								<option key={teacherItem._id} value={teacherItem._id}>
-									{lang === 'ar' ? teacherItem.name : teacherItem.nameEn} - {lang === 'ar' ? teacherItem.title : teacherItem.titleEn}
-								</option>
-							))
-						)}
-					</select>
+					<select
+                        value={teacher?._id || ''}
+                        onChange={(e) => {
+                            const selectedTeacher = teachers.find(t => t._id === e.target.value);
+                            setTeacher(selectedTeacher || null);
+                        }}
+                        className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        required
+                    >
+                        <option value="">Select a teacher</option>
+                        {teachers.map((teacherItem) => (
+                            <option key={teacherItem._id} value={teacherItem._id}>
+                                {lang === 'ar' ? teacherItem.name : teacherItem.nameEn} - {lang === 'ar' ? teacherItem.title : teacherItem.titleEn}
+                            </option>
+                        ))}
+                    </select>
 					{teachersStatus === 'failed' && (
 						<p className="mt-1 text-sm text-red-600">Failed to load teachers. Please try again.</p>
 					)}
+					{errors.teacher && <p className="mt-1 text-xs text-red-600">{errors.teacher}</p>}
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700">Category</label>
@@ -287,7 +364,7 @@ export function CourseForm() {
 				</div>
 				<div className="flex items-center gap-2">
 					<button 
-						type="submit" 
+						onClick={handleSubmit}
 						disabled={isSubmitting || coursesStatus === 'loading'}
 						className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
 					>

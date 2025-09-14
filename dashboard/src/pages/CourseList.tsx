@@ -15,6 +15,12 @@ export default function CourseList() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
+  const pagination = useSelector((s: RootState) => (s.courses as any).pagination || { totalPages: 1, currentPage: 1, total: 0 });
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 10;
+
   // Translation
   const translate = {
     en,
@@ -28,10 +34,22 @@ export default function CourseList() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   useEffect(() => {
-    dispatch(fetchCourses());
+    dispatch(fetchCourses({ page: currentPage, limit: itemsPerPage }));
     // Clear any existing errors when component mounts
     dispatch(clearError());
-  }, [dispatch]);
+  }, [dispatch, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Validate date strings: accept ISO (YYYY-MM-DD) or long form (e.g., "January 15, 2024")
+  const isValidDateFormat = (s: string | undefined) => {
+    if (!s) return false;
+    const iso = /^\d{4}-\d{2}-\d{2}$/;
+    const long = /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}$/i;
+    return iso.test(s.trim()) || long.test(s.trim());
+  };
 
   // Clear errors when user interacts
   const clearErrors = () => {
@@ -44,8 +62,25 @@ export default function CourseList() {
     setDeleteError(null);
     
     try {
-      await dispatch(deleteCourse(courseId));
+      await (dispatch(deleteCourse(courseId)) as any).unwrap();
       setShowDeleteConfirm(null);
+      // Clear Redux errors after successful operation
+      dispatch(clearError());
+
+      // Handle pagination after delete similar to TeachersList
+      const remainingItems = (pagination.total || 0) - 1; // Total items minus the deleted one
+      const totalPages = Math.ceil(remainingItems / itemsPerPage);
+
+      // If current page is empty and not the first page, go to previous page
+      if (remainingItems === 0 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      } else if (currentPage > totalPages && totalPages > 0) {
+        // If current page exceeds total pages, go to last page
+        setCurrentPage(totalPages);
+      } else {
+        // Refresh current page data
+        dispatch(fetchCourses({ page: currentPage, limit: itemsPerPage }));
+      }
     } catch (error) {
       setDeleteError('Failed to delete course. Please try again.');
     } finally {
@@ -97,7 +132,7 @@ export default function CourseList() {
               </div>
               <div className="mt-4">
                 <button
-                  onClick={() => dispatch(fetchCourses())}
+                  onClick={() => dispatch(fetchCourses({ page: currentPage, limit: itemsPerPage }))}
                   className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
                 >
                   {translations.courses.dismiss}
@@ -167,23 +202,67 @@ export default function CourseList() {
           </div>
         </div>
       ) : (
+        <>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.isArray(courses) && courses.map((course) => (
-            <CourseCard
-              key={course._id}
-              course={course}
-              onEdit={(courseId) => navigate(`/courses/${courseId}/edit`)}
-              onDelete={(courseId) => setShowDeleteConfirm(courseId)}
-            />
+            <div key={course._id}>
+              <CourseCard
+                course={course}
+                onEdit={(courseId) => navigate(`/courses/${courseId}/edit`)}
+                onDelete={(courseId) => setShowDeleteConfirm(courseId)}
+              />
+              {!isValidDateFormat(course.date) && (
+                <p className="mt-1 text-xs text-red-600 px-4">Invalid date format — use YYYY-MM-DD or "January 15, 2024"</p>
+              )}
+            </div>
           ))}
         </div>
+
+        {/* Pagination controls */}
+        {pagination.totalPages > 1 && (
+          <div className="flex items-center justify-center space-x-2 py-4">
+            <button
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={pagination.currentPage == 1}
+              className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {translations.teachers.previous}
+            </button>
+            
+            {/* Page numbers */}
+            <div className="flex space-x-1">
+              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`rounded-md px-3 py-1 text-sm ${
+                    pagination.currentPage == page
+                      ? 'bg-blue-600 text-white'
+                      : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+            
+            <button
+              onClick={() => handlePageChange(Number(pagination.currentPage) + 1)}
+              disabled={pagination.currentPage == pagination.totalPages}
+              className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {translations.teachers.next}
+            </button>
+          </div>
+        )}
+        </>
       )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowDeleteConfirm(null)}></div>
+            {/* <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowDeleteConfirm(null)}></div> */}
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">

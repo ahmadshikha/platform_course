@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { ITeacher } from '../teachers/teachersSlice';
+import { ICategory } from '../categories/categoriesSlice';
 
 export type Course = {
   _id: string,
@@ -20,8 +22,8 @@ export type Course = {
   reviews: number,
   description: string,
   descriptionEn: string,
-  teacher: string,
-  categoryId?: string,
+  teacher: ITeacher,
+  categoryId?: ICategory,
   isActive: boolean,
   createdAt: Date,
   updatedAt: Date
@@ -31,39 +33,59 @@ export type CoursesState = {
   items: Course[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  pagination?: {
+    totalPages: number;
+    currentPage: number;
+    total: number;
+  };
 };
 
 const initialState: CoursesState = {
   items: [],
   status: 'idle',
   error: null,
+  pagination: {
+    totalPages: 0,
+    currentPage: 1,
+    total: 0,
+  },
 };
 
 const fetchCourses = createAsyncThunk(
   'courses/fetchCourses',
-  async (_, { rejectWithValue }) => {
+  async (params: {page?: number, limit?: number} | undefined, { rejectWithValue }) => {
+    const { page, limit } = params || {};
     try {
-      const response = await fetch('http://localhost:5000/api/courses/',
-      {
+      const queryParams = new URLSearchParams();
+      if (page) queryParams.append('page', page.toString());
+      if (limit) queryParams.append('limit', limit.toString());
+
+      const url = `http://localhost:5000/api/courses/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      }
-      );
+      });
       if (!response.ok) {
-        throw new Error('Failed to fetch courses');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch courses');
       }
       const result = await response.json();
-      console.log(result);
-      
-      // Handle backend response structure - return data array or empty array
+
       if (result.success === false) {
         throw new Error(result.message || 'Failed to fetch courses');
       }
-      
-      // Ensure we always return an array
-      return Array.isArray(result.data) ? result.data : [];
+
+      // If backend returns paginated structure, use it; otherwise fall back to list-only
+      const courses = Array.isArray(result.data) ? result.data : (result.courses || []);
+      const pagination = {
+        totalPages: result.totalPages ?? result.pagination?.totalPages ?? 1,
+        currentPage: result.currentPage ?? result.pagination?.currentPage ?? (page || 1),
+        total: result.total ?? result.pagination?.total ?? courses.length,
+      };
+
+      return { courses, pagination };
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'An error occurred');
     }
@@ -180,7 +202,9 @@ const coursesSlice = createSlice({
       })
       .addCase(fetchCourses.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        // action.payload has shape { courses, pagination }
+        state.items = action.payload.courses;
+        state.pagination = action.payload.pagination;
         state.error = null;
       })
       .addCase(fetchCourses.rejected, (state, action) => {
