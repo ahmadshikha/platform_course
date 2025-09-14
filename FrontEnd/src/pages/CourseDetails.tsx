@@ -1,56 +1,92 @@
 import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Separator } from "../components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Calendar, Clock, MapPin, User, Phone, Mail, Users, BookOpen, FileText, Euro, Share2, Printer, Heart, ArrowLeft, Download, Star, CheckCircle } from "lucide-react";
-import { GoogleTranslate } from "@/components/GoogleTranslate";
+import { GoogleTranslate } from "../components/GoogleTranslate";
 import { useState } from "react";
+import { ICategory } from "../store/slices/categories/categoriesSlice";
+import { ITeacher } from "../store/slices/teachers/teachersSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
+import { useSelector } from "react-redux";
+
+export type Course = {
+  _id: string,
+  id: string,
+  title: string,
+  titleEn: string,
+  type: string,
+  typeEn: string,
+  date: string,
+  time: string,
+  duration: string,
+  location: string,
+  locationEn: string,
+  status: 'available'| 'full'| 'cancelled'| 'completed',
+  price: string,
+  seats: number,
+  enrolled: number,
+  rating: number,
+  reviews: number,
+  description: string,
+  descriptionEn: string,
+  teacher: ITeacher,
+  categoryId?: ICategory,
+  isActive: boolean,
+  createdAt: Date,
+  updatedAt: Date
+};
 
 export const CourseDetails = () => {
   const { t } = useTranslation();
   const { courseId } = useParams();
   const [isFavorite, setIsFavorite] = useState(false);
-
+  const courseData = useSelector((s: RootState) => s.courses.items.find(c => c._id === courseId));
+  console.log("Course from store:", courseData);
+  console.log("Course from store:", courseId);
+  const dispatch = useDispatch<AppDispatch>()
+  console.log("Course teacher:", courseData.teacher.name);
   // بيانات الدورة التدريبية باللغة العربية
-  const courseData = {
-    id: "U731063",
-    title: "اختبار تحديد المستوى للمسار M/الشهادة المتوسطة/التأهيل",
-    titleEn: "Placement Test M-Track/Middle School Certificate/Qualification",
-    description: "اختبار تحديد المستوى هو شرط أساسي للتسجيل في الدورات السنوية للتحضير لشهادة الثانوية التأهيلية (Quali)، وللمسار M وكذلك للشهادة المتوسطة.",
-    descriptionEn: "The placement test is a prerequisite for registration to the annual courses as preparation for the qualifying secondary school certificate (Quali), for the M-track as well as for the middle school certificate.",
-    details: "يستغرق كل اختبار كتابي 30 دقيقة لكل مادة. بالنسبة للمسار M والشهادة المتوسطة، يتم اختبار مواد اللغة الألمانية والرياضيات واللغة الإنجليزية. بالنسبة لاختبار التأهيل، يشمل الاختبار مواد اللغة الألمانية والرياضيات.",
-    detailsEn: "The written tests each last 30 minutes per subject. For the M-track and middle school certificate, the subjects German, Mathematics and English are tested. For the Quali, the test includes the subjects German and Mathematics.",
-    results: "تساعد النتائج في تحديد مستوى الدورة المناسب. خلال أسبوع إلى أسبوعين بعد اختبار تحديد المستوى، تتم استشارة فردية مع معلم أو مرافق اجتماعي متطوع. ستحصل على موعد الاستشارة مباشرة في موعد الاختبار.",
-    resultsEn: "The results help determine the appropriate course level. Within one to two weeks after the placement test, an individual consultation with a teacher or volunteer social worker takes place. You will receive the appointment for the consultation directly at the test appointment.",
-    instructor: "يانا كوربرماير-مانجيرت",
-    instructorBio: "معلمة ذات خبرة تزيد عن 15 عامًا في التحضير لامتحانات الشهادات المدرسية. متخصصة في اللغة الألمانية والرياضيات.",
-    date: "الإثنين، 17.09.2025",
-    time: "14:00 - 17:00",
-    duration: "موعد واحد",
-    location: "المركز الرئيسي MVHS، Landwehrstr. 32a",
-    room: "الغرفة 301، الطابق الثالث",
-    fee: "مجاني",
-    feeEn: "free",
-    participants: "لا تزال هناك أماكن متاحة",
-    participantsEn: "Still places available",
-    minParticipants: "تم الوصول إلى الحد الأدنى لعدد المشاركين",
-    maxParticipants: "العدد الأقصى للمشاركين: 24",
-    materials: "أقلام، قلم رصاص، مثلث هندسي وفرجار",
-    materialsEn: "Pens, pencil, set square and compass",
-    requirements: "المعارف المسبقة: المعرفة الأساسية باللغة الألمانية والرياضيات",
-    requirementsEn: "Prerequisites: Basic knowledge of German and Mathematics",
-    rating: 4.7,
-    reviews: 23,
-    contact: {
-      phone: "(089) 48006-6969",
-      email: "schulabschluesse@mvhs.de"
-    }
-  };
+  // const courseData = {
+  //   id: "U731063",
+  //   title: "اختبار تحديد المستوى للمسار M/الشهادة المتوسطة/التأهيل",
+  //   titleEn: "Placement Test M-Track/Middle School Certificate/Qualification",
+  //   description: "اختبار تحديد المستوى هو شرط أساسي للتسجيل في الدورات السنوية للتحضير لشهادة الثانوية التأهيلية (Quali)، وللمسار M وكذلك للشهادة المتوسطة.",
+  //   descriptionEn: "The placement test is a prerequisite for registration to the annual courses as preparation for the qualifying secondary school certificate (Quali), for the M-track as well as for the middle school certificate.",
+  //   details: "يستغرق كل اختبار كتابي 30 دقيقة لكل مادة. بالنسبة للمسار M والشهادة المتوسطة، يتم اختبار مواد اللغة الألمانية والرياضيات واللغة الإنجليزية. بالنسبة لاختبار التأهيل، يشمل الاختبار مواد اللغة الألمانية والرياضيات.",
+  //   detailsEn: "The written tests each last 30 minutes per subject. For the M-track and middle school certificate, the subjects German, Mathematics and English are tested. For the Quali, the test includes the subjects German and Mathematics.",
+  //   results: "تساعد النتائج في تحديد مستوى الدورة المناسب. خلال أسبوع إلى أسبوعين بعد اختبار تحديد المستوى، تتم استشارة فردية مع معلم أو مرافق اجتماعي متطوع. ستحصل على موعد الاستشارة مباشرة في موعد الاختبار.",
+  //   resultsEn: "The results help determine the appropriate course level. Within one to two weeks after the placement test, an individual consultation with a teacher or volunteer social worker takes place. You will receive the appointment for the consultation directly at the test appointment.",
+  //   instructor: "يانا كوربرماير-مانجيرت",
+  //   instructorBio: "معلمة ذات خبرة تزيد عن 15 عامًا في التحضير لامتحانات الشهادات المدرسية. متخصصة في اللغة الألمانية والرياضيات.",
+  //   date: "الإثنين، 17.09.2025",
+  //   time: "14:00 - 17:00",
+  //   duration: "موعد واحد",
+  //   location: "المركز الرئيسي MVHS، Landwehrstr. 32a",
+  //   room: "الغرفة 301، الطابق الثالث",
+  //   fee: "مجاني",
+  //   feeEn: "free",
+  //   participants: "لا تزال هناك أماكن متاحة",
+  //   participantsEn: "Still places available",
+  //   minParticipants: "تم الوصول إلى الحد الأدنى لعدد المشاركين",
+  //   maxParticipants: "العدد الأقصى للمشاركين: 24",
+  //   materials: "أقلام، قلم رصاص، مثلث هندسي وفرجار",
+  //   materialsEn: "Pens, pencil, set square and compass",
+  //   requirements: "المعارف المسبقة: المعرفة الأساسية باللغة الألمانية والرياضيات",
+  //   requirementsEn: "Prerequisites: Basic knowledge of German and Mathematics",
+  //   rating: 4.7,
+  //   reviews: 23,
+  //   contact: {
+  //     phone: "(089) 48006-6969",
+  //     email: "schulabschluesse@mvhs.de"
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white" dir="rtl">
@@ -88,12 +124,12 @@ export const CourseDetails = () => {
             <div className="bg-white rounded-xl p-6 shadow-sm border">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between">
                 <div>
-                  <div className="flex items-center mb-2">
+                  {/* <div className="flex items-center mb-2">
                     <Badge variant="secondary" className="ml-2">اختبار</Badge>
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                       {courseData.participants}
                     </Badge>
-                  </div>
+                  </div> */}
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">
                     {courseData.title}
                   </h1>
@@ -108,10 +144,10 @@ export const CourseDetails = () => {
                       <span className="mx-1">•</span>
                       <span>{courseData.reviews} تقييم</span>
                     </div>
-                    <div className="flex items-center">
+                    {/* <div className="flex items-center">
                       <Users className="h-4 w-4 ml-1" />
                       <span>{courseData.maxParticipants}</span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 
@@ -160,7 +196,7 @@ export const CourseDetails = () => {
 
                 <Separator />
 
-                <div>
+                {/* <div>
                   <h3 className="text-xl font-semibold mb-3">تفاصيل سير الاختبار</h3>
                   <p className="text-gray-700 leading-relaxed mb-3">
                     {courseData.details}
@@ -168,11 +204,11 @@ export const CourseDetails = () => {
                   <p className="text-gray-600 leading-relaxed">
                     {courseData.detailsEn}
                   </p>
-                </div>
+                </div> */}
 
                 <Separator />
 
-                <div>
+                {/* <div>
                   <h3 className="text-xl font-semibold mb-3">النتائج والاستشارة</h3>
                   <p className="text-gray-700 leading-relaxed mb-3">
                     {courseData.results}
@@ -180,7 +216,7 @@ export const CourseDetails = () => {
                   <p className="text-gray-600 leading-relaxed">
                     {courseData.resultsEn}
                   </p>
-                </div>
+                </div> */}
               </TabsContent>
               
               <TabsContent value="details" className="p-6">
@@ -220,25 +256,25 @@ export const CourseDetails = () => {
                         <div>
                           <p className="font-medium">مكان الفعالية</p>
                           <p className="text-gray-600">{courseData.location}</p>
-                          <p className="text-gray-500 text-sm">{courseData.room}</p>
+                          {/* <p className="text-gray-500 text-sm">{courseData.room}</p> */}
                         </div>
                       </div>
-                      <div className="flex items-start">
+                      {/* <div className="flex items-start">
                         <FileText className="h-5 w-5 text-primary ml-3 mt-0.5" />
                         <div>
                           <p className="font-medium">المواد المطلوبة</p>
                           <p className="text-gray-600">{courseData.materials}</p>
                           <p className="text-gray-500 text-sm">{courseData.materialsEn}</p>
                         </div>
-                      </div>
-                      <div className="flex items-start">
+                      </div> */}
+                      {/* <div className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-primary ml-3 mt-0.5" />
                         <div>
                           <p className="font-medium">المتطلبات</p>
                           <p className="text-gray-600">{courseData.requirements}</p>
                           <p className="text-gray-500 text-sm">{courseData.requirementsEn}</p>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -250,8 +286,8 @@ export const CourseDetails = () => {
                     <User className="h-8 w-8 text-gray-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold">{courseData.instructor}</h3>
-                    <p className="text-gray-600 mt-2">{courseData.instructorBio}</p>
+                    <h3 className="text-xl font-semibold">{courseData.teacher.nameEn}</h3>
+                    <p className="text-gray-600 mt-2">{courseData.teacher.bioEn}</p>
                     <div className="flex items-center mt-4 text-sm text-gray-500">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 ml-1" />
                       <span className="font-medium text-gray-700">4.9</span>
@@ -281,7 +317,7 @@ export const CourseDetails = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+                  {/* <div>
                     <h4 className="font-medium mb-3">طرق الاتصال</h4>
                     <div className="space-y-3">
                       <div className="flex items-center">
@@ -297,7 +333,7 @@ export const CourseDetails = () => {
                         </a>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div>
                     <h4 className="font-medium mb-3">المستندات</h4>
                     <Button variant="outline" className="w-full justify-start">
@@ -322,7 +358,7 @@ export const CourseDetails = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-5 pt-4">
-                <div className="text-center">
+                {/* <div className="text-center">
                   <div className="text-3xl font-bold text-primary mb-1">
                     {courseData.fee}
                   </div>
@@ -332,7 +368,7 @@ export const CourseDetails = () => {
                   <Badge variant="secondary" className="text-sm py-1 px-3">
                     {courseData.participants}
                   </Badge>
-                </div>
+                </div> */}
 
                 <div className="space-y-4">
                   <div className="flex items-center p-3 bg-gray-50 rounded-lg">
@@ -346,11 +382,11 @@ export const CourseDetails = () => {
 
                   <div className="flex items-center p-3 bg-gray-50 rounded-lg">
                     <MapPin className="ml-3 h-5 w-5 text-primary" />
-                    <div>
+                    {/* <div>
                       <div className="font-medium text-sm">المكان</div>
                       <div className="text-sm">{courseData.location}</div>
                       <div className="text-xs text-muted-foreground">{courseData.room}</div>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="flex items-center p-3 bg-gray-50 rounded-lg">
@@ -358,7 +394,7 @@ export const CourseDetails = () => {
                     <div>
                       <div className="font-medium text-sm">المدرب/ة</div>
                       <div className="text-sm text-primary">
-                        {courseData.instructor}
+                        {courseData.teacher.nameEn}
                       </div>
                     </div>
                   </div>
@@ -366,8 +402,8 @@ export const CourseDetails = () => {
 
                 <div className="pt-2 border-t">
                   <div className="text-xs text-muted-foreground mb-3">
-                    <div>{courseData.minParticipants}</div>
-                    <div>{courseData.maxParticipants}</div>
+                    <div>{courseData.teacher.students}</div>
+                    {/* <div>{courseData.maxParticipants}</div> */}
                   </div>
                 </div>
 
