@@ -1,5 +1,5 @@
 // controllers/adminController.js
-import Admin from "../models/Session.js";
+import Admin from "../models/Admin.js";
 
 // Create a new admin
 export const createAdmin = async (req, res) => {
@@ -80,6 +80,7 @@ export const deleteAdmin = async (req, res) => {
 
 // Simple login (without token)
 export const loginAdmin = async (req, res) => {
+  console.log('login admin controller')
   try {
     const { email, password } = req.body;
     const admin = await Admin.findOne({ email, password });
