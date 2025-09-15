@@ -105,7 +105,7 @@ export function TeachersForm() {
             setTitleEn(teacher.titleEn || '')
             setBio(teacher.bio || '')
             setBioEn(teacher.bioEn || '')
-            setExperience(teacher.experience || '')
+            // setExperience(teacher.experience || '')
             setImage(teacher.image || '')
             setSpecialties(teacher.specialties || [])
             setSpecialtiesEn(teacher.specialtiesEn || [])
@@ -179,24 +179,24 @@ export function TeachersForm() {
     if (!name.trim()) {
       newErrors.name = translations.form.validation.nameRequired
     }
-    if (!nameEn.trim()) {
-      newErrors.nameEn = translations.form.validation.nameEnRequired
-    }
+    // if (!nameEn.trim()) {
+    //   newErrors.nameEn = translations.form.validation.nameEnRequired
+    // }
     if (!title.trim()) {
       newErrors.title = translations.form.validation.titleRequired
     }
-    if (!titleEn.trim()) {
-      newErrors.titleEn = translations.form.validation.titleEnRequired
-    }
+    // if (!titleEn.trim()) {
+    //   newErrors.titleEn = translations.form.validation.titleEnRequired
+    // }
     if (!bio.trim()) {
       newErrors.bio = translations.form.validation.bioRequired
     }
-    if (!bioEn.trim()) {
-      newErrors.bioEn = translations.form.validation.bioEnRequired
-    }
-    if (!experience.trim()) {
-      newErrors.experience = translations.form.validation.experienceRequired
-    }
+    // if (!bioEn.trim()) {
+    //   newErrors.bioEn = translations.form.validation.bioEnRequired
+    // }
+    // if (!experience.trim()) {
+    //   newErrors.experience = translations.form.validation.experienceRequired
+    // }
     if (!contact.email.trim()) {
       newErrors.email = translations.form.validation.emailRequired
     } else if (!/\S+@\S+\.\S+/.test(contact.email)) {
@@ -227,7 +227,7 @@ export function TeachersForm() {
         titleEn,
         bio,
         bioEn,
-        experience,
+        // experience,
         image,
         specialties,
         specialtiesEn,
@@ -259,7 +259,7 @@ export function TeachersForm() {
         setTitleEn('')
         setBio('')
         setBioEn('')
-        setExperience('')
+        // setExperience('')
         setImage('')
         setSpecialties([])
         setSpecialtiesEn([])
@@ -313,7 +313,7 @@ export function TeachersForm() {
                 />
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
             </div>
-            <div>
+            {/* <div>
                 <label className="block text-sm font-medium text-gray-700">{translations.form.fields.nameEn}</label>
                 <input 
                   value={nameEn} 
@@ -326,9 +326,10 @@ export function TeachersForm() {
                   }`} 
                 />
                 {errors.nameEn && <p className="mt-1 text-sm text-red-600">{errors.nameEn}</p>}
-            </div>
+            </div> */}
             <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.form.fields.title}</label>
+                {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.title}</label> */}
+                <label className="block text-sm font-medium text-gray-700">اللقب</label>
                 <input 
                   value={title} 
                   onChange={e => {
@@ -341,7 +342,7 @@ export function TeachersForm() {
                 />
                 {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
             </div>
-            <div>
+            {/* <div>
                 <label className="block text-sm font-medium text-gray-700">{translations.form.fields.titleEn}</label>
                 <input 
                   value={titleEn} 
@@ -354,7 +355,7 @@ export function TeachersForm() {
                   }`} 
                 />
                 {errors.titleEn && <p className="mt-1 text-sm text-red-600">{errors.titleEn}</p>}
-            </div>
+            </div> */}
             <div>
                 <label className="block text-sm font-medium text-gray-700">{translations.form.fields.image}</label>
                 <input 
@@ -377,7 +378,7 @@ export function TeachersForm() {
                 />
                 {errors.bio && <p className="mt-1 text-sm text-red-600">{errors.bio}</p>}
             </div>
-            <div>
+            {/* <div>
                 <label className="block text-sm font-medium text-gray-700">{translations.form.fields.bioEn}</label>
                 <input 
                   value={bioEn} 
@@ -390,9 +391,9 @@ export function TeachersForm() {
                   }`} 
                 />
                 {errors.bioEn && <p className="mt-1 text-sm text-red-600">{errors.bioEn}</p>}
-            </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.form.fields.experience}</label>
+            </div> */}
+            {/* <div>
+                <label className="block text-sm font-medium text-gray-700">الخبرة</label>
                 <input 
                   value={experience} 
                   onChange={e => {
@@ -404,14 +405,16 @@ export function TeachersForm() {
                   }`} 
                 />
                 {errors.experience && <p className="mt-1 text-sm text-red-600">{errors.experience}</p>}
-            </div>
+            </div> */}
 
             {/* Contact Section */}
             <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.contactInfo}</h3>
+                {/* <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.contactInfo}</h3> */}
+                <h3 className="text-lg font-medium text-gray-900 mb-4">معلومات الاتصال</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.fields.email}</label>
+                        {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.email}</label> */}
+                        <label className="block text-sm font-medium text-gray-700">البريد الالكتروني</label>
                         <input 
                           type="email"
                           value={contact.email} 
@@ -426,7 +429,8 @@ export function TeachersForm() {
                         {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.fields.phone}</label>
+                        {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.phone}</label> */}
+                        <label className="block text-sm font-medium text-gray-700">رقم الهاتف</label>
                         <input 
                           value={contact.phone} 
                           onChange={e => {
@@ -444,10 +448,12 @@ export function TeachersForm() {
 
             {/* Social Media Section */}
             <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.socialMedia}</h3>
+                {/* <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.socialMedia}</h3> */}
+                <h3 className="text-lg font-medium text-gray-900 mb-4">وسائل التواصل الاجتماعي</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.fields.linkedin}</label>
+                        {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.linkedin}</label> */}
+                        <label className="block text-sm font-medium text-gray-700">لينكد ان</label>
                         <input 
                           value={social.linkedin || ''} 
                           onChange={e => setSocial(prev => ({ ...prev, linkedin: e.target.value }))} 
@@ -455,7 +461,8 @@ export function TeachersForm() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.fields.twitter}</label>
+                        {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.twitter}</label> */}
+                        <label className="block text-sm font-medium text-gray-700">تويتر</label>
                         <input 
                           value={social.twitter || ''} 
                           onChange={e => setSocial(prev => ({ ...prev, twitter: e.target.value }))} 
@@ -467,10 +474,12 @@ export function TeachersForm() {
 
             {/* Specialties Section */}
             <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.specialties}</h3>
+                {/* <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.specialties}</h3> */}
+                <h3 className="text-lg font-medium text-gray-900 mb-4">التخصص</h3>
         <div className="space-y-4">
             <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.sections.specialtiesAr}</label>
+                        {/* <label className="block text-sm font-medium text-gray-700">{translations.form.sections.specialtiesAr}</label> */}
+                        <label className="block text-sm font-medium text-gray-700">التخصص</label>
                         <div className="flex gap-2">
                             <input 
                               type="text"
@@ -493,7 +502,8 @@ export function TeachersForm() {
                               }}
                               className="mt-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                             >
-                              {translations.form.buttons.add}
+                              {/* {translations.form.buttons.add} */}
+                              اضافة
                             </button>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2">
@@ -512,7 +522,7 @@ export function TeachersForm() {
                         </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.sections.specialtiesEn}</label>
+                        {/* <label className="block text-sm font-medium text-gray-700">{translations.form.sections.specialtiesEn}</label>
                         <div className="flex gap-2">
                             <input 
                               type="text"
@@ -537,7 +547,7 @@ export function TeachersForm() {
                             >
                               {translations.form.buttons.add}
                             </button>
-                        </div>
+                        </div> */}
                         <div className="mt-2 flex flex-wrap gap-2">
                           {specialtiesEn.map((specialty, index) => (
                             <span key={index} className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-sm">

@@ -6,22 +6,24 @@ export type Course = {
   _id: string,
   id: string,
   title: string,
-  titleEn: string,
+  // titleEn: string,
   type: string,
-  typeEn: string,
+  // typeEn: string,
   date: string,
   time: string,
   duration: string,
   location: string,
-  locationEn: string,
-  status: 'available'| 'full'| 'cancelled'| 'completed',
+  // locationEn: string,
+  // status: 'available'| 'full'| 'cancelled'| 'completed',
+  status: "متوفر" | "ممتلئ" | "ملغى" | "مكتمل",
   price: string,
   seats: number,
   enrolled: number,
   rating: number,
   reviews: number,
   description: string,
-  descriptionEn: string,
+  details: string,
+  // descriptionEn: string,
   teacher: ITeacher,
   categoryId?: ICategory,
   isActive: boolean,
@@ -69,12 +71,12 @@ const fetchCourses = createAsyncThunk(
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch courses');
+        return rejectWithValue(errorData.message || 'Failed to fetch courses');
       }
       const result = await response.json();
 
       if (result.success === false) {
-        throw new Error(result.message || 'Failed to fetch courses');
+        return rejectWithValue(result.message || 'Failed to fetch courses');
       }
 
       // If backend returns paginated structure, use it; otherwise fall back to list-only
@@ -136,13 +138,13 @@ const addCourse = createAsyncThunk(
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create course');
+        return rejectWithValue(errorData.message || 'Failed to create course');
       }
       
       const result = await response.json();
       
       if (result.success === false) {
-        throw new Error(result.message || 'Failed to create course');
+        return rejectWithValue(result.message || 'Failed to create course');
       }
       
       return result.data;
@@ -167,13 +169,13 @@ const updateCourse = createAsyncThunk(
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update course');
+        return rejectWithValue(errorData.message || 'Failed to update course');
       }
       
       const result = await response.json();
       
       if (result.success === false) {
-        throw new Error(result.message || 'Failed to update course');
+        return rejectWithValue(result.message || 'Failed to update course');
       }
       
       return result.data;
@@ -196,13 +198,13 @@ const deleteCourse = createAsyncThunk(
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete course');
+        return rejectWithValue(errorData.message || 'Failed to delete course');
       }
       
       const result = await response.json();
       
       if (result.success === false) {
-        throw new Error(result.message || 'Failed to delete course');
+        return rejectWithValue(result.message || 'Failed to delete course');
       }
       
       return courseId;
@@ -231,6 +233,7 @@ const coursesSlice = createSlice({
       .addCase(fetchCourses.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        clearError()
       })
       .addCase(fetchCourses.fulfilled, (state, action) => {
         state.status = 'succeeded';

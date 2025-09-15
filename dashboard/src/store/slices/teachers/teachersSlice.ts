@@ -48,7 +48,7 @@ interface IAddTeacher {
   titleEn: string;
   bio: string;
   bioEn: string;
-  experience: string;
+  // experience: string;
   image: string;
   specialties: string[];
   specialtiesEn: string[];
@@ -218,6 +218,7 @@ const teachersSlice = createSlice({
     builder
       .addCase(fetchTeachers.pending, (state) => {
         state.status = 'loading';
+        clearError()
       })
       .addCase(fetchTeachers.fulfilled, (state, action) => {
         state.status = 'succeeded';

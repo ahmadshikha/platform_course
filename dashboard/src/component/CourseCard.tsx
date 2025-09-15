@@ -12,9 +12,15 @@ interface CourseCardProps {
 }
 
 export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
+  // const { lang } = useSelector((s: RootState) => s.lang);
   const { lang } = useSelector((s: RootState) => s.lang);
 
   // Translation
+  // const translate = {
+  //   en,
+  //   ar
+  // };
+  // const translations = translate[lang];
   const translate = {
     en,
     ar
@@ -36,6 +42,9 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
     }
   };
 
+  // const getStatusText = (status: string) => {
+  //   return translations.courses.status[status as keyof typeof translations.courses.status] || status;
+  // };
   const getStatusText = (status: string) => {
     return translations.courses.status[status as keyof typeof translations.courses.status] || status;
   };
@@ -47,13 +56,16 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-1">
-              {lang === 'ar' ? course.title : course.titleEn}
+              {/* {lang === 'ar' ? course.title : course.titleEn} */}
+              {course.title}
             </h3>
             <p className="text-sm text-gray-600">
-              {lang === 'ar' ? course.type : course.typeEn}
+              {/* {lang === 'ar' ? course.type : course.typeEn} */}
+              {course.type}
             </p>
           </div>
           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(course.status)}`}>
+            {course.status}
             {getStatusText(course.status)}
           </span>
         </div>
@@ -62,28 +74,39 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              {translations.courses.card.date}
+              {/* {translations.courses.card.date} */}
+              التاريخ
             </p>
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.date}</p>
             <p className="text-sm text-gray-900">{course.date}</p>
           </div>
           <div>
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              {translations.courses.card.time}
+              {/* {translations.courses.card.time} */}
+              الوقت
             </p>
+            {/* <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.time}</p> */}
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">الوقت</p>
             <p className="text-sm text-gray-900">{course.time}</p>
           </div>
           <div>
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              {translations.courses.card.location}
+              {/* {translations.courses.card.location} */}
+              الموقع
             </p>
+            {/* <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.location}</p> */}
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">الموقع</p>
             <p className="text-sm text-gray-900">
-              {lang === 'ar' ? course.location : course.locationEn}
+              {/* {lang === 'ar' ? course.location : course.locationEn} */}
+              {course.location}
             </p>
           </div>
           <div>
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              {translations.courses.card.duration}
+              {/* {translations.courses.card.duration} */}
+              المدة
             </p>
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.duration}</p>
             <p className="text-sm text-gray-900">{course.duration}</p>
           </div>
         </div>
@@ -93,14 +116,18 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
           <div className="flex items-center space-x-4">
             <div>
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                {translations.courses.card.price}
+                {/* {translations.courses.card.price} */}
+                السعر
               </p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.price}</p>
               <p className="text-lg font-semibold text-gray-900">${course.price}</p>
             </div>
             <div>
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                {translations.courses.card.seats}
+                {/* {translations.courses.card.seats} */}
+                المقاعد
               </p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.seats}</p>
               <p className="text-sm text-gray-900">
                 {course.enrolled}/{course.seats}
               </p>
@@ -120,10 +147,13 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
         {/* Description */}
         <div className="mb-4">
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-            {translations.courses.card.description}
+            {/* {translations.courses.card.description} */}
+            وصف الكورس
           </p>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{translations.courses.card.description}</p>
           <p className="text-sm text-gray-700 line-clamp-2">
-            {lang === 'ar' ? course.description : course.descriptionEn}
+            {/* {lang === 'ar' ? course.description : course.descriptionEn} */}
+            {course.description}
           </p>
         </div>
 
@@ -133,13 +163,15 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
             onClick={() => onEdit(course._id)}
             className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            {translations.courses.edit}
+            {/* {translations.courses.edit} */}
+            تعديل
           </button>
           <button
             onClick={() => onDelete(course._id)}
             className="inline-flex items-center px-3 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
           >
-            {translations.courses.delete}
+            حذف
+            {/* {translations.courses.delete} */}
           </button>
         </div>
       </div>
