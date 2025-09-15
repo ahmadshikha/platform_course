@@ -8,6 +8,7 @@ import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
 import userRegisterRoute from "./routes/userRegisterRoute.js";
+import adminRoute from "./routes/adminRoute.js";
 // import newsRoutes from "./routes/newsRoutes.js";
 // import activityRoutes from "./routes/activityRoutes.js";
 
@@ -26,6 +27,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/userRegister", userRegisterRoute);
+app.use("/api/adminRoute", adminRoute);
 // app.use("/api/news", newsRoutes);
 // app.use("/api/activities", activityRoutes);
 

@@ -22,7 +22,7 @@ const router = express.Router();
 router.post('/', createCourse);
 router.get('/', getCourses);
 router.get('/teacher/:teacherId', validateObjectId, getTeacherCourses);
-router.get('/category/:categoryId', validateObjectId, getCategoryCourses);
+router.get('/category/:categoryId',  getCategoryCourses);
 router.get('/:id', validateObjectId, getCourseById);
 router.get('/custom/:courseId', getCourseByCustomId);
 router.put('/:id', validateObjectId, updateCourse);
