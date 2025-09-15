@@ -49,10 +49,10 @@ export default function Layout({ children }: PropsWithChildren) {
 							</button>
 						</div>
 						<nav className="space-y-2">
-							<NavLink to="/users" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.users}</NavLink>
 							<NavLink to="/teachers" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.teachers}</NavLink>
 							<NavLink to="/categories" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.categories}</NavLink>
 							<NavLink to="/courses" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.courses}</NavLink>
+							<NavLink to="/users-register" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.usersRegisters}</NavLink>
 						</nav>
 					</aside>
 				</div>
@@ -64,10 +64,10 @@ export default function Layout({ children }: PropsWithChildren) {
 					<div className="p-4">
 						<div className="text-xs font-semibold text-gray-500 uppercase mb-2">{translations.navigation.menu}</div>
 						<nav className="space-y-1">
-							<NavLink to="/users" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.users}</NavLink>
 							<NavLink to="/teachers" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.teachers}</NavLink>
 							<NavLink to="/categories" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.categories}</NavLink>
 							<NavLink to="/courses" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.courses}</NavLink>
+							<NavLink to="/users-register" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>{translations.navigation.usersRegisters}</NavLink>
 						</nav>
 					</div>
 				</aside>

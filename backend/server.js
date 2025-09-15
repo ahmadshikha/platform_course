@@ -25,7 +25,7 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/teachers", teacherRoutes);
-app.use("/api/userRegisterRoute", userRegisterRoute);
+app.use("/api/userRegister", userRegisterRoute);
 // app.use("/api/news", newsRoutes);
 // app.use("/api/activities", activityRoutes);
 

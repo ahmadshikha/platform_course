@@ -123,7 +123,11 @@
         "teachers": "الاساتذة",
         "categories": "الفئات",
         "courses": "الكورسات",
+        "usersRegisters": "تسجيلات المستخدمين",
         "menu": "القائمة"
+    },
+    "teacherCourses": {
+        "title": "كورسات الاستاذ"
     },
     "courses": {
         "title": "الكورسات",

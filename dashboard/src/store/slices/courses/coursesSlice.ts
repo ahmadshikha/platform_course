@@ -92,6 +92,36 @@ const fetchCourses = createAsyncThunk(
   }
 );
 
+export const fetchTeacherCourses = createAsyncThunk(
+  'courses/fetchTeacherCourses',
+  async ({ teacherId }: { teacherId: string}, { rejectWithValue }) => {
+    try {
+
+
+      const url = `http://localhost:5000/api/courses/teacher/${teacherId}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        return rejectWithValue(errorData.message || 'Failed to fetch teacher courses');
+      }
+      const result = await response.json();
+      console.log('teacher courses result:', result)
+      if (result.success === false) {
+       return rejectWithValue(result.message || 'Failed to fetch teacher courses');
+      }
+
+      return result;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'An error occurred');
+    }
+  }
+);
+
 const addCourse = createAsyncThunk(
   'courses/addCourse',
   async (courseData: Omit<Course, '_id' | 'createdAt' | 'updatedAt'>, { rejectWithValue }) => {
@@ -182,6 +212,8 @@ const deleteCourse = createAsyncThunk(
   }
 );
 
+
+
 const coursesSlice = createSlice({
   name: 'courses',
   initialState,
@@ -202,7 +234,6 @@ const coursesSlice = createSlice({
       })
       .addCase(fetchCourses.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        // action.payload has shape { courses, pagination }
         state.items = action.payload.courses;
         state.pagination = action.payload.pagination;
         state.error = null;
@@ -252,10 +283,24 @@ const coursesSlice = createSlice({
       .addCase(updateCourse.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+      .addCase(fetchTeacherCourses.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchTeacherCourses.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload.data;
+        state.pagination = action.payload.pagination;
+        state.error = null;
+      })
+      .addCase(fetchTeacherCourses.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
   },
 });
 
 export const { clearError } = coursesSlice.actions;
-export { fetchCourses, addCourse, deleteCourse, updateCourse };
+export { fetchCourses, addCourse, deleteCourse, updateCourse, fetchTeacherCourses as _fetchTeacherCourses };
 export default coursesSlice.reducer;
