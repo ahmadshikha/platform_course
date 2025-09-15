@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { Search, User, Heart, Menu, X, Phone, Mail, MapPin, ChevronDown } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { GoogleTranslate } from "@/components/GoogleTranslate";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+} from "../components/ui/select";
+import { GoogleTranslate } from "../components/GoogleTranslate";
+import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
 import logo from '../assets/50.png'; 
 
 export const Header = () => {
@@ -71,7 +71,7 @@ export const Header = () => {
               </div>
               <div className="hidden md:flex items-center">
                 <Mail className="h-3 w-3 mr-2" />
-                <span className="text-xs">info@mvhs.edu.sy</span>
+                <span className="text-xs">info..mvhs.edu.sy</span>
               </div>
             </div>
             

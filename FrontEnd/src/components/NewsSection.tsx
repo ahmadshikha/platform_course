@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import { useTranslation } from "react-i18next";
 import { Calendar, Clock, ArrowRight, MapPin, Users, Star } from "lucide-react";
 import { useState, useEffect } from "react";

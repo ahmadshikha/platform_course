@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 
 const educationSchema = new mongoose.Schema({
   degree: { type: String, required: true },
-  degreeEn: { type: String, required: true },
   institution: { type: String, required: true },
   year: { type: String, required: true }
 });
@@ -21,19 +20,14 @@ const socialSchema = new mongoose.Schema({
 
 const TeacherSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  nameEn: { type: String, required: true },
   title: { type: String, required: true },
-  titleEn: { type: String, required: true },
   image: { type: String, default: "/placeholder.svg" },
   bio: { type: String, required: true },
-  bioEn: { type: String, required: true },
   rating: { type: Number, default: 0, min: 0, max: 5 },
   review: { type: Number, default: 0 },
   students: { type: Number, default: 0 },
   course: { type: Number, default: 0 },
-  experience: { type: String, required: true },
   specialties: [{ type: String }],
-  specialtiesEn: [{ type: String }],
   education: [educationSchema],
   contact: contactSchema,
   social: socialSchema,
