@@ -400,9 +400,10 @@ export const updateCourseRating = async (req, res) => {
 // الحصول على دورات المعلم
 export const getTeacherCourses = async (req, res) => {
   try {
+    console.log('getTeacherCourses controller')
     const { teacherId } = req.params;
     const { page = 1, limit = 10, status } = req.query;
-    
+    console.log(req.params)
     const query = { teacher: teacherId, isActive: true };
     if (status) query.status = status;
     

@@ -123,7 +123,11 @@
         "teachers": "Teachers",
         "categories": "Categories",
         "courses": "Courses",
+        "usersRegisters": "Users Registers",
         "menu": "Menu"
+    },
+    "teacherCourses": {
+        "title": "Teachers Courses"
     },
     "courses": {
         "title": "Courses",

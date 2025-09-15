@@ -175,8 +175,8 @@ function TeachersList() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {teachers.map(t => (
-          <div key={t._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div className={`flex items-center gap-4 p-4 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
+          <div  key={t._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <div onClick={() => navigate(`/courses/teachers/id=${t._id}`)} className={`flex items-center gap-4 p-4 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
               <img src={t.image || '/placeholder.svg'} alt={getLocalizedProperty(t, 'name')} className="h-16 w-16 rounded-full object-cover" />
               <div className="min-w-0 flex-1">
                 <div className={`flex items-center justify-between ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>

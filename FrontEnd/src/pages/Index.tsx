@@ -7,7 +7,6 @@ import { LocationsSection } from "../components/LocationsSection";
 import { MapSection } from "../components/MapSection";
 import { Footer } from "../components/Footer";
 
-
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
