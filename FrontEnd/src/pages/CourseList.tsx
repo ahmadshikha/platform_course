@@ -16,7 +16,7 @@ export default function CourseList() {
   const { lang } = useSelector((s: RootState) => s.lang);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
+  
   const pagination = useSelector((s: RootState) => (s.courses as any).pagination || { totalPages: 1, currentPage: 1, total: 0 });
 
   // Pagination state
