@@ -171,7 +171,7 @@ function CategoriesList() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map(category => (
           <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div className="p-4">
+            <div onClick={()=> console.log(category._id)} className="p-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">{getLocalizedProperty(category, 'name')}</h3>
               </div>

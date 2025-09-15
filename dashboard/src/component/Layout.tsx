@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import en from '../lang/en.json';
@@ -8,6 +8,7 @@ import ar from '../lang/ar.json';
 export default function Layout({ children }: PropsWithChildren) {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const { lang } = useSelector((s: RootState) => s.lang);
+	const location = useLocation();
 
 	// Translation
 	const translate = {
@@ -15,6 +16,11 @@ export default function Layout({ children }: PropsWithChildren) {
 		ar
 	};
 	const translations = translate[lang];
+
+	// If the current page is the login page, don't render the main layout
+	if (location.pathname === '/login') {
+		return <>{children}</>;
+	}
 
 	return (
 		<div className="min-h-screen bg-gray-50">

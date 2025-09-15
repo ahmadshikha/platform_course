@@ -60,7 +60,7 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
         </div>
 
         {/* Course Details */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div onClick={()=> navigate(`/course-details/${course._id}}`)} className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
               {translations.courses.card.date}
