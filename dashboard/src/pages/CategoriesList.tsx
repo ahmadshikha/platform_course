@@ -11,16 +11,16 @@ function CategoriesList() {
   const pagination = useSelector((s: RootState) => s.categories.pagination);
   const status = useSelector((s: RootState) => s.categories.status);
   const error = useSelector((s: RootState) => s.categories.error);
-  const { lang } = useSelector((s: RootState) => s.lang);
+  // const { lang } = useSelector((s: RootState) => s.lang);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   // Translation
-  const translate = {
-    en,
-    ar
-  };
-  const translations = translate[lang];
+  // const translate = {
+  //   en,
+  //   ar
+  // };
+  // const translations = translate[lang];
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,19 +88,21 @@ function CategoriesList() {
     setDeleteError(null);
   };
 
-  const getLocalizedProperty = (category: any, property: string) => {
-    if (lang === 'ar') {
-      return category[property] || category[property + 'En'] || '';
-    } else {
-      return category[property + 'En'] || category[property] || '';
-    }
-  };
+  // const getLocalizedProperty = (category: any, property: string) => {
+  //   if (lang === 'ar') {
+  //     return category[property] || category[property + 'En'] || '';
+  //   } else {
+  //     return category[property + 'En'] || category[property] || '';
+  //   }
+  // };
 
   return (
-    <div className={`space-y-4 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
+    <div className={`space-y-4`}>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{translations.categories.title}</h1>
-        <Link to="/categories/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">{translations.categories.addCategory}</Link>
+        {/* <h1 className="text-xl font-semibold">{translations.categories.title}</h1> */}
+        <h1 className="text-xl font-semibold">الفئات</h1>
+        {/* <Link to="/categories/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">{translations.categories.addCategory}</Link> */}
+        <Link to="/categories/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">اضافة فئة</Link>
       </div>
 
       {/* Global error message */}
@@ -108,7 +110,8 @@ function CategoriesList() {
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{translations.categories.error}</h3>
+              {/* <h3 className="text-sm font-medium text-red-800">{translations.categories.error}</h3> */}
+              <h3 className="text-sm font-medium text-red-800">خطأ</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
               </div>
@@ -117,7 +120,8 @@ function CategoriesList() {
                   onClick={clearErrors}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {translations.categories.dismiss}
+                  {/* {translations.categories.dismiss} */}
+                  تجاهل
                 </button>
               </div>
             </div>
@@ -130,7 +134,8 @@ function CategoriesList() {
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{translations.categories.deleteError}</h3>
+              {/* <h3 className="text-sm font-medium text-red-800">{translations.categories.deleteError}</h3> */}
+              <h3 className="text-sm font-medium text-red-800">خطا بالحذف</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{deleteError}</p>
               </div>
@@ -139,7 +144,8 @@ function CategoriesList() {
                   onClick={clearErrors}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {translations.categories.dismiss}
+                  {/* {translations.categories.dismiss} */}
+                  تجاهل
                 </button>
               </div>
             </div>
@@ -148,15 +154,18 @@ function CategoriesList() {
       )}
 
     {status === 'loading' && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">{translations.categories.loading}</div>
+      // <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">{translations.categories.loading}</div>
+      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">جاري تحميل الفئات</div>
     )}
 
     {status === 'failed' && (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">{translations.categories.failed}</div>
+      // <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">{translations.categories.failed}</div>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">فشل بتحميل الفئات</div>
     )}
 
     {status === 'succeeded' && categories.length === 0 && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">{translations.categories.noCategories}</div>
+      // <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">{translations.categories.noCategories}</div>
+      <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">لايوجد فئات</div>
     )}
 
     {status === 'succeeded' && categories.length > 0 && (
@@ -164,24 +173,27 @@ function CategoriesList() {
         {/* Pagination info */}
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-700">
-            {translations.categories.showing} {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)} {translations.categories.of} {pagination.totalItems} {translations.categories.categories}
+            {/* {translations.categories.showing} {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)} {translations.categories.of} {pagination.totalItems} {translations.categories.categories} */}
+            اظهار {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)} من {pagination.totalItems} فئات
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map(category => (
           <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div className="p-4">
+            <div onClick={()=> console.log(category._id)} className="p-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">{getLocalizedProperty(category, 'name')}</h3>
+                {/* <h3 className="text-lg font-semibold text-gray-900">{getLocalizedProperty(category, 'name')}</h3> */}
+                <h3 className="text-lg font-semibold text-gray-900">اسم الفئة</h3>
               </div>
-              <p className="mt-2 text-sm text-gray-600 line-clamp-3">{getLocalizedProperty(category, 'description')}</p>
+              {/* <p className="mt-2 text-sm text-gray-600 line-clamp-3">{getLocalizedProperty(category, 'description')}</p> */}
+              <p className="mt-2 text-sm text-gray-600 line-clamp-3">الوصف</p>
             </div>
-            <div className={`flex items-center justify-between border-t border-gray-100 px-4 py-3 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex items-center justify-between border-t border-gray-100 px-4 py-3 `}>
               {/* <div className="text-xs text-gray-500">
                 {new Date(category.createdAt).toLocaleDateString()}
               </div> */}
-              <div className={`space-x-2 ${lang === 'ar' ? 'space-x-reverse' : ''}`}>
+              <div className={`space-x-2 `}>
                 {/* <button 
                   onClick={() => navigate(`/categories/id=${category._id}/edit`)} 
                   className="rounded-md border border-green-300 px-2 py-1 text-sm text-green-600 hover:bg-gray-50"
@@ -197,7 +209,7 @@ function CategoriesList() {
                       : 'border-red-300 text-red-600 hover:bg-red-50'
                   }`}
                 >
-                  {deletingCategoryId === category._id ? translations.categories.deleting : translations.categories.delete}
+                  {deletingCategoryId === category._id ? "جاري الحذف..." : "حذف"}
                 </button>
               </div>
             </div>
@@ -213,7 +225,8 @@ function CategoriesList() {
               disabled={pagination.currentPage == 1}
               className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translations.categories.previous}
+              {/* {translations.categories.previous} */}
+              السابق
             </button>
             
             {/* Page numbers */}
@@ -238,7 +251,8 @@ function CategoriesList() {
               disabled={pagination.currentPage == pagination.totalPages}
               className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translations.categories.next}
+              {/* {translations.categories.next} */}
+              التالي
             </button>
           </div>
         )}
@@ -260,10 +274,12 @@ function CategoriesList() {
                   </svg>
                 </div>
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900">{translations.categories.deleteConfirm}</h3>
+                  {/* <h3 className="text-lg font-medium leading-6 text-gray-900">{translations.categories.deleteConfirm}</h3> */}
+                  <h3 className="text-lg font-medium leading-6 text-gray-900">تاكيد الحذف</h3>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      {translations.categories.deleteMessage}
+                      {/* {translations.categories.deleteMessage} */}
+                      هل انت متاكد من حذف الفئة
                     </p>
                   </div>
                 </div>
@@ -280,7 +296,7 @@ function CategoriesList() {
                     : 'bg-red-600 hover:bg-red-700'
                 }`}
               >
-                {deletingCategoryId === showDeleteConfirm ? translations.categories.deleting : translations.categories.delete}
+                {deletingCategoryId === showDeleteConfirm ? "جاري الحذف..." : "حذف"}
               </button>
               <button
                 type="button"
@@ -288,7 +304,8 @@ function CategoriesList() {
                 disabled={deletingCategoryId === showDeleteConfirm}
                 className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {translations.categories.cancel}
+                {/* {translations.categories.cancel} */}
+                الغاء
               </button>
             </div>
           </div>

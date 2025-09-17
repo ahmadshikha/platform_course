@@ -9,6 +9,7 @@ import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 import { CategoryNavigation } from '../components/CategoryNavigation';
 
+
 export default function CourseList() {
   const courses = useSelector((s: RootState) => s.courses.items);
   const status = useSelector((s: RootState) => s.courses.status);

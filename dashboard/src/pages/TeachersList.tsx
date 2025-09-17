@@ -93,19 +93,20 @@ function TeachersList() {
   };
 
   // Helper function to get language-specific properties
-  const getLocalizedProperty = (teacher: any, property: string) => {
-    if (lang === 'ar') {
-      return teacher[property] || teacher[property + 'En'] || '';
-    } else {
-      return teacher[property + 'En'] || teacher[property] || '';
-    }
-  };
+  // const getLocalizedProperty = (teacher: any, property: string) => {
+  //   if (lang === 'ar') {
+  //     return teacher[property] || teacher[property + 'En'] || '';
+  //   } else {
+  //     return teacher[property + 'En'] || teacher[property] || '';
+  //   }
+  // };
 
   return (
-    <div className={`space-y-4 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
+    <div className={`space-y-4 `}>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{translations.teachers.title}</h1>
-        <Link to="/teachers/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">{translations.teachers.addTeacher}</Link>
+        {/* <h1 className="text-xl font-semibold">{translations.teachers.title}</h1> */}
+        <h1 className="text-xl font-semibold">الاساتذة</h1>
+        <Link to="/teachers/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">اضافة استاذ</Link>
       </div>
 
       {/* Global error message */}
@@ -122,7 +123,8 @@ function TeachersList() {
                   onClick={clearErrors}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {translations.teachers.dismiss}
+                  {/* {translations.teachers.dismiss} */}
+                  تجاهل
                 </button>
               </div>
             </div>
@@ -144,7 +146,8 @@ function TeachersList() {
                   onClick={clearErrors}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {translations.teachers.dismiss}
+                  {/* {translations.teachers.dismiss} */}
+                  تجاهل
                 </button>
               </div>
             </div>
@@ -153,15 +156,15 @@ function TeachersList() {
       )}
 
     {status === 'loading' && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">{translations.teachers.loading}</div>
+      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">جاري تحميل الاساتذة</div>
     )}
 
     {status === 'failed' && (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">{translations.teachers.failed}</div>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">خطا بنحميل الاساتذة</div>
     )}
 
     {status === 'succeeded' && teachers.length === 0 && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">{translations.teachers.noTeachers}</div>
+      <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">لا يوجد اساتذة</div>
     )}
 
     {status === 'succeeded' && teachers.length > 0 && (
@@ -169,25 +172,25 @@ function TeachersList() {
         {/* Pagination info */}
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-700">
-            {translations.teachers.showing} {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.total)} {translations.teachers.of} {pagination.total} {translations.teachers.teachers}
+            عرض {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.total)} من {pagination.total} اساتذة
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {teachers.map(t => (
           <div  key={t._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div onClick={() => navigate(`/courses/teachers/id=${t._id}`)} className={`flex items-center gap-4 p-4 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-              <img src={t.image || '/placeholder.svg'} alt={getLocalizedProperty(t, 'name')} className="h-16 w-16 rounded-full object-cover" />
+            <div onClick={() => navigate(`/courses/teachers/id=${t._id}`)} className={`flex items-center gap-4 p-4 `}>
+              <img src={t.image || '/placeholder.svg'} alt="الاسم" className="h-16 w-16 rounded-full object-cover" />
               <div className="min-w-0 flex-1">
-                <div className={`flex items-center justify-between ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-                  <h3 className="truncate text-base font-semibold text-gray-900">{getLocalizedProperty(t, 'name')}</h3>
-                  <span className={`${lang === 'ar' ? 'mr-2' : 'ml-2'} inline-flex items-center rounded-full px-2 py-0.5 text-xs ${t.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>{t.isActive ? translations.teachers.active : translations.teachers.inactive}</span>
+                <div className={`flex items-center justify-between `}>
+                  <h3 className="truncate text-base font-semibold text-gray-900">{t.name}</h3>
+                  <span className={` inline-flex items-center rounded-full px-2 py-0.5 text-xs ${t.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>{t.isActive ? "نشط" : "غير نشط"}</span>
                 </div>
-                {getLocalizedProperty(t, 'title') && <p className="truncate text-sm text-gray-600">{getLocalizedProperty(t, 'title')}</p>}
+                {/* <p className="truncate text-sm text-gray-600">{t.}</p> */}
               </div>
             </div>
             <div className="px-4 pb-4 text-sm text-gray-700">
-              {getLocalizedProperty(t, 'bio') && <p className="line-clamp-3">{getLocalizedProperty(t, 'bio')}</p>}
+              <p className="line-clamp-3">{t.bio}</p>
               {(() => {
                 const specialties = lang === 'ar' ? t.specialties : t.specialtiesEn;
                 return specialties && specialties.length > 0 && (
@@ -199,18 +202,19 @@ function TeachersList() {
                 );
               })()}
             </div>
-            <div className={`flex items-center justify-between border-t border-gray-100 px-4 py-3 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex items-center justify-between border-t border-gray-100 px-4 py-3 `}>
               <div className="flex items-center gap-3 text-xs text-gray-600">
                 <span>⭐ {t.rating ?? 0}</span>
                 <span>👥 {t.students ?? 0}</span>
                 <span>📚 {t.course ?? 0}</span>
               </div>
-              <div className={`space-x-2 ${lang === 'ar' ? 'space-x-reverse' : ''}`}>
+              <div className={`space-x-2 `}>
                 <button 
                   onClick={() => navigate(`/teachers/id=${t._id}/edit`)} 
                   className="rounded-md border border-green-300 px-2 py-1 text-sm text-green-600 hover:bg-gray-50"
                 >
-                  {translations.teachers.edit}
+                  {/* {translations.teachers.edit} */}
+                  تعديل
                 </button>
                 <button 
                   onClick={() => confirmDelete(t._id)} 
@@ -221,7 +225,7 @@ function TeachersList() {
                       : 'border-red-300 text-red-600 hover:bg-red-50'
                   }`}
                 >
-                  {deletingTeacherId === t._id ? translations.teachers.deleting : translations.teachers.delete}
+                  {deletingTeacherId === t._id ? "جاري الحذف..." : "حذف"}
                 </button>
               </div>
             </div>
@@ -284,10 +288,12 @@ function TeachersList() {
                   </svg>
                 </div>
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900">{translations.teachers.deleteConfirm}</h3>
+                  {/* <h3 className="text-lg font-medium leading-6 text-gray-900">{translations.teachers.deleteConfirm}</h3> */}
+                  <h3 className="text-lg font-medium leading-6 text-gray-900">حذف الاستاذ</h3>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      {translations.teachers.deleteMessage}
+                      {/* {translations.teachers.deleteMessage} */}
+                      هل انت متاكد من حذف الاستاذ
                     </p>
                   </div>
                 </div>
@@ -304,7 +310,7 @@ function TeachersList() {
                     : 'bg-red-600 hover:bg-red-700'
                 }`}
               >
-                {deletingTeacherId === showDeleteConfirm ? translations.teachers.deleting : translations.teachers.delete}
+                {deletingTeacherId === showDeleteConfirm ? "جاري الحذف..." : "حذف"}
               </button>
               <button
                 type="button"
@@ -312,7 +318,8 @@ function TeachersList() {
                 disabled={deletingTeacherId === showDeleteConfirm}
                 className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {translations.teachers.cancel}
+                {/* {translations.teachers.cancel} */}
+                الغاء
               </button>
             </div>
           </div>

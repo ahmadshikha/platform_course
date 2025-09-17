@@ -117,6 +117,7 @@ export const deleteAdmin = async (req, res) => {
 
 // Login with JWT token
 export const loginAdmin = async (req, res) => {
+  console.log('login admin controller')
   try {
     const { email, password } = req.body;
     

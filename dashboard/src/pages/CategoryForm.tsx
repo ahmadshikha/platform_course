@@ -13,7 +13,7 @@ export function CategoryForm() {
     const [nameEn, setNameEn] = useState('');
     const [description, setDescription] = useState('');
     const [descriptionEn, setDescriptionEn] = useState('');
-    const [actionForm, setActionForm] = useState("Add Category");
+    const [actionForm, setActionForm] = useState("اضافة فئة");
     
     // Error handling states
     const [errors, setErrors] = useState<{[key: string]: string}>({})
@@ -35,7 +35,7 @@ export function CategoryForm() {
   useEffect((): any => {
     const url = window.location.href
     if(url.includes("/edit")) {
-        setActionForm(translations.categories.editCategory)
+        setActionForm("تعديل فئة")
         setIsEditMode(true)
         const start = url.indexOf('=')
         const end = url.indexOf('/edit')
@@ -46,14 +46,13 @@ export function CategoryForm() {
         const category = categories.find(c => c._id === id)
         if (category) {
             setName(category.name || '')
-            setNameEn(category.nameEn || '')
             setDescription(category.description || '')
-            setDescriptionEn(category.descriptionEn || '')
         } else {
-            setErrors({general: translations.categories.categoryNotFound})
+            // setErrors({general: translations.categories.categoryNotFound})
+            setErrors({general: "الفئة غير موجودة"})
         }
     }
-  }, [categories, translations.categories.editCategory, translations.categories.categoryNotFound, nameEn, descriptionEn])
+  }, [categories, name, description])
 
   // Clear Redux errors when component mounts
   useEffect(() => {
@@ -76,17 +75,19 @@ export function CategoryForm() {
     const newErrors: {[key: string]: string} = {}
     
     if (!name.trim()) {
-      newErrors.name = translations.categories.nameRequired
+      // newErrors.name = translations.categories.nameRequired
+      newErrors.name = "اسم الفئة مطلوب"
     }
-    if (!nameEn.trim()) {
-      newErrors.nameEn = translations.categories.nameEnRequired
-    }
+    // if (!nameEn.trim()) {
+    //   newErrors.nameEn = translations.categories.nameEnRequired
+    // }
     if (!description.trim()) {
-      newErrors.description = translations.categories.descriptionRequired
+      // newErrors.description = translations.categories.descriptionRequired
+      newErrors.description = "وصف الفئة مطلوب"
     }
-    if (!descriptionEn.trim()) {
-      newErrors.descriptionEn = translations.categories.descriptionEnRequired
-    }
+    // if (!descriptionEn.trim()) {
+    //   newErrors.descriptionEn = translations.categories.descriptionEnRequired
+    // }
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -104,9 +105,9 @@ export function CategoryForm() {
     try {
       const categoryData = {
         name,
-        nameEn,
+        // nameEn,
         description,
-        descriptionEn,
+        // descriptionEn,
         ...(isEditMode && editingCategoryId && { _id: editingCategoryId })
       }
 
@@ -127,7 +128,7 @@ export function CategoryForm() {
         setDescriptionEn('')
       }
     } catch (error: any) {
-      setErrors({ general: error || translations.categories.saveError })
+      setErrors({ general: error || "خطأ اثناء حفظ الفئة" })
     } finally {
       setIsLoading(false)
     }
@@ -154,7 +155,8 @@ export function CategoryForm() {
 
         <div className="space-y-4">
             <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.categories.name}</label>
+                {/* <label className="block text-sm font-medium text-gray-700">{translations.categories.name}</label> */}
+                <label className="block text-sm font-medium text-gray-700">الاسم</label>
                 <input 
                   value={name} 
                   onChange={e => {
@@ -168,7 +170,7 @@ export function CategoryForm() {
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
             </div>
             
-            <div>
+            {/* <div>
                 <label className="block text-sm font-medium text-gray-700">{translations.categories.nameEn}</label>
                 <input 
                   value={nameEn} 
@@ -181,10 +183,11 @@ export function CategoryForm() {
                   }`} 
                 />
                 {errors.nameEn && <p className="mt-1 text-sm text-red-600">{errors.nameEn}</p>}
-            </div>
+            </div> */}
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.categories.description}</label>
+                {/* <label className="block text-sm font-medium text-gray-700">{translations.categories.description}</label> */}
+                <label className="block text-sm font-medium text-gray-700">الوصف</label>
                 <textarea 
                   value={description} 
                   onChange={e => {
@@ -199,8 +202,9 @@ export function CategoryForm() {
                 {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
             </div>
  
-            <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.categories.descriptionEn}</label>
+            {/* <div>
+                {/* <label className="block text-sm font-medium text-gray-700">{translations.categories.descriptionEn}</label> */}
+                {/* <label className="block text-sm font-medium text-gray-700">الوصف</label>
                 <textarea 
                   value={descriptionEn} 
                   onChange={e => {
@@ -213,7 +217,7 @@ export function CategoryForm() {
                   }`} 
                 />
                 {errors.descriptionEn && <p className="mt-1 text-sm text-red-600">{errors.descriptionEn}</p>}
-            </div>
+            </div> */}
 
             <div className="flex items-center gap-2">
                 <button 
@@ -225,10 +229,11 @@ export function CategoryForm() {
                       : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
-                  {isLoading ? translations.categories.saving : translations.categories.save}
+                  {isLoading ? "جاري الحفظ" : "حفظ"}
                 </button>
                 <Link to="/categories" className="inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium hover:bg-gray-50">
-                  {translations.categories.cancel}
+                  {/* {translations.categories.cancel} */}
+                  الغاء
                 </Link>
             </div>
         </div>

@@ -93,15 +93,18 @@ export default function CourseList() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">{translations.courses.title}</h1>
+          {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
+          <h1 className="text-xl font-semibold">الكورسات</h1>
           <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
-            {translations.courses.addCourse}
+            {/* {translations.courses.addCourse} */}
+            اضافة كورس
           </Link>
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-sm text-gray-600">{translations.courses.loading}</p>
+            {/* <p className="mt-2 text-sm text-gray-600">{translations.courses.loading}</p> */}
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل الكورسات</p>
           </div>
         </div>
       </div>
@@ -113,9 +116,11 @@ export default function CourseList() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">{translations.courses.title}</h1>
+          {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
+          <h1 className="text-xl font-semibold">الكورسات</h1>
           <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
-            {translations.courses.addCourse}
+            {/* {translations.courses.addCourse} */}
+            اضافة كورس
           </Link>
         </div>
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
@@ -126,16 +131,18 @@ export default function CourseList() {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{translations.courses.error}</h3>
+              <h3 className="text-sm font-medium text-red-800">خطا</h3>
               <div className="mt-2 text-sm text-red-700">
-                <p>{error || translations.courses.failed}</p>
+                {/* <p>{error || translations.courses.failed}</p> */}
+                <p>فشل بتحميل الكورسات</p>
               </div>
               <div className="mt-4">
                 <button
                   onClick={() => dispatch(fetchCourses({ page: currentPage, limit: itemsPerPage }))}
                   className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {translations.courses.dismiss}
+                  {/* {translations.courses.dismiss} */}
+                  تجاهل
                 </button>
               </div>
             </div>
@@ -153,7 +160,8 @@ export default function CourseList() {
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          {translations.courses.addCourse}
+          {/* {translations.courses.addCourse} */}
+          اضافة كورس
         </Link>
       </div>
 
@@ -167,7 +175,8 @@ export default function CourseList() {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{translations.courses.deleteError}</h3>
+              {/* <h3 className="text-sm font-medium text-red-800">{translations.courses.deleteError}</h3> */}
+              <h3 className="text-sm font-medium text-red-800">خطأ بالحذف</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{deleteError}</p>
               </div>
@@ -176,7 +185,8 @@ export default function CourseList() {
                   onClick={clearErrors}
                   className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {translations.courses.dismiss}
+                  {/* {translations.courses.dismiss} */}
+                  تجاهل
                 </button>
               </div>
             </div>
@@ -212,7 +222,8 @@ export default function CourseList() {
                 onDelete={(courseId) => setShowDeleteConfirm(courseId)}
               />
               {!isValidDateFormat(course.date) && (
-                <p className="mt-1 text-xs text-red-600 px-4">Invalid date format — use YYYY-MM-DD or "January 15, 2024"</p>
+                // <p className="mt-1 text-xs text-red-600 px-4">Invalid date format — use YYYY-MM-DD or "January 15, 2024"</p>
+                <p className="mt-1 text-xs text-red-600 px-4">تنسيق التاريخ غير صالح — استخدم YYYY-MM-DD أو "15 يناير 2024"</p>
               )}
             </div>
           ))}
@@ -272,9 +283,11 @@ export default function CourseList() {
                     </svg>
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">{translations.courses.deleteConfirm}</h3>
+                    {/* <h3 className="text-lg leading-6 font-medium text-gray-900">{translations.courses.deleteConfirm}</h3> */}
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">حذف الكورس</h3>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">{translations.courses.deleteMessage}</p>
+                      {/* <p className="text-sm text-gray-500">{translations.courses.deleteMessage}</p> */}
+                      <p className="text-sm text-gray-500">هل انت متأكد من حذف الكورس</p>
                     </div>
                   </div>
                 </div>
@@ -285,13 +298,15 @@ export default function CourseList() {
                   disabled={deletingCourseId === showDeleteConfirm}
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
                 >
-                  {deletingCourseId === showDeleteConfirm ? translations.courses.deleting : translations.courses.delete}
+                  {/* {deletingCourseId === showDeleteConfirm ? translations.courses.deleting : translations.courses.delete} */}
+                  {deletingCourseId === showDeleteConfirm ? "جاري الحذف.." : "حذف"}
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(null)}
                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  {translations.courses.cancel}
+                  {/* {translations.courses.cancel} */}
+                  الغاء
                 </button>
               </div>
             </div>

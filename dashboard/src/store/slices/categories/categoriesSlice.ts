@@ -3,18 +3,18 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 export interface ICategory {
   _id: string;
   name: string;
-  nameEn: string;
+  // nameEn: string;
   description: string;
-  descriptionEn: string;
+  // descriptionEn: string;
   createdAt: string;
   updatedAt: string;
 }
 
 interface IAddCategory {
   name: string;
-  nameEn: string;
+  // nameEn: string;
   description: string;
-  descriptionEn: string;
+  // descriptionEn: string;
 }
 
 export type CategoriesState = {
@@ -106,7 +106,7 @@ export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValu
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: updatedCategory.name, nameEn: updatedCategory.nameEn, description: updatedCategory.description, descriptionEn: updatedCategory.descriptionEn }),
+        body: JSON.stringify({ name: updatedCategory.name, description: updatedCategory.description,}),
       });
       
       if (!response.ok) {

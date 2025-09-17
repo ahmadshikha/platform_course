@@ -12,13 +12,15 @@ import { CategoryForm } from "./pages/CategoryForm";
 import UsersRegisters from "./pages/UsersRegisters";
 import UserRegister from "./pages/UserRegister";
 import TeacherCourses from "./pages/TeacherCourses";
+import Login from "./pages/Login";
 
 function App() {
 	return <>
 		<HashRouter>
 			<Layout>
 				<Routes>
-					<Route path="/" element={<Navigate to="/courses" replace />} />
+					<Route path="/" element={<Navigate to="/login" replace />} />
+					<Route path="/login" element={<Login />} />
 					<Route path="/courses" element={<CourseList />} />
 					<Route path="/courses/new" element={<CourseForm />} />
 					<Route path="/courses/:id/edit" element={<CourseForm />} />
