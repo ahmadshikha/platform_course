@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { RootState, AppDispatch } from '../store/store';
-import { deleteCourse, fetchCourses, clearError, _fetchTeacherCourses } from '../store/slices/courses/coursesSlice';
+import { deleteCourse, fetchCourses, clearError, _fetchTeacherCourses, fetchCategoryCourses } from '../store/slices/courses/coursesSlice';
 import CourseCard from '../component/CourseCard';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 
-export default function TeacherCourses() {
+export default function CategoryCourses() {
   const courses = useSelector((s: RootState) => s.courses.items);
   const status = useSelector((s: RootState) => s.courses.status);
   const error = useSelector((s: RootState) => s.courses.error);
@@ -38,7 +38,7 @@ export default function TeacherCourses() {
     console.log({id});
     const _id = id.split('id=')[1]
     console.log(_id)
-    dispatch(_fetchTeacherCourses({teacherId: _id,params: {page: currentPage, limit: itemsPerPage}}));
+    dispatch(fetchCategoryCourses({categoryId: _id,params: {page: currentPage, limit: itemsPerPage}}));
   }, [navigate, currentPage]);
 
   const handlePageChange = (page: number) => {
@@ -49,7 +49,7 @@ export default function TeacherCourses() {
   // Validate date strings: accept ISO (YYYY-MM-DD) or long form (e.g., "January 15, 2024")
   const isValidDateFormat = (s: string | undefined) => {
     if (!s) return false;
-    const iso = /^\d{2}-\d{2}-\d{4}$/;    
+    const iso = /^\d{2}-\d{2}-\d{4}$/;
     // const long = /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}$/i;
     return iso.test(s.trim());
   };
@@ -94,7 +94,7 @@ export default function TeacherCourses() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">{translations.teacherCourses.title}</h1>
+          <h1 className="text-xl font-semibold">كورسات الفئة</h1>
           <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
             {translations.courses.addCourse}
           </Link>
@@ -102,7 +102,7 @@ export default function TeacherCourses() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-sm text-gray-600">{translations.courses.loading}</p>
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل الفئات...</p>
           </div>
         </div>
       </div>
@@ -223,7 +223,6 @@ export default function TeacherCourses() {
               {!isValidDateFormat(course.date) && (
                 // <p className="mt-1 text-xs text-red-600 px-4">Invalid date format — use YYYY-MM-DD or "January 15, 2024"</p>
                 <p className="mt-1 text-xs text-red-600 px-4">تنسيق التاريخ غير صالح — استخدم DD-MM-YYYY ex: 01-03-2000</p>
-
               )}
             </div>
           ))}

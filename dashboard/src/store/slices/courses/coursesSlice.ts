@@ -74,7 +74,7 @@ const fetchCourses = createAsyncThunk(
         return rejectWithValue(errorData.message || 'Failed to fetch courses');
       }
       const result = await response.json();
-
+      console.log('courses')
       if (result.success === false) {
         return rejectWithValue(result.message || 'Failed to fetch courses');
       }
@@ -94,13 +94,46 @@ const fetchCourses = createAsyncThunk(
   }
 );
 
+const fetchCategoryCourses = createAsyncThunk(
+  'courses/fetchCategoryCourses',
+  async ({ categoryId, params }: { categoryId: string, params: {page?: number, limit?: number} }, { rejectWithValue }) => {
+    try {
+      const { page, limit } = params || {};
+      const queryParams = new URLSearchParams();
+      if (page) queryParams.append('page', page.toString());
+      if (limit) queryParams.append('limit', limit.toString());
+      const url = `http://localhost:5000/api/courses/category/${categoryId}/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        return rejectWithValue(errorData.message || 'Failed to fetch teacher courses');
+      }
+      const result = await response.json();
+      console.log('category courses result:', result)
+      if (result.success === false) {
+       return rejectWithValue(result.message || 'Failed to fetch teacher courses');
+      }
+
+      return result;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'An error occurred');
+    }
+  }
+);
 export const fetchTeacherCourses = createAsyncThunk(
   'courses/fetchTeacherCourses',
-  async ({ teacherId }: { teacherId: string}, { rejectWithValue }) => {
+  async ({ teacherId, params }: { teacherId: string, params: {page?: number, limit?: number} }, { rejectWithValue }) => {
     try {
-
-
-      const url = `http://localhost:5000/api/courses/teacher/${teacherId}`;
+      const { page, limit } = params || {};
+      const queryParams = new URLSearchParams();
+      if (page) queryParams.append('page', page.toString());
+      if (limit) queryParams.append('limit', limit.toString());
+      const url = `http://localhost:5000/api/courses/teacher/${teacherId}/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -300,10 +333,31 @@ const coursesSlice = createSlice({
       .addCase(fetchTeacherCourses.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+      .addCase(fetchCategoryCourses.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchCategoryCourses.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload.data;
+        state.pagination = action.payload.pagination;
+        state.error = null;
+      })
+      .addCase(fetchCategoryCourses.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
   },
 });
 
 export const { clearError } = coursesSlice.actions;
-export { fetchCourses, addCourse, deleteCourse, updateCourse, fetchTeacherCourses as _fetchTeacherCourses };
+export { 
+  fetchCourses,
+  addCourse, 
+  deleteCourse, 
+  updateCourse, 
+  fetchTeacherCourses as _fetchTeacherCourses,
+  fetchCategoryCourses,
+};
 export default coursesSlice.reducer;

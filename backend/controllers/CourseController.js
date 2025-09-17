@@ -402,6 +402,7 @@ export const getTeacherCourses = async (req, res) => {
   try {
     console.log('getTeacherCourses controller')
     const { teacherId } = req.params;
+    console.log(req.query)
     const { page = 1, limit = 10, status } = req.query;
     console.log(req.params)
     const query = { teacher: teacherId, isActive: true };
@@ -443,6 +444,7 @@ export const getTeacherCourses = async (req, res) => {
 export const getCategoryCourses = async (req, res) => {
   try {
     const { categoryId } = req.params;
+    console.log({categoryId})
     const { page = 1, limit = 10, status } = req.query;
     
     const query = { categoryId, isActive: true };
@@ -467,6 +469,7 @@ export const getCategoryCourses = async (req, res) => {
       }
     });
   } catch (error) {
+    console.log('category courses ', error)
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,

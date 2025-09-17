@@ -1,15 +1,28 @@
-import React, { PropsWithChildren, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import React, { PropsWithChildren, useState, useEffect } from 'react';
+import { Link, NavLink, useLocation, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import { AppDispatch, RootState } from '../store/store';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
+import { useDispatch } from 'react-redux';
+import { authUser } from '../store/slices/login/logging';
 
 export default function Layout({ children }: PropsWithChildren) {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const navigate = useNavigate()
+	const dispatch = useDispatch<AppDispatch>()
+	const {islogged} = useSelector((s: RootState) => s.login);
+	
 	// const { lang } = useSelector((s: RootState) => s.lang);
 	const location = useLocation();
-
+	useEffect(() => {
+		if(islogged) {
+		dispatch(authUser())
+		}
+		return () => {
+		
+		}
+	},[navigate])
 	// Translation
 	// const translate = {
 	// 	en,
@@ -17,12 +30,18 @@ export default function Layout({ children }: PropsWithChildren) {
 	// };
 	// const translations = translate[lang];
 
-	// If the current page is the login page, don't render the main layout
-	if (location.pathname === '/login') {
-		return <>{children}</>;
+
+
+	if (!islogged && location.pathname !== '/login') {
+		return <Navigate to="/login" replace />;
 	}
 
+
+
+
+
 	return (
+		
 		<div className="min-h-screen bg-gray-50">
 			<nav className="bg-white border-b border-gray-200">
 				<div className="px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
@@ -79,7 +98,9 @@ export default function Layout({ children }: PropsWithChildren) {
 				</aside>
 
 				<main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
-					{children}
+					{/* When on /courses, render layout without nested content */}
+					<Outlet />
+					{/* {location.pathname === '/courses' ? null : <Outlet />} */}
 				</main>
 			</div>
 		</div>

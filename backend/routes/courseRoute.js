@@ -25,7 +25,7 @@ router.get('/teacher/:teacherId', validateObjectId, getTeacherCourses);
 router.get('/category/:categoryId',  getCategoryCourses);
 router.get('/:id', validateObjectId, getCourseById);
 router.get('/custom/:courseId', getCourseByCustomId);
-router.put('/:id', validateObjectId, updateCourse);
+router.put('/:id', updateCourse);
 router.delete('/:id', validateObjectId, deleteCourse);
 
 

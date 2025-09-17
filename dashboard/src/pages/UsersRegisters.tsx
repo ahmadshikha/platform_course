@@ -61,22 +61,22 @@ function UserRegisterCard({ reg, onChangeStatus, idx }: { reg: UserRegister, onC
                     <span className="mr-2">{reg.participantType}</span>
                     <select value={reg.status ?? 'pending'} onChange={(e) => onChangeStatus(e, idx)}
                         className="ml-2 rounded border px-2 py-1 text-sm">
-                        <option value="pending">pending</option>
-                        <option value="confirmed">confirmed</option>
-                        <option value="cancelled">cancelled</option>
-                        <option value="completed">completed</option>
-                        <option value="waiting_list">waiting_list</option>
+                        <option value="معلق">معلق</option>
+                        <option value="مؤكد">مؤكد</option>
+                        <option value="ملغى">ملغى</option>
+                        <option value="مكتمل">مكتمل</option>
+                        <option value="قائمة الانظار">قائمة الانظار</option>
                     </select>
                 </div>
             </div>
 
             <div className="text-sm text-gray-700 mb-2">
-                <div>Email: {reg.email}</div>
-                <div>Phone: {reg.phone}</div>
-                <div>Course: {reg.courseTitle} ({reg.courseNumber})</div>
+                <div>البريد الالكتروني: {reg.email}</div>
+                <div>الهاتف: {reg.phone}</div>
+                <div>الكورسات: {reg.courseTitle} ({reg.courseNumber})</div>
             </div>
 
-            <div className="text-xs text-gray-500">Registered: {new Date(reg.registrationDate || Date.now()).toLocaleString()}</div>
+            <div className="text-xs text-gray-500">تم تسجيله: {new Date(reg.registrationDate || Date.now()).toLocaleString()}</div>
             <button onClick={() => navigate(`/user-register/${reg._id}/details`)} className='text-blue-500 hover:text-blue-700'>Details</button>
         </article>
     )

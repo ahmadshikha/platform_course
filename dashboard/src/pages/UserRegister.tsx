@@ -76,61 +76,61 @@ export default function UserRegister() {
         <div className="user-register-details p-4 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">Registration Details</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">معلومات التسجيل</h1>
                     <span className={`px-3 py-1 text-sm font-semibold rounded-full capitalize ${statusClasses[registration.status || 'pending']}`}>
                         {registration.status?.replace('_', ' ')}
                     </span>
                 </div>
 
                 <div className="space-y-6">
-                    <Section title="Personal Information">
-                        <Detail label="Full Name" value={`${registration.title} ${registration.firstName} ${registration.lastName}`} />
-                        <Detail label="Date of Birth" value={new Date(registration.birthDate).toLocaleDateString()} />
-                        <Detail label="Gender" value={registration.gender} />
-                        <Detail label="Nationality" value={registration.nationality} />
-                        <Detail label="ID Number" value={registration.idNumber} />
+                    <Section title="المعلومات الشخصية">
+                        <Detail label="الاسم الكامل" value={`${registration.title} ${registration.firstName} ${registration.lastName}`} />
+                        <Detail label="تاريخ الميلاد" value={new Date(registration.birthDate).toLocaleDateString()} />
+                        <Detail label="الجنس" value={registration.gender} />
+                        <Detail label="الجنسية" value={registration.nationality} />
+                        <Detail label="رقم الهوية" value={registration.idNumber} />
                     </Section>
 
-                    <Section title="Contact Information">
-                        <Detail label="Email" value={registration.email} />
-                        <Detail label="Phone" value={registration.phone} />
-                        <Detail label="Mobile" value={registration.mobile} />
-                        <Detail label="Address" value={`${registration.streetAddress}, ${registration.city}, ${registration.postalCode}, ${registration.country}`} />
+                    <Section title="معلومات الاتصال">
+                        <Detail label="البريد الالكتروني" value={registration.email} />
+                        <Detail label="الرقم" value={registration.phone} />
+                        <Detail label="الهاتف" value={registration.mobile} />
+                        <Detail label="العنوان" value={`${registration.streetAddress}, ${registration.city}, ${registration.postalCode}, ${registration.country}`} />
                     </Section>
 
-                    <Section title="Course Information">
-                        <Detail label="Course Title" value={registration.courseTitle} />
-                        <Detail label="Course Number" value={registration.courseNumber} />
-                        <Detail label="Participant Type" value={registration.participantType} />
-                        <Detail label="Reason for Participation" value={registration.participationReason} />
-                        <Detail label="Registration Date" value={new Date(registration.registrationDate || '').toLocaleString()} />
+                    <Section title="معلومات الكورس">
+                        <Detail label="عنوان الكورس" value={registration.courseTitle} />
+                        <Detail label="رقم الكورس" value={registration.courseNumber} />
+                        <Detail label="نوع المشارك" value={registration.participantType} />
+                        <Detail label="سبب التسجيل" value={registration.participationReason} />
+                        <Detail label="وقت التسجيل" value={new Date(registration.registrationDate || '').toLocaleString()} />
                     </Section>
 
-                    <Section title="Professional Information">
-                        <Detail label="Education Level" value={registration.educationLevel} />
-                        <Detail label="Occupation" value={registration.occupation} />
-                        <Detail label="Company Name" value={registration.companyName} />
-                        <Detail label="Company Address" value={registration.companyAddress} />
+                    <Section title="المعلومات الشخصية">
+                        <Detail label="مستوى التعليم" value={registration.educationLevel} />
+                        <Detail label="المهنة" value={registration.occupation} />
+                        <Detail label="اسم الشركة" value={registration.companyName} />
+                        <Detail label="عنوان الشركة" value={registration.companyAddress} />
                     </Section>
 
-                    <Section title="Emergency Contact">
-                        <Detail label="Name" value={registration.emergencyContact.name} />
-                        <Detail label="Relationship" value={registration.emergencyContact.relationship} />
-                        <Detail label="Phone" value={registration.emergencyContact.phone} />
+                    <Section title="معلومات اتصال الطوارئ">
+                        <Detail label="الاسم" value={registration.emergencyContact.name} />
+                        <Detail label="الصلة" value={registration.emergencyContact.relationship} />
+                        <Detail label="الرقم" value={registration.emergencyContact.phone} />
                     </Section>
 
-                    <Section title="Additional Information & Agreements">
-                        <Detail label="Special Needs" value={registration.specialNeeds} />
-                        <Detail label="Additional Info" value={registration.additionalInfo} />
-                        <Detail label="Agreed to Terms" value={registration.agreeTerms} />
-                        <Detail label="Agreed to Data Processing" value={registration.agreeDataProcessing} />
-                        <Detail label="Wants Newsletter" value={registration.receiveNewsletter} />
-                        <Detail label="Admin Notes" value={registration.notes} />
+                    <Section title="معلومات واتفاقيات إضافية">
+                        <Detail label="الاحتياجات الخاصة" value={registration.specialNeeds} />
+                        <Detail label="معلومات اضافية" value={registration.additionalInfo} />
+                        <Detail label="تمت الموافقة على الشروط" value={registration.agreeTerms} />
+                        <Detail label="الموافقة على معالجة البيانات" value={registration.agreeDataProcessing} />
+                        <Detail label="يريد النشرة الإخبارية" value={registration.receiveNewsletter} />
+                        <Detail label="ملاحظات للمسؤول" value={registration.notes} />
                     </Section>
                 </div>
                 <div className="mt-8 text-center">
                     <Link to="/users-register" className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-                        Back to All Registrations
+                        عودة الى كل الحجوزات
                     </Link>
                 </div>
             </div>

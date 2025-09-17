@@ -46,9 +46,9 @@ export default function CourseList() {
   // Validate date strings: accept ISO (YYYY-MM-DD) or long form (e.g., "January 15, 2024")
   const isValidDateFormat = (s: string | undefined) => {
     if (!s) return false;
-    const iso = /^\d{4}-\d{2}-\d{2}$/;
-    const long = /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}$/i;
-    return iso.test(s.trim()) || long.test(s.trim());
+    const iso = /^\d{2}-\d{2}-\d{4}$/;
+    // const long = /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}$/i;
+    return iso.test(s.trim());
   };
 
   // Clear errors when user interacts
@@ -155,7 +155,7 @@ export default function CourseList() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">{translations.courses.title}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">الكورسات</h1>
         <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -200,14 +200,15 @@ export default function CourseList() {
           <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">{translations.courses.noCourses}</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by creating a new course.</p>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">لا توجد كورسات بعد</h3>
+          <p className="mt-1 text-sm text-gray-500">ابدأ باضافة كورسات</p>
           <div className="mt-6">
             <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              {translations.courses.addCourse}
+              {/* {translations.courses.addCourse} */}
+              اضافة كورس
             </Link>
           </div>
         </div>
@@ -223,7 +224,7 @@ export default function CourseList() {
               />
               {!isValidDateFormat(course.date) && (
                 // <p className="mt-1 text-xs text-red-600 px-4">Invalid date format — use YYYY-MM-DD or "January 15, 2024"</p>
-                <p className="mt-1 text-xs text-red-600 px-4">تنسيق التاريخ غير صالح — استخدم YYYY-MM-DD أو "15 يناير 2024"</p>
+                <p className="mt-1 text-xs text-red-600 px-4">تنسيق التاريخ غير صالح — استخدم DD-MM-YYYY ex: 01-03-2000</p>
               )}
             </div>
           ))}
@@ -237,7 +238,7 @@ export default function CourseList() {
               disabled={pagination.currentPage == 1}
               className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translations.teachers.previous}
+              السابق
             </button>
             
             {/* Page numbers */}
@@ -262,7 +263,7 @@ export default function CourseList() {
               disabled={pagination.currentPage == pagination.totalPages}
               className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translations.teachers.next}
+              التالي
             </button>
           </div>
         )}

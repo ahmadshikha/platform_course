@@ -35,7 +35,7 @@ export interface UserRegister {
     agreeTerms: boolean;
     agreeDataProcessing: boolean;
     receiveNewsletter?: boolean;
-    status?: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'waiting_list';
+    status?: "معلق"|"مؤكد"| "ملغى"| "مكتمل"| "قائمة_الانتظار";
     registrationDate?: string; // ISO date string
     notes?: string;
     _id?: string;

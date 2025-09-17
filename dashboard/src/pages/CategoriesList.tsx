@@ -181,13 +181,11 @@ function CategoriesList() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map(category => (
           <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div onClick={()=> console.log(category._id)} className="p-4">
+            <div onClick={()=> navigate(`/category-courses/id=${category._id}`)} className="p-4">
               <div className="flex items-center justify-between">
-                {/* <h3 className="text-lg font-semibold text-gray-900">{getLocalizedProperty(category, 'name')}</h3> */}
-                <h3 className="text-lg font-semibold text-gray-900">اسم الفئة</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{category.name}</h3>
               </div>
-              {/* <p className="mt-2 text-sm text-gray-600 line-clamp-3">{getLocalizedProperty(category, 'description')}</p> */}
-              <p className="mt-2 text-sm text-gray-600 line-clamp-3">الوصف</p>
+              <p className="mt-2 text-sm text-gray-600 line-clamp-3">{category.description}</p>
             </div>
             <div className={`flex items-center justify-between border-t border-gray-100 px-4 py-3 `}>
               {/* <div className="text-xs text-gray-500">

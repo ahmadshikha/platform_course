@@ -65,7 +65,7 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
             </p>
           </div>
           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(course.status)}`}>
-            {course.status}
+            {/* {course.status} */}
             {getStatusText(course.status)}
           </span>
         </div>

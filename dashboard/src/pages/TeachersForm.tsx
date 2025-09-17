@@ -38,7 +38,7 @@ export function TeachersForm() {
     const [bio, setBio] = useState("")
     const [bioEn, setBioEn] = useState("")
     const [experience, setExperience] = useState("")
-    const [actionForm, setActionForm] = useState("Add Teacher")
+    const [actionForm, setActionForm] = useState("اضافة استاذ")
     const [specialties, setSpecialties] = useState<string[]>([])
     const [specialtiesEn, setSpecialtiesEn] = useState<string[]>([])
     const [isActive, setActive] = useState(true)
@@ -89,7 +89,7 @@ export function TeachersForm() {
   useEffect((): any => {
     const url = window.location.href
     if(url.includes("/edit")) {
-        setActionForm(translations.form.editTeacher)
+        setActionForm("تعديل استاذ")
         setIsEditMode(true)
         const start = url.indexOf('=')
         const end = url.indexOf('/edit')
@@ -118,10 +118,10 @@ export function TeachersForm() {
             setStudents(teacher.students || 0)
             setCourse(teacher.course || 0)
         } else {
-            setErrors({general: translations.form.validation.teacherNotFound})
+            setErrors({general: "الاستاذ غير موجود"})
         }
     }
-  }, [teachers, translations.form.editTeacher])
+  }, [teachers,])
 
   // Clear Redux errors when component mounts
   useEffect(() => {
@@ -177,19 +177,19 @@ export function TeachersForm() {
     const newErrors: {[key: string]: string} = {}
     
     if (!name.trim()) {
-      newErrors.name = translations.form.validation.nameRequired
+      newErrors.name = "الاسم مطلوب"
     }
     // if (!nameEn.trim()) {
     //   newErrors.nameEn = translations.form.validation.nameEnRequired
     // }
     if (!title.trim()) {
-      newErrors.title = translations.form.validation.titleRequired
+      newErrors.title = "اللقب مطلوب"
     }
     // if (!titleEn.trim()) {
     //   newErrors.titleEn = translations.form.validation.titleEnRequired
     // }
     if (!bio.trim()) {
-      newErrors.bio = translations.form.validation.bioRequired
+      newErrors.bio = "السيرة الذاتية مطلوبة"
     }
     // if (!bioEn.trim()) {
     //   newErrors.bioEn = translations.form.validation.bioEnRequired
@@ -198,12 +198,12 @@ export function TeachersForm() {
     //   newErrors.experience = translations.form.validation.experienceRequired
     // }
     if (!contact.email.trim()) {
-      newErrors.email = translations.form.validation.emailRequired
+      newErrors.email = "البريد الالكتروني مطلوب"
     } else if (!/\S+@\S+\.\S+/.test(contact.email)) {
-      newErrors.email = translations.form.validation.emailInvalid
+      newErrors.email = "البريد الالكتروني غير صالح"
     }
     if (!contact.phone.trim()) {
-      newErrors.phone = translations.form.validation.phoneRequired
+      newErrors.phone = "رقم الهاتف مطلوب"
     }
     
     setErrors(newErrors)
@@ -273,7 +273,7 @@ export function TeachersForm() {
         setActive(true)
       }
     } catch (error: any) {
-      setErrors({ general: error || translations.form.validation.saveError })
+      setErrors({ general: error || "خطأاثناء حفظ الاستاذ" })
     } finally {
       setIsLoading(false)
     }
@@ -300,7 +300,7 @@ export function TeachersForm() {
 
         <div className="space-y-4">
             <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.form.fields.name}</label>
+                <label className="block text-sm font-medium text-gray-700">الاسم</label>
                 <input 
                   value={name} 
                   onChange={e => {
@@ -357,7 +357,7 @@ export function TeachersForm() {
                 {errors.titleEn && <p className="mt-1 text-sm text-red-600">{errors.titleEn}</p>}
             </div> */}
             <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.form.fields.image}</label>
+                <label className="block text-sm font-medium text-gray-700">الصورة</label>
                 <input 
                   value={image} 
                   onChange={e => setImage(e.target.value)} 
@@ -365,7 +365,7 @@ export function TeachersForm() {
                 />
             </div>
             <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.form.fields.bio}</label>
+                <label className="block text-sm font-medium text-gray-700">السيرة الذاتية</label>
                 <input 
                   value={bio} 
                   onChange={e => {
@@ -483,7 +483,8 @@ export function TeachersForm() {
                         <div className="flex gap-2">
                             <input 
                               type="text"
-                              placeholder={translations.form.placeholders.addSpecialty}
+                              // placeholder={translations.form.placeholders.addSpecialty}
+                              placeholder="اضافة تخصص"
                               onKeyPress={e => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault()
@@ -568,27 +569,27 @@ export function TeachersForm() {
 
             {/* Education Section */}
             <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.education}</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">التعليم</h3>
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">{translations.form.fields.degree}</label>
+                            <label className="block text-sm font-medium text-gray-700">الدرجة العلمية</label>
                             <input 
                               value={newEducation.degree} 
                               onChange={e => setNewEducation(prev => ({ ...prev, degree: e.target.value }))} 
                               className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
                             />
                         </div>
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium text-gray-700">{translations.form.fields.degreeEn}</label>
                             <input 
                               value={newEducation.degreeEn} 
                               onChange={e => setNewEducation(prev => ({ ...prev, degreeEn: e.target.value }))} 
                               className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
                             />
-                        </div>
+                        </div> */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">{translations.form.fields.institution}</label>
+                            <label className="block text-sm font-medium text-gray-700">المؤوسسة</label>
                             <input 
                               value={newEducation.institution} 
                               onChange={e => setNewEducation(prev => ({ ...prev, institution: e.target.value }))} 
@@ -596,7 +597,7 @@ export function TeachersForm() {
                             />
             </div>
             <div>
-                            <label className="block text-sm font-medium text-gray-700">{translations.form.fields.year}</label>
+                            <label className="block text-sm font-medium text-gray-700">السنة</label>
                             <input 
                               type="number"
                               value={newEducation.year} 
@@ -610,7 +611,8 @@ export function TeachersForm() {
                       onClick={addEducation}
                       className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                     >
-                      {translations.form.buttons.addEducation}
+                      {/* {translations.form.buttons.addEducation} */}
+                      اضافة تعليم
                     </button>
                     <div className="space-y-2">
                       {education.map((edu, index) => (
@@ -623,7 +625,8 @@ export function TeachersForm() {
                             onClick={() => removeEducation(index)}
                             className="text-red-600 hover:text-red-800"
                           >
-                            {translations.form.buttons.remove}
+                            {/* {translations.form.buttons.remove} */}
+                            ازالة
                           </button>
                         </div>
                       ))}
@@ -632,7 +635,7 @@ export function TeachersForm() {
             </div>
 
             {/* Stats Section */}
-            <div className="border-t pt-4">
+            {/* <div className="border-t pt-4">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.statistics}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
@@ -678,7 +681,7 @@ export function TeachersForm() {
                         />
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Active Status */}
             <div className="border-t pt-4">
@@ -690,7 +693,8 @@ export function TeachersForm() {
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label className="ml-2 block text-sm text-gray-900">
-                        {translations.form.activeTeacher}
+                        {/* {translations.form.activeTeacher} */}
+                        استاذ نشط؟
                     </label>
                 </div>
             </div>
@@ -705,10 +709,11 @@ export function TeachersForm() {
                       : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
-                  {isLoading ? translations.form.buttons.saving : translations.form.buttons.save}
+                  {isLoading ? "جاري الحفظ..." : "حفظ"}
                 </button>
                 <Link to="/teachers" className="inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium hover:bg-gray-50">
-                  {translations.form.buttons.cancel}
+                  {/* {translations.form.buttons.cancel} */}
+                  الغاء
                 </Link>
             </div>
         </div>

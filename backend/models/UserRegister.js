@@ -79,8 +79,9 @@ const courseRegistrationSchema = new mongoose.Schema({
   receiveNewsletter: { type: Boolean, default: true },
   status: { 
     type: String, 
-    enum: ['pending', 'confirmed', 'cancelled', 'completed', 'waiting_list'], 
-    default: 'pending' 
+    // enum: ['pending', 'confirmed', 'cancelled', 'completed', 'waiting_list'], 
+    enum: ["معلق","مؤكد", "ملغى", "مكتمل", "قائمة_الانتظار"],
+    default: 'pending'
   },
   registrationDate: { type: Date, default: Date.now },
 

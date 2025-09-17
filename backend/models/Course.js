@@ -14,8 +14,9 @@ const CourseSchema = new mongoose.Schema({
   location: { type: String, required: true },
   status: { 
     type: String, 
-    enum: ['available', 'full', 'cancelled', 'completed'], 
-    default: 'available' 
+    // enum: ['available', 'full', 'cancelled', 'completed'], 
+    enum: ["متوفر", "ممتلئ", "ملغى", "مكتمل"], 
+    default: 'متوفر'
   },
   maxParticipants:{type:Number},
   price: { type: String, required: true },

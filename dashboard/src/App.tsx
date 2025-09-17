@@ -13,33 +13,36 @@ import UsersRegisters from "./pages/UsersRegisters";
 import UserRegister from "./pages/UserRegister";
 import TeacherCourses from "./pages/TeacherCourses";
 import Login from "./pages/Login";
+import CategoryCourses from "./pages/CategoryCourses";
 
 function App() {
-	return <>
+	return (
 		<HashRouter>
-			<Layout>
-				<Routes>
-					<Route path="/" element={<Navigate to="/login" replace />} />
-					<Route path="/login" element={<Login />} />
+			<Routes>
+				{/* Public route - login rendered outside the main layout */}
+				<Route path="/login" element={<Login />} />
+
+				{/* Protected app routes rendered inside Layout */}
+				<Route path="/" element={<Layout />}>
+					{/* <Route index element={<Navigate to="/courses" replace />} /> */}
 					<Route path="/courses" element={<CourseList />} />
-					<Route path="/courses/new" element={<CourseForm />} />
-					<Route path="/courses/:id/edit" element={<CourseForm />} />
-					<Route path="/courses/teachers/:id" element={<TeacherCourses />} />
-					<Route path="/courses/teachers/:id/edit" element={<CourseForm />} />
-					<Route path="/teachers/" element={<TeachersList />} />
-					<Route path="/teachers/new" element={<TeachersForm />} />
-					<Route path="/teachers/:id/edit" element={<TeachersForm />} />
-					<Route path="/categories" element={<CategoriesList />} />
-					<Route path="/categories/new" element={<CategoryForm />} />
-					<Route path="/categories/:id/edit" element={<CategoryForm />} />
-					{/* <Route path="/users/new" element={<UserForm />} /> */}
-					{/* <Route path="/users/:id/edit" element={<UserForm />} /> */}
-					<Route path="/users-register/" element={<UsersRegisters />} />
-					<Route path="/user-register/:id/details" element={<UserRegister />} />
-				</Routes>
-			</Layout>
+					<Route path="courses/new" element={<CourseForm />} />
+					<Route path="courses/:id/edit" element={<CourseForm />} />
+					<Route path="teacher-courses/:id" element={<TeacherCourses />} />
+					<Route path="category-courses/:id" element={<CategoryCourses />} />
+					<Route path="courses/teachers/:id/edit" element={<CourseForm />} />
+					<Route path="teachers" element={<TeachersList />} />
+					<Route path="teachers/new" element={<TeachersForm />} />
+					<Route path="teachers/:id/edit" element={<TeachersForm />} />
+					<Route path="categories" element={<CategoriesList />} />
+					<Route path="categories/new" element={<CategoryForm />} />
+					<Route path="categories/:id/edit" element={<CategoryForm />} />
+					<Route path="users-register" element={<UsersRegisters />} />
+					<Route path="user-register/:id/details" element={<UserRegister />} />
+				</Route>
+			</Routes>
 		</HashRouter>
-	</>
+	);
 }
 
 export default App;

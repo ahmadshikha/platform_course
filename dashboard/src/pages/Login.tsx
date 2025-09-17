@@ -1,36 +1,68 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
+import { loginUser } from '../store/slices/login/logging';
 
 export default function Login() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const {islogged, error: loginError} = useSelector((s: RootState) => s.login);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // If already logged in, redirect to home
+    useEffect(()=> {
+        if (islogged) {
+            navigate('/courses');
+        }
+        if (loginError == 'token expired') setError("انتهت صلاحية الجلسة")
+
+    })
+
+    const dispatch = useDispatch<AppDispatch>();
+
+    async function handleSubmit() {
         setError('');
         setIsLoading(true);
+        try {
+            const resultAction = await dispatch(loginUser({ email, password }));
+            if (loginUser.fulfilled.match(resultAction)) {
+                // successful login
+                navigate('/');
+            } else {
 
-        // Basic validation
-        if (!username || !password) {
-            setError('Both username and password are required.');
+                const err: any = resultAction.payload || resultAction.error;
+                console.log(loginError)
+                if(loginError == 'Invalid credentials') setError("اسم المستخدم او كلمة السر خطأ");
+                else
+                setError('خطأ بتسجيل الدخول');
+            }
+        } catch (err: any) {
+            setError(err?.message || 'Login failed');
+        } finally {
             setIsLoading(false);
-            return;
         }
+        
+        // Basic validation
+        // if (!username || !password) {
+        //     setError('Both username and password are required.');
+        //     setIsLoading(false);
+        //     return;
+        // }
 
         // In a real app, you would dispatch an action to an auth slice here
         // and handle success/failure from an API call.
         // For demonstration, we'll use a timeout and mock credentials.
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // await new Promise(resolve => setTimeout(resolve, 1000));
 
-        if (username === 'admin' && password === 'password') {
-            console.log('Login successful');
-            navigate('/courses'); // Redirect to a protected route
-        } else {
-            setError('Invalid credentials. Please try again.');
-        }
+        // if (username === 'admin' && password === 'password') {
+        //     console.log('Login successful');
+        //     // navigate('/courses'); // Redirect to a protected route
+        // } else {
+        //     setError('Invalid credentials. Please try again.');
+        // }
 
         setIsLoading(false);
     };
@@ -40,27 +72,27 @@ export default function Login() {
             <div className="w-full max-w-md space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Sign in to your account
+                        تسجيل الدخول
                     </h2>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                <div className="mt-8 space-y-6">
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div>
-                            <label htmlFor="username" className="sr-only">Username</label>
+                            <label htmlFor="email" className="sr-only">البريد الالكتروني</label>
                             <input
-                                id="username"
-                                name="username"
+                                id="email"
+                                name="email"
                                 type="text"
-                                autoComplete="username"
+                                autoComplete="email"
                                 required
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                                placeholder="Username"
+                                placeholder="البريد الالكتروني"
                             />
                         </div>
                         <div>
-                            <label htmlFor="password-address" className="sr-only">Password</label>
+                            <label htmlFor="password-address" className="sr-only">كلمة السر</label>
                             <input
                                 id="password"
                                 name="password"
@@ -83,14 +115,14 @@ export default function Login() {
 
                     <div>
                         <button
-                            type="submit"
+                            onClick={()=> handleSubmit()}
                             disabled={isLoading}
                             className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed"
                         >
-                            {isLoading ? 'Signing in...' : 'Sign in'}
+                            {isLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );

@@ -39,7 +39,7 @@ function TeachersList() {
     console.log(pagination.currentPage === pagination.totalPages)
     // Clear any existing errors when component mounts
     dispatch(clearError());
-  }, [currentPage, itemsPerPage, dispatch]);
+  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -114,7 +114,7 @@ function TeachersList() {
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{translations.teachers.error}</h3>
+              <h3 className="text-sm font-medium text-red-800">حدث خطأ</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
               </div>
@@ -137,7 +137,7 @@ function TeachersList() {
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{translations.teachers.deleteError}</h3>
+              <h3 className="text-sm font-medium text-red-800">خطأ بالحذف</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{deleteError}</p>
               </div>
@@ -179,7 +179,7 @@ function TeachersList() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {teachers.map(t => (
           <div  key={t._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div onClick={() => navigate(`/courses/teachers/id=${t._id}`)} className={`flex items-center gap-4 p-4 `}>
+            <div onClick={() => navigate(`/teacher-courses/id=${t._id}`)} className={`flex items-center gap-4 p-4 `}>
               <img src={t.image || '/placeholder.svg'} alt="الاسم" className="h-16 w-16 rounded-full object-cover" />
               <div className="min-w-0 flex-1">
                 <div className={`flex items-center justify-between `}>
@@ -192,8 +192,8 @@ function TeachersList() {
             <div className="px-4 pb-4 text-sm text-gray-700">
               <p className="line-clamp-3">{t.bio}</p>
               {(() => {
-                const specialties = lang === 'ar' ? t.specialties : t.specialtiesEn;
-                return specialties && specialties.length > 0 && (
+                const specialties = t.specialties;
+                return t.specialties && specialties.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1">
                     {specialties.slice(0, 4).map((sp, i) => (
                       <span key={i} className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">{sp}</span>
