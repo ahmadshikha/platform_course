@@ -5,13 +5,13 @@ import mongoose from "mongoose";
 
 
 const CourseSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
-  title: { type: String, required: true },
-  type: { type: String, required: true },
-  date: { type: String, required: true },
-  time: { type: String, required: true },
-  duration: { type: String, required: true },
-  location: { type: String, required: true },
+  id: { type: String, required: true, unique: true }, // المعرف الفريد للدورة
+  title: { type: String, required: true }, // عنوان الدورة
+  type: { type: String, required: true }, // نوع الدورة (اختبار، ورشة، دورة تدريبية)
+  date: { type: String, required: true }, // تاريخ الدورة
+  time: { type: String, required: true }, // وقت الدورة
+  duration: { type: String, required: true }, // مدة الدورة
+  location: { type: String, required: true }, // مكان انعقاد الدورة
   status: { 
     type: String, 
     // enum: ['available', 'full', 'cancelled', 'completed'], 
@@ -30,14 +30,11 @@ const CourseSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Teacher', 
     required: true 
-  },
-  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
-  startDate: String,
-  endDate: String,
-  times: String,
-  isActive: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  }, // المدرب (مرتبط بنموذج Teacher)
+  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" }, // التصنيف
+  isActive: { type: Boolean, default: true }, // هل الدورة مفعلة؟
+  createdAt: { type: Date, default: Date.now }, // تاريخ الإنشاء
+  updatedAt: { type: Date, default: Date.now } // تاريخ آخر تحديث
 });
 
 CourseSchema.pre('save', function(next) {

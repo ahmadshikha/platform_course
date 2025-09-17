@@ -6,16 +6,18 @@ import {
   createTeacher,
   updateTeacher,
   deleteTeacher,
-  searchTeachers
+  searchTeachers,
+  getTeacherWithCourses
 } from "../controllers/teacherController.js";
-
+import upload from '../middlewares/upload.js';
 const router = express.Router();
 
 // Teacher routes
 router.get("/", getAllTeachers);
+router.get('/:id/courses', getTeacherWithCourses);
 router.get("/search", searchTeachers);
 router.get("/:id", getTeacherById);
-router.post("/", createTeacher);
+router.post('/', upload.single('image'), createTeacher);
 router.put("/:id", updateTeacher);
 router.delete("/:id", deleteTeacher);
 
