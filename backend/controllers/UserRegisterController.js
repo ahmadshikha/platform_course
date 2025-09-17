@@ -5,6 +5,7 @@ import UserRegister from "../models/UserRegister.js";
 export const createRegistration = async (req, res) => {
   try {
     console.log("Creating new registration");
+    console.log(req.body)
     const registration = new UserRegister(req.body);
     await registration.save();
     res.status(201).json({

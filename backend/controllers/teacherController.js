@@ -1,6 +1,9 @@
 // controllers/teacherController.js
 import Teacher from "../models/Teacher.js";
-
+import Course from "../models/Course.js";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 // Get all teachers
 export const getAllTeachers = async (req, res) => {
   try {
@@ -43,15 +46,15 @@ export const getTeacherById = async (req, res) => {
 };
 
 // Create new teacher
-export const createTeacher = async (req, res) => {
-  try {
-    const teacher = new Teacher(req.body);
-    const savedTeacher = await teacher.save();
-    res.status(201).json(savedTeacher);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+// export const createTeacher = async (req, res) => {
+//   try {
+//     const teacher = new Teacher(req.body);
+//     const savedTeacher = await teacher.save();
+//     res.status(201).json(savedTeacher);
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
 
 // Update teacher
 export const updateTeacher = async (req, res) => {
@@ -121,5 +124,101 @@ export const searchTeachers = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const getTeacherWithCourses = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // البحث عن الأستاذ مع الكورسات المرتبطة به
+    const teacher = await Teacher.findById(id);
+    
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: 'لم يتم العثور على الأستاذ'
+      });
+    }
+
+    // البحث عن جميع كورسات هذا الأستاذ
+    const courses = await Course.find({ teacher: id })
+      .select('-teacher') // استبعاد حقل teacher لتجنب التكرار
+      .sort({ createdAt: -1 }); // ترتيب من الأحدث إلى الأقدم
+
+    // تحديث عدد الكورسات في بيانات الأستاذ
+    teacher.course = courses.length;
+    
+    // إرجاع البيانات مع الكورسات
+    res.status(200).json({
+      success: true,
+      data: {
+        teacher: {
+          _id: teacher._id,
+          name: teacher.name,
+          title: teacher.title,
+          image: teacher.image,
+          bio: teacher.bio,
+          rating: teacher.rating,
+          review: teacher.review,
+          students: teacher.students,
+          course: teacher.course,
+          specialties: teacher.specialties,
+          education: teacher.education,
+          contact: teacher.contact,
+          social: teacher.social,
+          isActive: teacher.isActive,
+          createdAt: teacher.createdAt,
+          updatedAt: teacher.updatedAt
+        },
+        courses: courses
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'خطأ في الخادم',
+      error: error.message
+    });
+  }
+};
+
+
+export const createTeacher = async (req, res) => {
+  try {
+    const teacherData = { ...req.body };
+    
+    // إذا كانت هناك صورة مرفوعة
+    if (req.file) {
+      teacherData.image = `/uploads/teachers/${req.file.filename}`;
+    }
+
+    const teacher = new Teacher(teacherData);
+    const savedTeacher = await teacher.save();
+    
+    res.status(201).json({
+      success: true,
+      data: savedTeacher,
+      message: 'Teacher created successfully'
+    });
+  } catch (error) {
+    // حذف الصورة إذا كان هناك خطأ
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+    
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: Object.values(error.errors).map(e => e.message)
+      });
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Error creating teacher',
+      error: error.message
+    });
   }
 };

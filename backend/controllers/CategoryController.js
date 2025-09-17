@@ -1,37 +1,62 @@
 // controllers/categoryController.js
 import Category from '../models/Category.js';
-
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 // إنشاء فئة جديدة
-export const createCategory = async (req, res) => {
+// export const createCategory = async (req, res) => {
+//   try {
+//     console.log("test");
+    
+//     const { name, nameEn, description, descriptionEn } = req.body;
+    
+//     // التحقق من وجود الفئة مسبقاً
+//     const existingCategory = await Category.findOne({ name });
+//     if (existingCategory) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'اسم الفئة موجود مسبقاً'
+//       });
+//     }
+    
+//     const category = new Category({ name, nameEn, description, descriptionEn });
+//     await category.save();
+    
+//     res.status(201).json({
+//       success: true,
+//       message: 'تم إنشاء الفئة بنجاح',
+//       data: category
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
+
+export const createCategory=async(req,res)=>{
   try {
-    console.log("test");
+    const { name, description } = req.body;
     
-    const { name, nameEn, description, descriptionEn } = req.body;
-    
-    // التحقق من وجود الفئة مسبقاً
-    const existingCategory = await Category.findOne({ name });
-    if (existingCategory) {
-      return res.status(400).json({
-        success: false,
-        message: 'اسم الفئة موجود مسبقاً'
-      });
+    // التحقق من وجود الصورة
+    let imagePath = "";
+    if (req.file) {
+      imagePath = req.file.path; // مسار الصورة المرفوعة
     }
-    
-    const category = new Category({ name, nameEn, description, descriptionEn });
-    await category.save();
-    
-    res.status(201).json({
-      success: true,
-      message: 'تم إنشاء الفئة بنجاح',
-      data: category
+
+    const newCategory = new Category({
+      name,
+      description,
+      image: imagePath, // حفظ مسار الصورة في قاعدة البيانات
     });
+
+    const savedCategory = await newCategory.save();
+    res.status(201).json(savedCategory);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(400).json({ message: error.message });
   }
-};
+}
 
 // الحصول على جميع الفئات
 export const getCategories = async (req, res) => {
@@ -148,7 +173,7 @@ export const deleteCategory = async (req, res) => {
         success: false,
         message: 'الفئة غير موجودة'
       });
-    }
+    }لث
     
     res.json({
       success: true,

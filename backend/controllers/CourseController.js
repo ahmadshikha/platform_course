@@ -7,7 +7,6 @@ import Category from '../models/Category.js';
 export const createCourse = async (req, res) => {
   try {
     const courseData = req.body;
-    
     // التحقق من وجود المعلم
     const teacher = await Teacher.findById(courseData.teacher);
     if (!teacher) {
