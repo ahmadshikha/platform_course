@@ -8,7 +8,7 @@ import {
   deleteAdmin,
   loginAdmin,
   auth
-} from "../controllers/AdminControllerC.js";
+} from "../controllers/AdminController.js";
 
 const router = express.Router();
 
