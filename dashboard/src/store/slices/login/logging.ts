@@ -30,7 +30,7 @@ const initialState: UserState = {
 export const loginUser = createAsyncThunk<IUser, LoginCredentials>(
   'users/loginUser',
   async (credentials, { rejectWithValue }) => {
-    const user: IUser = await fetch('http://localhost:5000/api/adminRoute/login', {
+    const user: IUser = await fetch('http://localhost:5000/api/admin/login', {
       method: 'POST',
       credentials: "include",
       headers: {
@@ -63,7 +63,7 @@ export const loginUser = createAsyncThunk<IUser, LoginCredentials>(
 export const authUser = createAsyncThunk(
   'users/auth',
   async (credentials, { rejectWithValue }) => {
-    const user = await fetch('http://localhost:5000/api/adminRoute/auth', {
+    const user = await fetch('http://localhost:5000/api/admin/auth', {
       method: 'POST',
       credentials: "include",
       headers: {
