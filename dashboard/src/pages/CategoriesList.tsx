@@ -21,7 +21,7 @@ function CategoriesList() {
   //   ar
   // };
   // const translations = translate[lang];
-  
+      console.log(categories)
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -33,6 +33,7 @@ function CategoriesList() {
   
   useEffect(() => {
     dispatch(fetchCategories({ page: currentPage, limit: itemsPerPage }));
+
     // Clear any existing errors when component mounts
     dispatch(clearError());
   }, [currentPage, itemsPerPage, dispatch]);
@@ -179,7 +180,9 @@ function CategoriesList() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map(category => (
+          {categories.map((category)=> {
+            console.log(category)
+            return (
           <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
             <div onClick={()=> navigate(`/category-courses/id=${category._id}`)} className="p-4">
               <div className="flex items-center justify-between">
@@ -212,7 +215,8 @@ function CategoriesList() {
               </div>
             </div>
           </div>
-        ))}
+        )
+          } )}
         </div>
 
         {/* Pagination controls */}

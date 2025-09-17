@@ -1,5 +1,7 @@
 // controllers/categoryController.js
 import Category from '../models/Category.js';
+import Courses from '../models/Course.js';
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -173,8 +175,8 @@ export const deleteCategory = async (req, res) => {
         success: false,
         message: 'الفئة غير موجودة'
       });
-    }لث
-    
+    }
+    const courses = await Courses.findOneAndDelete({categoryId : id})
     res.json({
       success: true,
       message: 'تم حذف الفئة بنجاح'

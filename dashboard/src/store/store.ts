@@ -12,6 +12,9 @@ import { UserRegisterState } from './slices/usersRegisters/usersRegisterSlice';
 import { UserState } from './slices/login/logging';
 import adminLoginReducer from './slices/login/logging';
 
+import newsReducer from './slices/news/newsSlice';
+import type { NewsState } from './slices/news/newsSlice';
+
 const LOCAL_STORAGE_KEY = 'app_state';
 
 
@@ -41,8 +44,8 @@ export const store = configureStore({
 		categories: categoriesReducer,
 		lang: langReducer,
 		usersRegisters: usersRegistersReducer,
-		login: adminLoginReducer
-		
+		login: adminLoginReducer,
+		news: newsReducer,		
 	},
 	preloadedState: loadState() as {
 		courses: CoursesState, 
@@ -50,7 +53,8 @@ export const store = configureStore({
 		categories: CategoriesState,
 		lang: ILang,
 		usersRegisters: UserRegisterState,
-		login: UserState
+		login: UserState,
+		news: NewsState,
 	} | undefined,
 });
 

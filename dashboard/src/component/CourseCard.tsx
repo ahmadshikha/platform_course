@@ -77,23 +77,14 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
               {/* {translations.courses.card.date} */}
               التاريخ
             </p>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.date}</p>
             <p className="text-sm text-gray-900">{course.date}</p>
           </div>
           <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              {/* {translations.courses.card.time} */}
-              الوقت
-            </p>
             {/* <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.time}</p> */}
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">الوقت</p>
             <p className="text-sm text-gray-900">{course.time}</p>
           </div>
           <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              {/* {translations.courses.card.location} */}
-              الموقع
-            </p>
             {/* <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.location}</p> */}
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">الموقع</p>
             <p className="text-sm text-gray-900">
@@ -106,7 +97,6 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
               {/* {translations.courses.card.duration} */}
               المدة
             </p>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.duration}</p>
             <p className="text-sm text-gray-900">{course.duration}</p>
           </div>
         </div>
@@ -119,7 +109,6 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
                 {/* {translations.courses.card.price} */}
                 السعر
               </p>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.price}</p>
               <p className="text-lg font-semibold text-gray-900">${course.price}</p>
             </div>
             <div>
@@ -127,7 +116,6 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
                 {/* {translations.courses.card.seats} */}
                 المقاعد
               </p>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.seats}</p>
               <p className="text-sm text-gray-900">
                 {course.enrolled}/{course.seats}
               </p>
@@ -150,7 +138,6 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
             {/* {translations.courses.card.description} */}
             وصف الكورس
           </p>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{translations.courses.card.description}</p>
           <p className="text-sm text-gray-700 line-clamp-2">
             {/* {lang === 'ar' ? course.description : course.descriptionEn} */}
             {course.description}

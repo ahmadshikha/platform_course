@@ -634,54 +634,6 @@ export function TeachersForm() {
                 </div>
             </div>
 
-            {/* Stats Section */}
-            {/* <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.statistics}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.fields.rating}</label>
-                        <input 
-                          type="number"
-                          min="0"
-                          max="5"
-                          step="0.1"
-                          value={rating} 
-                          onChange={e => setRating(Number(e.target.value))} 
-                          className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                        />
-            </div>
-            <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.fields.reviews}</label>
-                        <input 
-                          type="number"
-                          min="0"
-                          value={review} 
-                          onChange={e => setReview(Number(e.target.value))} 
-                          className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                        />
-            </div>
-            <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.fields.students}</label>
-                        <input 
-                          type="number"
-                          min="0"
-                          value={students} 
-                          onChange={e => setStudents(Number(e.target.value))} 
-                          className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                        />
-            </div>
-            <div>
-                        <label className="block text-sm font-medium text-gray-700">{translations.form.fields.courses}</label>
-                        <input 
-                          type="number"
-                          min="0"
-                          value={course} 
-                          onChange={e => setCourse(Number(e.target.value))} 
-                          className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                        />
-                    </div>
-                </div>
-            </div> */}
 
             {/* Active Status */}
             <div className="border-t pt-4">

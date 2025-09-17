@@ -11,7 +11,7 @@ import teacherRoutes from "./routes/teacherRoutes.js";
 import userRegisterRoute from "./routes/userRegisterRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import adminRouteC from "./routes/adminRouteC.js";
-// import newsRoutes from "./routes/newsRoutes.js";
+import newsRoutes from "./routes/newsRoutes.js";
 // import activityRoutes from "./routes/activityRoutes.js";
 
 dotenv.config();
@@ -51,7 +51,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/userRegister", userRegisterRoute);
 app.use("/api/adminRoute", adminRouteC);
-// app.use("/api/news", newsRoutes);
+app.use("/api/news", newsRoutes);
 // app.use("/api/activities", activityRoutes);
 
 app.get("/", (req, res) => {

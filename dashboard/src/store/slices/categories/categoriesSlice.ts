@@ -64,6 +64,7 @@ export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination: 
       }
       
       const data = await res.json();
+      console.log(res)
       return {
         data: data.data,
         pagination: data.pagination
@@ -91,7 +92,8 @@ export const addCategory = createAsyncThunk<ICategory, IAddCategory, {rejectValu
       }
       
       const data = await res.json();
-      return data.data;
+      console.log(data)
+      return data;
 
     } catch(e) {
       return rejectWithValue(e.message || 'Failed to add category');
@@ -131,14 +133,17 @@ export const deleteCategory = createAsyncThunk<string, string, {rejectValue: str
           'Content-Type': 'application/json',
         },
       });
-      
+      console.log(response)
+      if(response.status == 500) {
+        return rejectWithValue("حدث خطا");
+      }
       if (!response.ok) {
         const errorData = await response.json();
         return rejectWithValue(errorData.message || 'Failed to delete category');
       }
-      
       return categoryId;
     } catch (error) {
+      alert('error')
       return rejectWithValue(error.message || 'Failed to delete category');
     }
   }

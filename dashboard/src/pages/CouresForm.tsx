@@ -11,7 +11,10 @@ import { ITeacher } from '../store/slices/teachers/teachersSlice';
 export function CourseForm() {
     const { id: idww } = useParams<{ id?: string }>();
 	const courseId = idww; // Rename `id` to `courseId` for consistency
-    const isEditMode = true;
+    const [isEditMode, setIsEditMode] = useState(false)
+    const [actionForm, setActionForm] = useState("اضافة كورس")
+    
+    
     
     const [id, setId] = useState('');
     const [title, setTitle] = useState('');
@@ -61,7 +64,10 @@ export function CourseForm() {
     // Load course data in edit mode
     useEffect(() => {
         setErrors({});
-        if (isEditMode) {
+        const url = window.location.href
+        if(url.includes("/edit")) {
+            setActionForm("تعديل كورس")
+            setIsEditMode(true)
 			console.log(11111, courseId)
             const course = courses.items.find(c => c._id === courseId);
             if (course) {
@@ -216,7 +222,7 @@ export function CourseForm() {
     return(
     <>
     <div className="max-w-xl">
-		<h1 className="text-xl font-semibold mb-4">اضافة كورس</h1>
+		<h1 className="text-xl font-semibold mb-4">{actionForm}</h1>
 		
 		{/* Error Messages */}
 		{(submitError || coursesError) && (
