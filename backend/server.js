@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
 import userRegisterRoute from "./routes/userRegisterRoute.js";
+import contactRoutes from "./routes/contactRoutes.js";
 // import adminRoute from "./routes/AdminRoute.js";
 import admin from './routes/admin.js'
 import newsRoutes from "./routes/newsRoutes.js";
@@ -33,6 +34,7 @@ const PORT = process.env.PORT || 5000;
 var whitelist = [
   'http://localhost:3000',
   'http://localhost:3000/',
+  'http://localhost:8080',
 ]
 
 var corsOptions = {
@@ -64,7 +66,8 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/userRegister", userRegisterRoute);
 app.use("/api/admin", admin);
-app.use("/api/news", newsRoutes);
+app.use("/api/contact", contactRoutes);
+// app.use("/api/news", newsRoutes);
 // app.use("/api/activities", activityRoutes);
 
 app.get("/", (req, res) => {

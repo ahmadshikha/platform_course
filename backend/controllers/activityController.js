@@ -1,5 +1,7 @@
 import Activity from '../models/Activity.js';
-
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs'; 
 // Get all activities
 export const getAllActivities = async (req, res) => {
   try {

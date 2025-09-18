@@ -1,44 +1,44 @@
 
 import mongoose from "mongoose";
 
-const UserRegisterSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  relationship: { type: String, required: true },
-  phone: { type: String, required: true }
+const UserRegisterSchemaString = new mongoose.Schema({
+  name: { type: String, },
+  relationship: { type: String, },
+  phone: { type: String, }
 });
 
 const courseRegistrationSchema = new mongoose.Schema({
   participantType: { 
     type: String, 
     enum: ['individual', 'group'], 
-    required: true,
+String,
     default: 'individual'
   },
-  title: { type: String, required: true },
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  birthDate: { type: Date, required: true },
+  title: { type: String},
+  firstName: { type: String, },
+  lastName: { type: String, },
+  birthDate: { type: String, },
   gender: { 
     type: String, 
     enum: ['male', 'female'], 
-    required: true 
+String, 
   },
-  nationality: { type: String, required: true },
-  // idNumber: { type: String, required: true },
-  streetAddress: { type: String, required: true },
-  // postalCode: { type: String, required: true },
-  city: { type: String, required: true },
-  country: { type: String, required: true },
-  phone: { type: String, required: true },
-  mobile: { type: String, required: true },
+  nationality: { type: String },
+  // idNumber: { type: String, },
+  streetAddress: { type: String},
+  // postalCode: { type: String, },
+  city: { type: String, },
+  country: { type: String, },
+  phone: { type: String, },
+  mobile: { type: String, },
   email: { 
     type: String, 
-    required: true,
+String,
     match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'البريد الإلكتروني غير صالح']
   },
   confirmEmail: { 
     type: String, 
-    required: true,
+    
     validate: {
       validator: function(email) {
         return email === this.email;
@@ -46,14 +46,14 @@ const courseRegistrationSchema = new mongoose.Schema({
       message: 'البريد الإلكتروني غير متطابق'
     }
   },
-  courseNumber: { type: String, required: true },
-  // courseTitle: { type: String, required: true },
+  courseNumber: { type: String, },
+  // courseTitle: { type: String, },
   participationReason: { type: String },
-  educationLevel: { type: String, required: true },
-  // occupation: { type: String, required: true },
+  educationLevel: { type: String, },
+  // occupation: { type: String, },
   companyName: { type: String },
   companyAddress: { type: String },
-  emergencyContact: { type: UserRegisterSchema, required: true },
+  emergencyContact: { type: UserRegisterSchemaString },
   specialNeeds: { type: String },
   additionalInfo: { type: String },
   agreeTerms: { 
@@ -68,7 +68,7 @@ const courseRegistrationSchema = new mongoose.Schema({
   },
   agreeDataProcessing: { 
     type: Boolean, 
-    required: true,
+  
     validate: {
       validator: function(value) {
         return value === true;
@@ -81,7 +81,7 @@ const courseRegistrationSchema = new mongoose.Schema({
     type: String, 
     // enum: ['pending', 'confirmed', 'cancelled', 'completed', 'waiting_list'], 
     enum: ["معلق","مؤكد", "ملغى", "مكتمل", "قائمة_الانتظار"],
-    default: 'pending'
+    default: 'معلق'
   },
   registrationDate: { type: Date, default: Date.now },
 

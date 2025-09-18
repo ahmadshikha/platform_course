@@ -7,7 +7,6 @@ import {
   deleteActivity,
   getActivitiesByDateRange
 } from '../controllers/activityController.js';
-
 const router = express.Router();
 
 // GET /api/activities - Get all activities

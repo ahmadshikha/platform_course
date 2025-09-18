@@ -46,7 +46,7 @@ export const createCategory=async(req,res)=>{
     if (req.file) {
       imagePath = `/uploads/teachers/${req.file.filename}`;; // مسار الصورة المرفوعة
     }
-
+    
     const newCategory = new Category({
       name,
       description,
