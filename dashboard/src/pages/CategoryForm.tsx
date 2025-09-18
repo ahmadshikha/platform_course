@@ -12,6 +12,7 @@ export function CategoryForm() {
     const [name, setName] = useState('');
     const [nameEn, setNameEn] = useState('');
     const [description, setDescription] = useState('');
+    const [image, setImage] = useState<HTMLInputElement>();
     const [descriptionEn, setDescriptionEn] = useState('');
     const [actionForm, setActionForm] = useState("اضافة فئة");
     
@@ -26,8 +27,8 @@ export function CategoryForm() {
 
     const {lang} = useSelector((s: RootState) => s.lang);
     const translate = {
-        en,
-        ar
+      en,
+      ar
     }
     const translations = translate[lang];
     const dispatch = useDispatch<AppDispatch>();
@@ -69,7 +70,9 @@ export function CategoryForm() {
       })
     }
   }
-
+  useEffect(()=> {
+    console.log("error category list", error)
+  },[error])
   // Form validation
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {}
@@ -92,7 +95,13 @@ export function CategoryForm() {
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
+  // useEffect(()=> {
+  //   if(image.files) {
+  //     console.log(image.files)
+  //   }
 
+
+  // }, [image])
   // Handle form submission
   const handleSubmit = async () => {
     if (!validateForm()) {
@@ -107,12 +116,13 @@ export function CategoryForm() {
         name,
         // nameEn,
         description,
+        image,
         // descriptionEn,
         ...(isEditMode && editingCategoryId && { _id: editingCategoryId })
       }
 
       if (isEditMode && editingCategoryId) {
-        await dispatch(updateCategory(categoryData as ICategory)).unwrap()
+        // await dispatch(updateCategory(categoryData as ICategory)).unwrap()
       } else {
         await dispatch(addCategory(categoryData)).unwrap()
       }
@@ -128,7 +138,6 @@ export function CategoryForm() {
         setDescriptionEn('')
       }
     } catch (error: any) {
-      setErrors({ general: error || "خطأ اثناء حفظ الفئة" })
     } finally {
       setIsLoading(false)
     }
@@ -136,8 +145,8 @@ export function CategoryForm() {
 
     return(
     <>
-    <div className={`max-w-xl ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
-        <h1 className="text-xl font-semibold mb-4">{actionForm}</h1>
+    <div className={`max-w-lg mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل الفئة" : "إضافة فئة جديدة"}</h1>
         
         {/* Global error message */}
         {errors.general && (
@@ -153,19 +162,17 @@ export function CategoryForm() {
           </div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-6">
             <div>
                 {/* <label className="block text-sm font-medium text-gray-700">{translations.categories.name}</label> */}
-                <label className="block text-sm font-medium text-gray-700">الاسم</label>
+                <label className="block text-gray-700 font-medium mb-2">الاسم</label>
                 <input 
                   value={name} 
                   onChange={e => {
                     setName(e.target.value)
                     clearFieldError('name')
                   }} 
-                  className={`mt-1 w-full rounded-md border shadow-sm focus:ring-blue-500 ${
-                    errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`} 
+                  className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                 />
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
             </div>
@@ -187,7 +194,7 @@ export function CategoryForm() {
 
             <div>
                 {/* <label className="block text-sm font-medium text-gray-700">{translations.categories.description}</label> */}
-                <label className="block text-sm font-medium text-gray-700">الوصف</label>
+                <label className="block text-gray-700 font-medium mb-2">الوصف</label>
                 <textarea 
                   value={description} 
                   onChange={e => {
@@ -195,13 +202,25 @@ export function CategoryForm() {
                     clearFieldError('description')
                   }} 
                   rows={4}
-                  className={`mt-1 w-full rounded-md border shadow-sm focus:ring-blue-500 ${
-                    errors.description ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`} 
+                  className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
                 />
                 {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
             </div>
- 
+            <div>
+                {/* <label className="block text-sm font-medium text-gray-700">{translations.categories.description}</label> */}
+                <label className="block text-gray-700 font-medium mb-2">الصورة</label>
+                <input 
+                  type="file"
+                  onChange={e => {
+                    setImage(e.target)
+                    clearFieldError('name')
+                    console.log(e.target.files[0])
+                  }} 
+                  className={`file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {errors.image && <p className="mt-1 text-sm text-red-600">{errors.image}</p>}
+            </div>
+                
             {/* <div>
                 {/* <label className="block text-sm font-medium text-gray-700">{translations.categories.descriptionEn}</label> */}
                 {/* <label className="block text-sm font-medium text-gray-700">الوصف</label>
@@ -219,19 +238,19 @@ export function CategoryForm() {
                 {errors.descriptionEn && <p className="mt-1 text-sm text-red-600">{errors.descriptionEn}</p>}
             </div> */}
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
                 <button 
                   onClick={handleSubmit}
                   disabled={isLoading}
-                  className={`inline-flex items-center rounded-md px-3 py-2 text-sm font-medium ${
+                  className={`w-full sm:w-auto flex-1 inline-flex justify-center items-center rounded-lg px-4 py-3 text-sm font-semibold text-white ${
                     isLoading 
-                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                      ? 'bg-gray-400 cursor-not-allowed' 
                       : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
-                  {isLoading ? "جاري الحفظ" : "حفظ"}
+                  {isLoading ? "جاري الحفظ..." : "حفظ"}
                 </button>
-                <Link to="/categories" className="inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium hover:bg-gray-50">
+                <Link to="/categories" className="w-full sm:w-auto flex-1 text-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">
                   {/* {translations.categories.cancel} */}
                   الغاء
                 </Link>

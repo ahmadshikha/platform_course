@@ -6,6 +6,8 @@ import { deleteTeacher, fetchTeachers, clearError } from '../store/slices/teache
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 
+import image from '../images/teacher-1758091670690-778911984.png'
+
 function TeachersList() {
   const teachers = useSelector((s: RootState) => {
     const activTeachers = s.teachers.items.filter(t => t.isActive);
@@ -102,7 +104,7 @@ function TeachersList() {
   // };
 
   return (
-    <div className={`space-y-4 `}>
+    <div className={`space-y-6 `}>
       <div className="flex items-center justify-between">
         {/* <h1 className="text-xl font-semibold">{translations.teachers.title}</h1> */}
         <h1 className="text-xl font-semibold">الاساتذة</h1>
@@ -164,7 +166,7 @@ function TeachersList() {
     )}
 
     {status === 'succeeded' && teachers.length === 0 && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">لا يوجد اساتذة</div>
+      <div className="rounded-lg text-center border border-gray-200 bg-white p-6 text-gray-500">لا يوجد اساتذة</div>
     )}
 
     {status === 'succeeded' && teachers.length > 0 && (
@@ -177,10 +179,16 @@ function TeachersList() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {teachers.map(t => (
+          {teachers.map(t => 
+          {
+          return (
           <div  key={t._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
             <div onClick={() => navigate(`/teacher-courses/id=${t._id}`)} className={`flex items-center gap-4 p-4 `}>
-              <img src={t.image || '/placeholder.svg'} alt="الاسم" className="h-16 w-16 rounded-full object-cover" />
+              <img src={`http://localhost:5000${t.image}`} alt="الاسم"
+              onError={(e)=> {
+                e.currentTarget.src = image
+              }}
+              className="h-16 w-16 rounded-full object-cover" />
               <div className="min-w-0 flex-1">
                 <div className={`flex items-center justify-between `}>
                   <h3 className="truncate text-base font-semibold text-gray-900">{t.name}</h3>
@@ -230,7 +238,7 @@ function TeachersList() {
               </div>
             </div>
           </div>
-        ))}
+        )})}
         </div>
 
         {/* Pagination controls */}

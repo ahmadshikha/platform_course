@@ -43,7 +43,7 @@ function App() {
 					<Route path="user-register/:id/details" element={<UserRegister />} />
 					{/* News */}
 					<Route path="news" element={<NewsList/>}/>
-					<Route path="news/add" element={<AddNewsForm/>}/>
+					<Route path="news/new" element={<AddNewsForm/>}/>
 				</Route>
 			</Routes>
 		</HashRouter>

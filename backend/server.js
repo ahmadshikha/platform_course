@@ -11,7 +11,7 @@ import teacherRoutes from "./routes/teacherRoutes.js";
 import userRegisterRoute from "./routes/userRegisterRoute.js";
 // import adminRoute from "./routes/AdminRoute.js";
 import admin from './routes/admin.js'
-// import newsRoutes from "./routes/newsRoutes.js";
+import newsRoutes from "./routes/newsRoutes.js";
 // import activityRoutes from "./routes/activityRoutes.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -64,7 +64,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/userRegister", userRegisterRoute);
 app.use("/api/admin", admin);
-// app.use("/api/news", newsRoutes);
+app.use("/api/news", newsRoutes);
 // app.use("/api/activities", activityRoutes);
 
 app.get("/", (req, res) => {

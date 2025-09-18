@@ -14,7 +14,8 @@ interface CourseCardProps {
 export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
   // const { lang } = useSelector((s: RootState) => s.lang);
   const { lang } = useSelector((s: RootState) => s.lang);
-
+  let date = new Date(course.date);
+  let dataString = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   // Translation
   // const translate = {
   //   en,
@@ -77,7 +78,7 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
               {/* {translations.courses.card.date} */}
               التاريخ
             </p>
-            <p className="text-sm text-gray-900">{course.date}</p>
+            <p className="text-sm text-gray-900">{`${dataString}`}</p>
           </div>
           <div>
             {/* <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{translations.courses.card.time}</p> */}

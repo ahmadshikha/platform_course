@@ -6,6 +6,8 @@ import { deleteCategory, fetchCategories, clearError } from '../store/slices/cat
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 
+import avatar from '../images/teacher-1758091670690-778911984.png'
+
 function CategoriesList() {
   const categories = useSelector((s: RootState) => s.categories.items);
   const pagination = useSelector((s: RootState) => s.categories.pagination);
@@ -89,13 +91,7 @@ function CategoriesList() {
     setDeleteError(null);
   };
 
-  // const getLocalizedProperty = (category: any, property: string) => {
-  //   if (lang === 'ar') {
-  //     return category[property] || category[property + 'En'] || '';
-  //   } else {
-  //     return category[property + 'En'] || category[property] || '';
-  //   }
-  // };
+
 
   return (
     <div className={`space-y-4`}>
@@ -178,10 +174,13 @@ function CategoriesList() {
             اظهار {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)} من {pagination.totalItems} فئات
           </div>
         </div>
-
+        {/* categories list */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category)=> {
             console.log(category)
+            const a = category.image.split('backend')[1]
+            console.log(category.image)
+            console.log(`http://localhost:5000${a}`)
             return (
           <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
             <div onClick={()=> navigate(`/category-courses/id=${category._id}`)} className="p-4">
@@ -189,6 +188,12 @@ function CategoriesList() {
                 <h3 className="text-lg font-semibold text-gray-900">{category.name}</h3>
               </div>
               <p className="mt-2 text-sm text-gray-600 line-clamp-3">{category.description}</p>
+              <img src={`http://localhost:5000${category.image}`} alt={category.name} className="mt-4 w-full h-48 object-cover rounded-md"
+              onError={(e)=> {
+                e.currentTarget.src = avatar
+              }}
+              />
+
             </div>
             <div className={`flex items-center justify-between border-t border-gray-100 px-4 py-3 `}>
               {/* <div className="text-xs text-gray-500">

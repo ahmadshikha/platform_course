@@ -9,7 +9,7 @@ export type Course = {
   // titleEn: string,
   type: string,
   // typeEn: string,
-  date: string,
+  date: Date,
   time: string,
   duration: string,
   location: string,

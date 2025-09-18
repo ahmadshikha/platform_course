@@ -10,7 +10,6 @@ import ar from '../lang/ar.json'
 
 export type Education = {
   degree: string;
-  degreeEn: string;
   institution: string;
   year: string;
 };
@@ -34,7 +33,7 @@ export function TeachersForm() {
     const [nameEn, setNameEn] = useState('');
     const [title, setTitle] = useState('');
     const [titleEn, setTitleEn] = useState('');
-    const [image, setImage] = useState('')
+    const [image, setImage] = useState<HTMLInputElement>()
     const [bio, setBio] = useState("")
     const [bioEn, setBioEn] = useState("")
     const [experience, setExperience] = useState("")
@@ -47,7 +46,6 @@ export function TeachersForm() {
     const [education, setEducation] = useState<Education[]>([])
     const [newEducation, setNewEducation] = useState<Education>({
         degree: '',
-        degreeEn: '',
         institution: '',
         year: ''
     })
@@ -100,15 +98,15 @@ export function TeachersForm() {
         const teacher = teachers.find(t => t._id === id)
         if (teacher) {
             setName(teacher.name || '')
-            setNameEn(teacher.nameEn || '')
+            // setNameEn(teacher.nameEn || '')
             setTitle(teacher.title || '')
-            setTitleEn(teacher.titleEn || '')
+            // setTitleEn(teacher.titleEn || '')
             setBio(teacher.bio || '')
-            setBioEn(teacher.bioEn || '')
+            // setBioEn(teacher.bioEn || '')
             // setExperience(teacher.experience || '')
-            setImage(teacher.image || '')
+            // setImage(teacher.image)
             setSpecialties(teacher.specialties || [])
-            setSpecialtiesEn(teacher.specialtiesEn || [])
+            // setSpecialtiesEn(teacher.specialtiesEn || [])
             setActive(teacher.isActive !== undefined ? teacher.isActive : true)
             setEducation(teacher.education || [])
             setContact(teacher.contact || { email: '', phone: '' })
@@ -163,7 +161,7 @@ export function TeachersForm() {
   const addEducation = () => {
     if (newEducation.degree.trim() && newEducation.institution.trim()) {
       setEducation(prev => [...prev, { ...newEducation }])
-      setNewEducation({ degree: '', degreeEn: '', institution: '', year: '' })
+      setNewEducation({ degree: '', institution: '', year: '' })
     }
   }
 
@@ -243,8 +241,9 @@ export function TeachersForm() {
       }
 
       if (isEditMode && editingTeacherId) {
-        await dispatch(updateTeacher(teacherData as ITeacher)).unwrap()
+        // await dispatch(updateTeacher(teacherData as ITeacher)).unwrap()
       } else {
+        console.log(teacherData)
         await dispatch(addTeacher(teacherData)).unwrap()
       }
       
@@ -254,15 +253,13 @@ export function TeachersForm() {
       // Reset form after successful submission
       if (!isEditMode) {
         setName('')
-        setNameEn('')
+
         setTitle('')
-        setTitleEn('')
+
         setBio('')
-        setBioEn('')
+
         // setExperience('')
-        setImage('')
         setSpecialties([])
-        setSpecialtiesEn([])
         setEducation([])
         setContact({ email: '', phone: '' })
         setSocial({ linkedin: '', twitter: '' })
@@ -281,9 +278,8 @@ export function TeachersForm() {
 
     return(
     <>
-    <div className={`max-w-xl ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
-        <h1 className="text-xl font-semibold mb-4">{actionForm}</h1>
-        
+    <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل بيانات الأستاذ" : "إضافة أستاذ جديد"}</h1>
         {/* Global error message */}
         {errors.general && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
@@ -298,18 +294,16 @@ export function TeachersForm() {
           </div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-6">
             <div>
-                <label className="block text-sm font-medium text-gray-700">الاسم</label>
+                <label className="block text-gray-700 font-medium mb-2">الاسم</label>
                 <input 
                   value={name} 
                   onChange={e => {
                     setName(e.target.value)
                     clearFieldError('name')
                   }} 
-                  className={`mt-1 w-full rounded-md border shadow-sm focus:ring-blue-500 ${
-                    errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`} 
+                  className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                 />
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
             </div>
@@ -329,16 +323,14 @@ export function TeachersForm() {
             </div> */}
             <div>
                 {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.title}</label> */}
-                <label className="block text-sm font-medium text-gray-700">اللقب</label>
+                <label className="block text-gray-700 font-medium mb-2">اللقب</label>
                 <input 
                   value={title} 
                   onChange={e => {
                     setTitle(e.target.value)
                     clearFieldError('title')
                   }} 
-                  className={`mt-1 w-full rounded-md border shadow-sm focus:ring-blue-500 ${
-                    errors.title ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`} 
+                  className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
                 />
                 {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
             </div>
@@ -357,24 +349,27 @@ export function TeachersForm() {
                 {errors.titleEn && <p className="mt-1 text-sm text-red-600">{errors.titleEn}</p>}
             </div> */}
             <div>
-                <label className="block text-sm font-medium text-gray-700">الصورة</label>
+                <label className="block text-gray-700 font-medium mb-2">رابط الصورة</label>
                 <input 
-                  value={image} 
-                  onChange={e => setImage(e.target.value)} 
-                  className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                  type="file"
+                  onChange={e => {
+                    setImage(e.target)
+                    clearFieldError('name')
+                    console.log(e.target.files[0])
+                  }} 
+                  className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
             </div>
             <div>
-                <label className="block text-sm font-medium text-gray-700">السيرة الذاتية</label>
-                <input 
+                <label className="block text-gray-700 font-medium mb-2">السيرة الذاتية</label>
+                <textarea 
                   value={bio} 
                   onChange={e => {
                     setBio(e.target.value)
                     clearFieldError('bio')
                   }} 
-                  className={`mt-1 w-full rounded-md border shadow-sm focus:ring-blue-500 ${
-                    errors.bio ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`} 
+                  rows={4}
+                  className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none ${errors.bio ? 'border-red-500' : 'border-gray-300'}`}
                 />
                 {errors.bio && <p className="mt-1 text-sm text-red-600">{errors.bio}</p>}
             </div>
@@ -408,13 +403,13 @@ export function TeachersForm() {
             </div> */}
 
             {/* Contact Section */}
-            <div className="border-t pt-4">
+            <div className="border-t border-gray-200 pt-6">
                 {/* <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.contactInfo}</h3> */}
-                <h3 className="text-lg font-medium text-gray-900 mb-4">معلومات الاتصال</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">معلومات الاتصال</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.email}</label> */}
-                        <label className="block text-sm font-medium text-gray-700">البريد الالكتروني</label>
+                        <label className="block text-gray-700 font-medium mb-2">البريد الالكتروني</label>
                         <input 
                           type="email"
                           value={contact.email} 
@@ -422,9 +417,7 @@ export function TeachersForm() {
                             setContact(prev => ({ ...prev, email: e.target.value }))
                             clearFieldError('email')
                           }} 
-                          className={`mt-1 w-full rounded-md border shadow-sm focus:ring-blue-500 ${
-                            errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                          }`} 
+                          className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                     </div>
@@ -437,9 +430,7 @@ export function TeachersForm() {
                             setContact(prev => ({ ...prev, phone: e.target.value }))
                             clearFieldError('phone')
                           }} 
-                          className={`mt-1 w-full rounded-md border shadow-sm focus:ring-blue-500 ${
-                            errors.phone ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                          }`} 
+                          className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
                     </div>
@@ -447,35 +438,35 @@ export function TeachersForm() {
             </div>
 
             {/* Social Media Section */}
-            <div className="border-t pt-4">
+            <div className="border-t border-gray-200 pt-6">
                 {/* <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.socialMedia}</h3> */}
-                <h3 className="text-lg font-medium text-gray-900 mb-4">وسائل التواصل الاجتماعي</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">وسائل التواصل الاجتماعي</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.linkedin}</label> */}
-                        <label className="block text-sm font-medium text-gray-700">لينكد ان</label>
+                        <label className="block text-gray-700 font-medium mb-2">لينكد ان</label>
                         <input 
                           value={social.linkedin || ''} 
                           onChange={e => setSocial(prev => ({ ...prev, linkedin: e.target.value }))} 
-                          className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                          className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                         />
                     </div>
                     <div>
                         {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.twitter}</label> */}
-                        <label className="block text-sm font-medium text-gray-700">تويتر</label>
+                        <label className="block text-gray-700 font-medium mb-2">تويتر</label>
                         <input 
                           value={social.twitter || ''} 
                           onChange={e => setSocial(prev => ({ ...prev, twitter: e.target.value }))} 
-                          className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                          className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Specialties Section */}
-            <div className="border-t pt-4">
+            <div className="border-t border-gray-200 pt-6">
                 {/* <h3 className="text-lg font-medium text-gray-900 mb-4">{translations.form.sections.specialties}</h3> */}
-                <h3 className="text-lg font-medium text-gray-900 mb-4">التخصص</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">التخصصات</h3>
         <div className="space-y-4">
             <div>
                         {/* <label className="block text-sm font-medium text-gray-700">{translations.form.sections.specialtiesAr}</label> */}
@@ -492,7 +483,7 @@ export function TeachersForm() {
                                   e.currentTarget.value = ''
                                 }
                               }}
-                              className="mt-1 flex-1 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                              className="flex-1 border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                             />
                             <button 
                               type="button"
@@ -501,7 +492,7 @@ export function TeachersForm() {
                                 addSpecialty(input.value)
                                 input.value = ''
                               }}
-                              className="mt-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                             >
                               {/* {translations.form.buttons.add} */}
                               اضافة
@@ -568,16 +559,16 @@ export function TeachersForm() {
             </div>
 
             {/* Education Section */}
-            <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">التعليم</h3>
+            <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">التعليم</h3>
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">الدرجة العلمية</label>
+                            <label className="block text-gray-700 font-medium mb-2">الدرجة العلمية</label>
                             <input 
                               value={newEducation.degree} 
                               onChange={e => setNewEducation(prev => ({ ...prev, degree: e.target.value }))} 
-                              className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                              className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                             />
                         </div>
                         {/* <div>
@@ -585,31 +576,31 @@ export function TeachersForm() {
                             <input 
                               value={newEducation.degreeEn} 
                               onChange={e => setNewEducation(prev => ({ ...prev, degreeEn: e.target.value }))} 
-                              className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                              className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                             />
                         </div> */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">المؤوسسة</label>
+                            <label className="block text-gray-700 font-medium mb-2">المؤسسة</label>
                             <input 
                               value={newEducation.institution} 
                               onChange={e => setNewEducation(prev => ({ ...prev, institution: e.target.value }))} 
-                              className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                              className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                             />
             </div>
             <div>
-                            <label className="block text-sm font-medium text-gray-700">السنة</label>
+                            <label className="block text-gray-700 font-medium mb-2">السنة</label>
                             <input 
                               type="number"
                               value={newEducation.year} 
                               onChange={e => setNewEducation(prev => ({ ...prev, year: e.target.value }))} 
-                              className="mt-1 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                              className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                             />
                         </div>
                     </div>
                     <button 
                       type="button"
                       onClick={addEducation}
-                      className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                     >
                       {/* {translations.form.buttons.addEducation} */}
                       اضافة تعليم
@@ -636,7 +627,7 @@ export function TeachersForm() {
 
 
             {/* Active Status */}
-            <div className="border-t pt-4">
+            <div className="border-t border-gray-200 pt-6">
                 <div className="flex items-center">
                     <input 
                       type="checkbox"
@@ -651,19 +642,19 @@ export function TeachersForm() {
                 </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
                 <button 
                   onClick={handleSubmit}
                   disabled={isLoading}
-                  className={`inline-flex items-center rounded-md px-3 py-2 text-sm font-medium ${
+                  className={`w-full sm:w-auto flex-1 inline-flex justify-center items-center rounded-lg px-4 py-3 text-sm font-semibold text-white ${
                     isLoading 
-                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-blue-600 hover:bg-blue-700'
                   }`}
                 >
                   {isLoading ? "جاري الحفظ..." : "حفظ"}
                 </button>
-                <Link to="/teachers" className="inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium hover:bg-gray-50">
+                <Link to="/teachers" className="w-full sm:w-auto flex-1 text-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">
                   {/* {translations.form.buttons.cancel} */}
                   الغاء
                 </Link>

@@ -14,24 +14,18 @@ export function CourseForm() {
     const [isEditMode, setIsEditMode] = useState(false)
     const [actionForm, setActionForm] = useState("اضافة كورس")
     
-    
-    
     const [id, setId] = useState('');
     const [title, setTitle] = useState('');
-    const [titleEn, setTitleEn] = useState('');
     const [type, setType] = useState('');
-    const [typeEn, setTypeEn] = useState('');
-    const [date, setDate] = useState('');
+    const [date, setDate] = useState<Date | null>();
     const [time, setTime] = useState("");
     const [duration, setDuration] = useState("");
     const [location, setLocation] = useState("");
-    const [locationEn, setLocationEn] = useState("");
     const [status, setStatus] = useState<"متوفر" | "ممتلئ" | "ملغى" | "مكتمل">("متوفر");
     const [price, setPrice] = useState('');
     const [seats, setSeats] = useState(1);
     const [description, setDescription] = useState("");
     const [details, setDetails] = useState("");
-    const [descriptionEn, setDescriptionEn] = useState("");
     const [teacher, setTeacher] = useState<ITeacher | null>(null);
     // store selected category id as a string (or empty when none)
     const [categoryId, setCategoryId] = useState<string>("");
@@ -75,8 +69,8 @@ export function CourseForm() {
                 setTitle(course.title);
                 // setTitleEn(course.titleEn);
                 setType(course.type);
-                // setTypeEn(course.typeEn);
-                setDate(course.date);
+                // setTypeEn(course.typeEn)
+                setDate(course.date ? new Date(course.date) : null);
                 setTime(course.time);
                 setDuration(course.duration);
                 setLocation(course.location);
@@ -120,7 +114,7 @@ export function CourseForm() {
         // if (!typeEn.trim()) {
         //     newErrors.typeEn = 'Type (English) is required';
         // }
-        if (!date.trim()) {
+        if (!date) {
             newErrors.date = 'التاريخ مطلوب';
         }
         if (!time.trim()) {
@@ -180,7 +174,7 @@ export function CourseForm() {
                 // titleEn: titleEn.trim(),
                 type: type.trim(),
                 // typeEn: typeEn.trim(),
-                date: date.trim(),
+                date: date,
                 time: time.trim(),
                 duration: duration.trim(),
                 location: location.trim(),
@@ -221,12 +215,12 @@ export function CourseForm() {
 
     return(
     <>
-    <div className="max-w-xl">
-		<h1 className="text-xl font-semibold mb-4">{actionForm}</h1>
+    <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100`}>
+		<h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{actionForm}</h1>
 		
 		{/* Error Messages */}
 		{(submitError || coursesError) && (
-			<div className="mb-4 bg-red-50 border border-red-200 rounded-md p-4">
+			<div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
 				<div className="flex">
 					<div className="flex-shrink-0">
 						<svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -234,7 +228,7 @@ export function CourseForm() {
 						</svg>
 					</div>
 					<div className="ml-3">
-						<h3 className="text-sm font-medium text-red-800">Error</h3>
+						<h3 className="text-sm font-medium text-red-800">خطأ</h3>
 						<div className="mt-2 text-sm text-red-700">
 							<p>{submitError || coursesError}</p>
 						</div>
@@ -243,63 +237,47 @@ export function CourseForm() {
 			</div>
 		)}
 
-		<form className="space-y-4">
+		<form className="space-y-6">
 				<div>
-					<label className="block text-sm font-medium text-gray-700">معرف الكورس *</label>
-					<input value={id} onChange={e => {setId(e.target.value); console.log(id)}} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					<p className="mt-1 text-xs text-gray-500">معرف فريد للطاب</p>
-					{errors.id && <p className="mt-1 text-xs text-red-600">{errors.id}</p>}
+					<label className="block text-gray-700 font-medium mb-2">معرف الكورس *</label>
+					<input value={id} onChange={e => {setId(e.target.value); console.log(id)}} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.id ? 'border-red-500' : 'border-gray-300'}`} required />
+					<p className="mt-1 text-sm text-gray-500">معرف فريد للطلب</p>
+					{errors.id && <p className="mt-1 text-sm text-red-600">{errors.id}</p>}
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700">العنوان *</label>
-					<input value={title} onChange={e => setTitle(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.title && <p className="mt-1 text-xs text-red-600">{errors.title}</p>}
-				</div>
-				{/* <div>
-					<label className="block text-sm font-medium text-gray-700">Title (English) *</label>
-					<input value={titleEn} onChange={e => setTitleEn(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.titleEn && <p className="mt-1 text-xs text-red-600">{errors.titleEn}</p>}
-				</div> */}
-				<div>
-					<label className="block text-sm font-medium text-gray-700">نوع *</label>
-					<input value={type} onChange={e => setType(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.type && <p className="mt-1 text-xs text-red-600">{errors.type}</p>}
-				</div>
-				{/* <div>
-					<label className="block text-sm font-medium text-gray-700">Type (English) *</label>
-					<input value={typeEn} onChange={e => setTypeEn(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.typeEn && <p className="mt-1 text-xs text-red-600">{errors.typeEn}</p>}
-				</div> */}
-				<div>
-					<label className="block text-sm font-medium text-gray-700">التاريخ *</label>
-					<input type="text" value={date} onChange={e => setDate(e.target.value)} placeholder="e.g., 2024-01-15, January 15, 2024" className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					<p className="mt-1 text-xs text-gray-500">ادخل التاريخ كنص (e.g., "2024-01-15" or "كانون الاول 15, 2024")</p>
-					{errors.date && <p className="mt-1 text-xs text-red-600">{errors.date}</p>}
+					<label className="block text-gray-700 font-medium mb-2">العنوان *</label>
+					<input value={title} onChange={e => setTitle(e.target.value)} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.title ? 'border-red-500' : 'border-gray-300'}`} required />
+					{errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700">الوقت *</label>
-					<input type="text" value={time} onChange={e => setTime(e.target.value)} placeholder="e.g., 09:00, 2:30 PM, 14:30" className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					<p className="mt-1 text-xs text-gray-500">ادخل الوقت كنص (e.g., "09:00", "2:30 PM", "14:30")</p>
-					{errors.time && <p className="mt-1 text-xs text-red-600">{errors.time}</p>}
+					<label className="block text-gray-700 font-medium mb-2">نوع *</label>
+					<input value={type} onChange={e => setType(e.target.value)} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.type ? 'border-red-500' : 'border-gray-300'}`} required />
+					{errors.type && <p className="mt-1 text-sm text-red-600">{errors.type}</p>}
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700">خلال *</label>
-					<input value={duration} onChange={e => setDuration(e.target.value)} placeholder="e.g., 2 hours, 3 days" className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.duration && <p className="mt-1 text-xs text-red-600">{errors.duration}</p>}
+					<label className="block text-gray-700 font-medium mb-2">التاريخ *</label>
+					<input type="date" value={date ? date.toISOString().split('T')[0] : ''} onChange={e => setDate(e.target.value ? new Date(e.target.value) : null)} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.date ? 'border-red-500' : 'border-gray-300'}`} required />
+					{errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700"> الموقع*</label>
-					<input value={location} onChange={e => setLocation(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.location && <p className="mt-1 text-xs text-red-600">{errors.location}</p>}
+					<label className="block text-gray-700 font-medium mb-2">الوقت *</label>
+					<input type="text" value={time} onChange={e => setTime(e.target.value)} placeholder="e.g., 09:00, 2:30 PM, 14:30" className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.time ? 'border-red-500' : 'border-gray-300'}`} required />
+					<p className="mt-1 text-sm text-gray-500">ادخل الوقت كنص (e.g., "09:00", "2:30 PM", "14:30")</p>
+					{errors.time && <p className="mt-1 text-sm text-red-600">{errors.time}</p>}
 				</div>
-				{/* <div>
-					<label className="block text-sm font-medium text-gray-700">Location (English) *</label>
-					<input value={locationEn} onChange={e => setLocationEn(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.locationEn && <p className="mt-1 text-xs text-red-600">{errors.locationEn}</p>}
-				</div> */}
 				<div>
-					<label className="block text-sm font-medium text-gray-700">Status</label>
-					<select value={status} onChange={e => setStatus(e.target.value as 'متوفر' | 'ممتلئ' | 'ملغى' | 'مكتمل')} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+					<label className="block text-gray-700 font-medium mb-2">خلال *</label>
+					<input value={duration} onChange={e => setDuration(e.target.value)} placeholder="e.g., 2 hours, 3 days" className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.duration ? 'border-red-500' : 'border-gray-300'}`} required />
+					{errors.duration && <p className="mt-1 text-sm text-red-600">{errors.duration}</p>}
+				</div>
+				<div>
+					<label className="block text-gray-700 font-medium mb-2"> الموقع*</label>
+					<input value={location} onChange={e => setLocation(e.target.value)} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.location ? 'border-red-500' : 'border-gray-300'}`} required />
+					{errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
+				</div>
+				<div>
+					<label className="block text-gray-700 font-medium mb-2">الحالة</label>
+					<select value={status} onChange={e => setStatus(e.target.value as 'متوفر' | 'ممتلئ' | 'ملغى' | 'مكتمل')} className="border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition border-gray-300">
 						<option value="متوفر">متوفر</option>
 						<option value="ممتلئ">ممتلئ</option>
 						<option value="ملغى">ملغى</option>
@@ -307,58 +285,51 @@ export function CourseForm() {
 					</select>
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700">السعر *</label>
-					<input type="text" value={price} onChange={e => setPrice(e.target.value)} placeholder="e.g., 100, 150.50" className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					<p className="mt-1 text-xs text-gray-500">(e.g., "100" or "150.50") ادخل السعر </p>
-					{errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
+					<label className="block text-gray-700 font-medium mb-2">السعر *</label>
+					<input type="text" value={price} onChange={e => setPrice(e.target.value)} placeholder="e.g., 100, 150.50" className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.price ? 'border-red-500' : 'border-gray-300'}`} required />
+					<p className="mt-1 text-sm text-gray-500">(e.g., "100" or "150.50") ادخل السعر </p>
+					{errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700">Seats *</label>
-					<input type="number" min="1" value={seats} onChange={e => setSeats(Number(e.target.value))} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+					<label className="block text-gray-700 font-medium mb-2">المقاعد *</label>
+					<input type="number" min="1" value={seats} onChange={e => setSeats(Number(e.target.value))} className="border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition border-gray-300" required />
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700">الوصف *</label>
-					<textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.description && <p className="mt-1 text-xs text-red-600">{errors.description}</p>}
+					<label className="block text-gray-700 font-medium mb-2">الوصف *</label>
+					<textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none ${errors.description ? 'border-red-500' : 'border-gray-300'}`} required />
+					{errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700">التفاصيل *</label>
-					<textarea value={details} onChange={e => setDetails(e.target.value)} rows={3} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.details && <p className="mt-1 text-xs text-red-600">{errors.details}</p>}
+					<label className="block text-gray-700 font-medium mb-2">التفاصيل *</label>
+					<textarea value={details} onChange={e => setDetails(e.target.value)} rows={3} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none ${errors.details ? 'border-red-500' : 'border-gray-300'}`} required />
+					{errors.details && <p className="mt-1 text-sm text-red-600">{errors.details}</p>}
 				</div>
-				{/* <div>
-					<label className="block text-sm font-medium text-gray-700">Description (English) *</label>
-					<textarea value={descriptionEn} onChange={e => setDescriptionEn(e.target.value)} rows={3} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-					{errors.descriptionEn && <p className="mt-1 text-xs text-red-600">{errors.descriptionEn}</p>}
-					
-				</div> */}
 				<div>
-					<label className="block text-sm font-medium text-gray-700">الاستاذ *</label>
+					<label className="block text-gray-700 font-medium mb-2">الاستاذ *</label>
 					<select
                         value={teacher?._id || ''}
                         onChange={(e) => {
                             const selectedTeacher = teachers.find(t => t._id === e.target.value);
                             setTeacher(selectedTeacher || null);
                         }}
-                        className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.teacher ? 'border-red-500' : 'border-gray-300'}`}
                         required
                     >
                         <option value="">اختر استاذ</option>
                         {teachers.map((teacherItem) => (
                             <option key={teacherItem._id} value={teacherItem._id}>
-                                {/* {lang === 'ar' ? teacherItem.name : teacherItem.nameEn} - {lang === 'ar' ? teacherItem.title : teacherItem.titleEn} */}
                                 {teacherItem.name} - {teacherItem.title}
                             </option>
                         ))}
                     </select>
 					{teachersStatus === 'failed' && (
-						<p className="mt-1 text-sm text-red-600">Failed to load teachers. Please try again.</p>
+						<p className="mt-1 text-sm text-red-600">فشل بتحميل الاساتذة. حاول مرة اخرى.</p>
 					)}
-					{errors.teacher && <p className="mt-1 text-xs text-red-600">{errors.teacher}</p>}
+					{errors.teacher && <p className="mt-1 text-sm text-red-600">{errors.teacher}</p>}
 				</div>
 				<div>
-					<label className="block text-sm font-medium text-gray-700">الصنف</label>
-					<select value={categoryId} onChange={e => setCategoryId(e.target.value)} className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+					<label className="block text-gray-700 font-medium mb-2">الصنف</label>
+					<select value={categoryId} onChange={e => setCategoryId(e.target.value)} className="border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition border-gray-300">
 						<option value="">اختر صنف</option>
 						{categoriesStatus === 'loading' ? (
 							<option value="" disabled>تحميل الفئات....</option>
@@ -374,21 +345,16 @@ export function CourseForm() {
 						<p className="mt-1 text-sm text-red-600">فشل بتحميل الاصناف</p>
 					)}
 				</div>
-				<div className="flex items-center">
+				<div className="flex items-center pt-2">
 					<input type="checkbox" id="isActive" checked={isActive} onChange={e => setActive(e.target.checked)} className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
 					<label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">الكورس مفعل؟</label>
 				</div>
-                
 
-				<div>
-					{/* <label className="block text-sm font-medium text-gray-700">Role</label> */}
-
-				</div>
-				<div className="flex items-center gap-2">
+				<div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
 					<button 
 						onClick={handleSubmit}
 						disabled={isSubmitting || coursesStatus === 'loading'}
-						className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+						className={`w-full sm:w-auto flex-1 inline-flex justify-center items-center rounded-lg px-4 py-3 text-sm font-semibold text-white ${isSubmitting || coursesStatus === 'loading' ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
 					>
 						{isSubmitting || coursesStatus === 'loading' ? (
 							<>
@@ -402,11 +368,10 @@ export function CourseForm() {
 							'حفظ الكورس'
 						)}
 					</button>
-					<Link to="/courses" className="inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium hover:bg-gray-50">الغاء</Link>
+					<Link to="/courses" className="w-full sm:w-auto flex-1 text-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">الغاء</Link>
 				</div>
 			</form>
 		</div>        
     </>
     )
 }
-

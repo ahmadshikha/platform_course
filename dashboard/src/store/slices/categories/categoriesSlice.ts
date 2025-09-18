@@ -5,6 +5,7 @@ export interface ICategory {
   name: string;
   // nameEn: string;
   description: string;
+  image: string
   // descriptionEn: string;
   createdAt: string;
   updatedAt: string;
@@ -13,6 +14,7 @@ export interface ICategory {
 interface IAddCategory {
   name: string;
   // nameEn: string;
+  image: HTMLInputElement
   description: string;
   // descriptionEn: string;
 }
@@ -75,31 +77,56 @@ export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination: 
     }
 });
 
-export const addCategory = createAsyncThunk<ICategory, IAddCategory, {rejectValue: string}>('categories/addCategory', 
-  async (newCategory, {rejectWithValue}) => {
+export const addCategory = createAsyncThunk(
+  'categories/addCategory',
+  async (newCategory: IAddCategory, { rejectWithValue }) => {
     try {
+      // 1. Create a new FormData instance. This is the correct way
+      //    to handle file uploads in a browser environment.
+      const formdata = new FormData();
+      
+      // 2. Append all fields to the FormData object. This includes
+      //    the file and any other data you want to send.
+      formdata.append("name", newCategory.name);
+      formdata.append("description", newCategory.description);
+      
+      // 3. Append the actual file. The first argument is the field name
+      //    the server expects ("image"). The second argument is the file object itself.
+      //    The browser will automatically set the correct filename and content type.
+      //    We no longer need the local file path.
+      if (newCategory.image.files && newCategory.image.files[0]) {
+        formdata.append("image", newCategory.image.files[0]);
+      } else {
+        return rejectWithValue("No image file provided.");
+      }
+
+      // 4. Make the fetch request with the formdata object as the body.
+      //    IMPORTANT: Do NOT set the 'Content-Type' header. The browser will
+      //    automatically set it to 'multipart/form-data' with the correct boundary.
       const res = await fetch('http://localhost:5000/api/categories', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newCategory),
+        body: formdata,
       });
-      
-      if(!res.ok) {
+
+      if (!res.ok) {
         const errorData = await res.json();
-        return rejectWithValue(errorData.message || 'Failed to add category');
+        console.log(errorData)
+        if(errorData.message == 'Only image files are allowed!') return rejectWithValue('مسموح فقط برفع الصور')
+        if(errorData.message == 'No file uploaded') return rejectWithValue("قم بتحميل الصورة اولا")
+        return rejectWithValue('فشل باضافة الفئة');
       }
-      
+
       const data = await res.json();
-      console.log(data)
       return data;
-
-    } catch(e) {
-      return rejectWithValue(e.message || 'Failed to add category');
+    } catch (e) {
+      // It's good practice to check if 'e' is an Error object before accessing its properties.
+      console.log(e.message)
+      if(e.message == "Cannot read properties of undefined (reading 'files')") return rejectWithValue("قم بتحميل الصورة اولا")
+      const errorMessage = 'خطا غير متوقع';
+      return rejectWithValue(errorMessage);
     }
-});
-
+  }
+);
 export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValue: string}>('categories/updateCategory', 
   async (updatedCategory, {rejectWithValue}) => {
     try {

@@ -188,11 +188,20 @@ export const getTeacherWithCourses = async (req, res) => {
 export const createTeacher = async (req, res) => {
   try {
     const teacherData = { ...req.body };
-    
     // إذا كانت هناك صورة مرفوعة
     if (req.file) {
       teacherData.image = `/uploads/teachers/${req.file.filename}`;
     }
+    if(teacherData.social) {
+      teacherData.social = JSON.parse(teacherData.social);
+    }
+    if(teacherData.contact) {
+      teacherData.contact = JSON.parse(teacherData.contact);
+    }
+    if(teacherData.education) {
+      teacherData.education = JSON.parse(teacherData.education);
+    }
+    console.log("create teacher", teacherData)
 
     const teacher = new Teacher(teacherData);
     const savedTeacher = await teacher.save();
@@ -204,6 +213,7 @@ export const createTeacher = async (req, res) => {
     });
   } catch (error) {
     // حذف الصورة إذا كان هناك خطأ
+    console.log("create teacher", error)
     if (req.file) {
       fs.unlinkSync(req.file.path);
     }

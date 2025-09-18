@@ -38,4 +38,21 @@ const upload = multer({
   }
 });
 
+// A reusable middleware for single image upload
+export const singleImageUpload = (req, res, next) => {
+  upload.single('image')(req, res, function (err) {
+    console.log('singleImageUpload error', err)
+    if (err) {
+      // Multer error (fileFilter, size, limit, etc.)
+      return res.status(400).json({ message: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+    // If everything is fine, continue
+    next();
+  });
+};
+
+
 export default upload;

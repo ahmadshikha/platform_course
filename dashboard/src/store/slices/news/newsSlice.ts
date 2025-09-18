@@ -113,9 +113,9 @@ export const updateNews = createAsyncThunk<INews, INews, { rejectValue: string }
 );
 
 export const deleteNews = createAsyncThunk<string, string, { rejectValue: string }>('news/deleteNews',
-    async (newsId, { rejectWithValue }) => {
+    async (_id, { rejectWithValue }) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/news/${newsId}`, {
+            const response = await fetch(`http://localhost:5000/api/news/${_id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,12 +127,13 @@ export const deleteNews = createAsyncThunk<string, string, { rejectValue: string
             }
             if (!response.ok) {
                 const errorData = await response.json();
-                return rejectWithValue(errorData.message || 'Failed to delete news');
+                if(errorData.message == "News article not found") return rejectWithValue("هذا الخبر غير موجود")
+                return rejectWithValue('فشل حذف الخبر');
             }
-            return newsId;
+            return _id;
         } catch (error) {
             alert('error')
-            return rejectWithValue(error.message || 'Failed to delete news');
+            return rejectWithValue('فشل حذف الخبر');
         }
     }
 );
@@ -169,7 +170,10 @@ const newsSlice = createSlice({
             })
             .addCase(deleteNews.rejected, (state, action) => {
                 state.error = (action.payload as string) || action.error.message || 'Failed to delete news';
-            });
+            })
+            .addCase(deleteNews.fulfilled, (state, action: PayloadAction<string>) => {
+                 state.items = state.items.filter(item => item._id !== action.payload);
+            })
     },
 });
 

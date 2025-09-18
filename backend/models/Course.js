@@ -8,7 +8,7 @@ const CourseSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true }, // المعرف الفريد للدورة
   title: { type: String, required: true }, // عنوان الدورة
   type: { type: String, required: true }, // نوع الدورة (اختبار، ورشة، دورة تدريبية)
-  date: { type: String, required: true }, // تاريخ الدورة
+  date: { type: Date, required: true }, // تاريخ الدورة
   time: { type: String, required: true }, // وقت الدورة
   duration: { type: String, required: true }, // مدة الدورة
   location: { type: String, required: true }, // مكان انعقاد الدورة

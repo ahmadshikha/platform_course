@@ -2,7 +2,6 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 
 export type Education = {
   degree: string;
-  degreeEn: string;
   institution: string;
   year: string;
 };
@@ -20,12 +19,12 @@ export type Social = {
 export interface ITeacher {
   _id: string;
   name: string;
-  nameEn: string;
+  // nameEn: string;
   title: string;
-  titleEn: string;
+  // titleEn: string;
   image: string;
   bio: string;
-  bioEn: string;
+  // bioEn: string;
   rating: number;
   review: number;
   students: number;
@@ -43,22 +42,15 @@ export interface ITeacher {
 
 interface IAddTeacher {
   name: string;
-  nameEn: string;
   title: string;
-  titleEn: string;
   bio: string;
-  bioEn: string;
   // experience: string;
-  image: string;
+  image: HTMLInputElement;
   specialties: string[];
-  specialtiesEn: string[];
   education: Education[];
   contact: Contact;
   social: Social;
-  rating: number;
-  review: number;
-  students: number;
-  course: number;
+
   isActive: boolean;
 }
 
@@ -125,12 +117,34 @@ export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination:
 export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTeacher', 
   async (newTeacher, {rejectWithValue}) => {
     try {
+      const formdata = new FormData();
+      formdata.append('name', newTeacher.name);
+      formdata.append('title', newTeacher.title);
+      formdata.append('bio', newTeacher.bio);
+      formdata.append('education', JSON.stringify(newTeacher.education));
+      formdata.append('contact', JSON.stringify(newTeacher.contact));
+      formdata.append('social', JSON.stringify(newTeacher.social));
+      // formdata.append('specialties', JSON.stringify(newTeacher.specialties));
+      formdata.append('isActive', newTeacher.isActive.toString());
+
+      const spec = newTeacher.specialties
+      spec.forEach(item=> {
+        formdata.append('specialties', item);
+      })
+
+      if (newTeacher.image.files && newTeacher.image.files[0]) {
+        formdata.append("image", newTeacher.image.files[0]);
+      } else {
+        return rejectWithValue("No image file provided.");
+      }
+      console.log(formdata)
       const res = await fetch('http://localhost:5000/api/teachers/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newTeacher),
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+        // body: JSON.stringify(newTeacher),
+        body: formdata,
       });
       if(!res.ok) {
         const errorData = await res.json();
@@ -142,6 +156,7 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
       return data;
 
     } catch(e) {
+      console.log(e)
       return rejectWithValue(e.message || 'Failed to add techer');
     }
 });
