@@ -85,6 +85,8 @@ export const updateUserRegisterStatus = createAsyncThunk<
       console.log("update user register status", res)
       if (!res.ok) {
           const errorData = await res.json();
+          console.log(errorData);
+          
           return rejectWithValue(errorData.message || 'Failed to update registration status');
         }
         
