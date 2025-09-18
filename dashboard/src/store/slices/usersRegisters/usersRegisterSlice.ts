@@ -85,6 +85,8 @@ export const updateUserRegisterStatus = createAsyncThunk<
       console.log("update user register status", res)
       if (!res.ok) {
           const errorData = await res.json();
+          console.log(errorData)
+          if(errorData.message == 'لا توجد مقاعد متاحة في هذا الكورس') return rejectWithValue(errorData.message)
           return rejectWithValue(errorData.message || 'Failed to update registration status');
         }
         

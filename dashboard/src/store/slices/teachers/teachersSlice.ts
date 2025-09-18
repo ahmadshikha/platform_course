@@ -53,6 +53,20 @@ interface IAddTeacher {
 
   isActive: boolean;
 }
+interface IUpdateTeacher {
+  _id: string
+  name: string;
+  title: string;
+  bio: string;
+  // experience: string;
+  image: HTMLInputElement;
+  specialties: string[];
+  education: Education[];
+  contact: Contact;
+  social: Social;
+
+  isActive: boolean;
+}
 
 export type TeachersState = {
   items: ITeacher[];
@@ -161,7 +175,7 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
     }
 });
 
-export const updateTeacher = createAsyncThunk<ITeacher, ITeacher, {rejectValue: string}>('teachers/updateTeacher', 
+export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teachers/updateTeacher', 
   async (updatedTeacher, {rejectWithValue}) => {
     try {
       const response = await fetch(`http://localhost:5000/api/teachers/${updatedTeacher._id}`, {
@@ -197,12 +211,13 @@ export const deleteTeacher = createAsyncThunk<string, string, {rejectValue: stri
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to delete teacher');
+        if (errorData.message == 'Teacher not found') return rejectWithValue('هذا المعلم غير موجود');
+        return rejectWithValue('فشل بحذف الاستاذ');
       }
       
       return teacherId;
     } catch (error) {
-      return rejectWithValue(error.message || 'Failed to delete teacher');
+      return rejectWithValue('فشل بحذف الاستاذ');
     }
   }
 );
@@ -228,6 +243,9 @@ const teachersSlice = createSlice({
     clearError(state) {
       state.error = null;
     },
+    clearStatus(state) {
+      state.status = 'idle';
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -245,6 +263,7 @@ const teachersSlice = createSlice({
         state.error = action.error.message || 'Failed to fetch teachers';
       })
       .addCase(addTeacher.fulfilled, (state, action: PayloadAction<ITeacher>) => {
+        state.status = 'succeeded';
         state.items.push(action.payload);
       })
       .addCase(addTeacher.rejected, (state, action) => {
@@ -257,6 +276,7 @@ const teachersSlice = createSlice({
         if (index !== -1) {
           state.items[index] = action.payload;
         }
+        state.status = 'succeeded';
       })
       .addCase(updateTeacher.rejected, (state, action) => {
         state.error = (action.payload as string) || action.error.message || 'Failed to update teacher';
@@ -270,5 +290,11 @@ const teachersSlice = createSlice({
   },
 });
 
-export const { setTeachers, updateTeacherLocally, deleteTeacherLocally, clearError } = teachersSlice.actions;
+export const { 
+  setTeachers, 
+  updateTeacherLocally, 
+  deleteTeacherLocally, 
+  clearStatus, 
+  clearError 
+} = teachersSlice.actions;
 export default teachersSlice.reducer;

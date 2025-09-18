@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../store/store';
-import { deleteCategory, fetchCategories, clearError } from '../store/slices/categories/categoriesSlice';
+import { deleteCategory, fetchCategories, clearError, clearStatus } from '../store/slices/categories/categoriesSlice';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 
@@ -32,10 +32,11 @@ function CategoriesList() {
   const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  
+
   useEffect(() => {
     dispatch(fetchCategories({ page: currentPage, limit: itemsPerPage }));
-
+    // if(status !== "idle") dispatch(clearStatus())
+    
     // Clear any existing errors when component mounts
     dispatch(clearError());
   }, [currentPage, itemsPerPage, dispatch]);
@@ -48,7 +49,6 @@ function CategoriesList() {
   const clearErrors = () => {
     setDeleteError(null);
   };
-
   // Handle delete category
   const handleDeleteCategory = async (categoryId: string) => {
     setDeletingCategoryId(categoryId);
@@ -180,7 +180,7 @@ function CategoriesList() {
             console.log(category)
             const a = category.image.split('backend')[1]
             console.log(category.image)
-            console.log(`http://localhost:5000${a}`)
+            console.log(`http://localhost:5000${category.image}`)
             return (
           <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
             <div onClick={()=> navigate(`/category-courses/id=${category._id}`)} className="p-4">

@@ -20,7 +20,7 @@ String,
   birthDate: { type: String, },
   gender: { 
     type: String, 
-    enum: ['male', 'female'], 
+    enum: ['male', 'female'],
 String, 
   },
   nationality: { type: String },

@@ -121,24 +121,19 @@ export const getNewsById = async (req, res) => {
 export const createNews = async (req, res) => {
   try {
     // إنشاء كائن الخبر مع البيانات من req.body
+    console.log(req.body)
     const newsData = { ...req.body };
-    
+    newsData.eventDate = new Date(req.body.eventDate)
     // إذا كان هناك ملف مرفوع، إضافة معلومات الصورة
     if (req.file) {
-      newsData.image = {
-        filename: req.file.filename,
-        originalName: req.file.originalname,
-        path: req.file.path,
-        mimetype: req.file.mimetype,
-        size: req.file.size
-      };
-      
-      // إضافة رابط للصورة
-      newsData.imageUrl = `/uploads/news/${req.file.filename}`;
+      newsData.imageURL = `/uploads/${req.file.filename}`
+  
     }
+    console.log(newsData)
     
-    const news = new News(newsData);
+    const news = new News({...newsData});
     const savedNews = await news.save();
+    console.log(news);
     
     res.status(201).json({
       success: true,

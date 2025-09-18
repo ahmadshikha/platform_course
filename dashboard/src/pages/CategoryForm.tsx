@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import {Link} from 'react-router-dom'
-import { addCategory, updateCategory, ICategory, clearError } from "../store/slices/categories/categoriesSlice";
+import { addCategory, updateCategory, ICategory, clearError, clearStatus } from "../store/slices/categories/categoriesSlice";
 import { useSelector } from "react-redux";
 
 import en from '../lang/en.json'
@@ -21,6 +21,12 @@ export function CategoryForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [isEditMode, setIsEditMode] = useState(false)
     const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
+
+    // New state for success message
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+    // Ref to track initial mount
+    const isMounted = useRef(false);
     
     const categories = useSelector((s: RootState) => s.categories.items);
     const { status, error } = useSelector((s: RootState) => s.categories);
@@ -55,10 +61,28 @@ export function CategoryForm() {
     }
   }, [categories, name, description])
 
-  // Clear Redux errors when component mounts
+  // Clear Redux errors and status when component mounts
   useEffect(() => {
     dispatch(clearError());
+    // Dispatch a new action to clear the status, preventing old messages from showing.
+    dispatch(clearStatus()); 
   }, [dispatch]);
+
+  // Handle success message visibility
+  useEffect(() => {
+    // Only show success message if the status changes to 'succeeded' after the initial mount.
+    // This prevents showing a stale success message when navigating to the form.
+    if (isMounted.current && status === 'succeeded') {
+      setShowSuccessMessage(true);
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000); // Hide after 3 seconds
+      return () => clearTimeout(timer); // Clean up the timer
+    } else if (status !== 'succeeded') {
+      // Ensure the message is hidden if status is not 'succeeded'
+      setShowSuccessMessage(false);
+    }
+  }, [status, isMounted]);
 
   // Clear errors when user starts typing
   const clearFieldError = (field: string) => {
@@ -73,6 +97,12 @@ export function CategoryForm() {
   useEffect(()=> {
     console.log("error category list", error)
   },[error])
+
+  // Set isMounted to true after the first render
+  useEffect(() => {
+    isMounted.current = true;
+  }, []);
+
   // Form validation
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {}
@@ -82,23 +112,23 @@ export function CategoryForm() {
       newErrors.name = "اسم الفئة مطلوب"
     }
     // if (!nameEn.trim()) {
-    //   newErrors.nameEn = translations.categories.nameEnRequired
+    //   newErrors.nameEn = translations.categories.nameEnRequired
     // }
     if (!description.trim()) {
       // newErrors.description = translations.categories.descriptionRequired
       newErrors.description = "وصف الفئة مطلوب"
     }
     // if (!descriptionEn.trim()) {
-    //   newErrors.descriptionEn = translations.categories.descriptionEnRequired
+    //   newErrors.descriptionEn = translations.categories.descriptionEnRequired
     // }
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
   // useEffect(()=> {
-  //   if(image.files) {
-  //     console.log(image.files)
-  //   }
+  //   if(image.files) {
+  //     console.log(image.files)
+  //   }
 
 
   // }, [image])
@@ -110,6 +140,7 @@ export function CategoryForm() {
 
     setIsLoading(true)
     setErrors({})
+    setShowSuccessMessage(false); // Hide any previous success message
 
     try {
       const categoryData = {
@@ -160,6 +191,13 @@ export function CategoryForm() {
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-600">{error}</p>
           </div>
+        )}
+
+        {/* Success message */}
+        {showSuccessMessage && (
+            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                <p className="text-sm text-green-600">تم الحفظ بنجاح</p>
+            </div>
         )}
 
         <div className="space-y-6">
@@ -222,8 +260,8 @@ export function CategoryForm() {
             </div>
                 
             {/* <div>
-                {/* <label className="block text-sm font-medium text-gray-700">{translations.categories.descriptionEn}</label> */}
-                {/* <label className="block text-sm font-medium text-gray-700">الوصف</label>
+                <label className="block text-sm font-medium text-gray-700">{translations.categories.descriptionEn}</label>
+                <label className="block text-sm font-medium text-gray-700">الوصف</label>
                 <textarea 
                   value={descriptionEn} 
                   onChange={e => {

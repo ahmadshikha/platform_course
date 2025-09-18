@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import {Link} from 'react-router-dom'
-import { addTeacher, updateTeacher, ITeacher, clearError } from "../store/slices/teachers/teachersSlice";
+import { addTeacher, updateTeacher, ITeacher, clearError, clearStatus } from "../store/slices/teachers/teachersSlice";
 import { useSelector } from "react-redux";
 
 import en from '../lang/en.json'
@@ -73,7 +73,11 @@ export function TeachersForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [isEditMode, setIsEditMode] = useState(false)
     const [editingTeacherId, setEditingTeacherId] = useState<string | null>(null)
-    
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+    // Ref to track initial mount
+    const isMounted = useRef(false);
+
     const teachers = useSelector((s: RootState) => s.teachers.items);
     const { status, error } = useSelector((s: RootState) => s.teachers);
 
@@ -124,6 +128,7 @@ export function TeachersForm() {
   // Clear Redux errors when component mounts
   useEffect(() => {
     dispatch(clearError());
+    dispatch(clearStatus());
   }, [dispatch]);
 
   // Clear errors when user starts typing
@@ -136,8 +141,27 @@ export function TeachersForm() {
       })
     }
   }
-
+  useEffect(() => {
+    // Only show success message if the status changes to 'succeeded' after the initial mount.
+    // This prevents showing a stale success message when navigating to the form.
+    if (isMounted.current && status === 'succeeded') {
+      setShowSuccessMessage(true);
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000); // Hide after 3 seconds
+      return () => clearTimeout(timer); // Clean up the timer
+    } else if (status !== 'succeeded') {
+      // Ensure the message is hidden if status is not 'succeeded'
+      setShowSuccessMessage(false);
+    }
+  }, [status, isMounted]);
   // Add specialty
+
+  // Set isMounted to true after the first render
+  useEffect(() => {
+    isMounted.current = true;
+  }, []);
+
   const addSpecialty = (specialty: string, isEn: boolean = false) => {
     if (specialty.trim()) {
       if (isEn) {
@@ -216,6 +240,7 @@ export function TeachersForm() {
 
     setIsLoading(true)
     setErrors({})
+    setShowSuccessMessage(false);
 
     try {
       const teacherData = {
@@ -241,7 +266,7 @@ export function TeachersForm() {
       }
 
       if (isEditMode && editingTeacherId) {
-        // await dispatch(updateTeacher(teacherData as ITeacher)).unwrap()
+        await dispatch(updateTeacher(teacherData))
       } else {
         console.log(teacherData)
         await dispatch(addTeacher(teacherData)).unwrap()
@@ -293,7 +318,11 @@ export function TeachersForm() {
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
-
+        {showSuccessMessage && (
+            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                <p className="text-sm text-green-600">تم الحفظ بنجاح</p>
+            </div>
+        )}
         <div className="space-y-6">
             <div>
                 <label className="block text-gray-700 font-medium mb-2">الاسم</label>

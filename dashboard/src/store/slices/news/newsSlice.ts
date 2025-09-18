@@ -14,7 +14,7 @@ interface IAddNews {
     content: string;
     category: string;
     eventDate: Date;
-    imageURL: string;
+    imageURL: HTMLInputElement;
 }
 
 export type NewsState = {
@@ -48,7 +48,8 @@ export const fetchNews = createAsyncThunk<{ data: INews[]}>('news/fetchNews',
 
             if (!res.ok) {
                 const errorData = await res.json();
-                return rejectWithValue(errorData.message || 'Failed to fetch news');
+                // console.log(errorData)
+                return rejectWithValue('فشل بتحميل الاخبار');
             }
 
             const data = await res.json();
@@ -58,35 +59,45 @@ export const fetchNews = createAsyncThunk<{ data: INews[]}>('news/fetchNews',
             };
 
         } catch (e) {
-            return rejectWithValue(e.message || 'Failed to fetch news');
+            return rejectWithValue('فشل بتحميل الاخبار');
         }
     });
 
-export const addNews = createAsyncThunk<INews, IAddNews, { rejectValue: string }>('news/addNews',
-    async (newNews, { rejectWithValue }) => {
-        try {
-            const res = await fetch('http://localhost:5000/api/news', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newNews),
-                
-            });
+export const addNews = createAsyncThunk<INews, IAddNews, { rejectValue: string }>(
+  'news/addNews',
+  async (newNews, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append('title', newNews.title);
+      formData.append('content', newNews.content);
+      formData.append('category', newNews.category);
+      formData.append('eventDate', newNews.eventDate.toString());
 
-            if (!res.ok) {
-                const errorData = await res.json();
-                return rejectWithValue(errorData.message || 'Failed to add news');
-            }
+      if (newNews.imageURL.files && newNews.imageURL.files[0]) {
+        formData.append("image", newNews.imageURL.files[0]);
+      } else {
+        return rejectWithValue("لم يتم اضافة صورة");
+      }
 
-            const data = await res.json();
-            console.log(data)
-            return data.data;
+      const res = await fetch('http://localhost:5000/api/news', {
+        method: 'POST',
+        body: formData, // no Content-Type header
+      });
 
-        } catch (e) {
-            return rejectWithValue(e.message || 'Failed to add news');
-        }
-    });
+      const data = await res.json();
+
+      if (!res.ok) {
+        if(data.message = "ValidationError") rejectWithValue("تحقق من صحة البيانات")
+        return rejectWithValue('فشل باضافة الخبر');
+      }
+
+      return data.data;
+    } catch (e) {
+      return rejectWithValue('فشل باضافة الخبر');
+    }
+  }
+);
+
 
 export const updateNews = createAsyncThunk<INews, INews, { rejectValue: string }>('news/updateNews',
     async (updatedNews, { rejectWithValue }) => {
@@ -127,12 +138,12 @@ export const deleteNews = createAsyncThunk<string, string, { rejectValue: string
             }
             if (!response.ok) {
                 const errorData = await response.json();
+                console.log(errorData)
                 if(errorData.message == "News article not found") return rejectWithValue("هذا الخبر غير موجود")
                 return rejectWithValue('فشل حذف الخبر');
             }
             return _id;
         } catch (error) {
-            alert('error')
             return rejectWithValue('فشل حذف الخبر');
         }
     }
@@ -148,6 +159,9 @@ const newsSlice = createSlice({
         clearError(state) {
             state.error = null;
         },
+        clearStatus(state) {
+            state.status = 'idle';
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -160,22 +174,27 @@ const newsSlice = createSlice({
             })
             .addCase(fetchNews.rejected, (state, action) => {
                 state.status = 'failed';
-                state.error = action.error.message || 'Failed to fetch news';
+                state.error = action.payload.toString() || "فشل بتحميل الاخبار";
             })
             .addCase(addNews.fulfilled, (state, action: PayloadAction<INews>) => {
+                state.status = 'succeeded';
                 state.items.push(action.payload);
             })
             .addCase(addNews.rejected, (state, action) => {
-                state.error = (action.payload as string) || action.error.message || 'Failed to add news';
+                state.status = 'failed';
+                state.error = action.payload || action.error.message || 'Failed to add news';
             })
             .addCase(deleteNews.rejected, (state, action) => {
-                state.error = (action.payload as string) || action.error.message || 'Failed to delete news';
+                state.status = 'failed';
+                console.log(action.payload)
+                state.error = action.payload;
             })
             .addCase(deleteNews.fulfilled, (state, action: PayloadAction<string>) => {
-                 state.items = state.items.filter(item => item._id !== action.payload);
+                state.items = state.items.filter(item => item._id !== action.payload);
+                console.log(state.items)
             })
     },
 });
 
-export const { setNews, clearError } = newsSlice.actions;
+export const { setNews, clearError, clearStatus } = newsSlice.actions;
 export default newsSlice.reducer;

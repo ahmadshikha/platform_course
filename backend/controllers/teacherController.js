@@ -190,7 +190,7 @@ export const createTeacher = async (req, res) => {
     const teacherData = { ...req.body };
     // إذا كانت هناك صورة مرفوعة
     if (req.file) {
-      teacherData.image = `/uploads/teachers/${req.file.filename}`;
+      teacherData.image = `/uploads/${req.file.filename}`;
     }
     if(teacherData.social) {
       teacherData.social = JSON.parse(teacherData.social);

@@ -14,25 +14,25 @@ interface EmergencyContact {
 
 export default function UsersRegisters() {
     const dispatch = useDispatch<AppDispatch>()
-    const userReg = useSelector((s: RootState) => s.usersRegisters)
+    const {items,error} = useSelector((s: RootState) => s.usersRegisters)
 
     const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
         const newStatus = e.target.value as UserRegister['status']
-        dispatch(updateUserRegisterStatus({id: userReg.items[index]._id, status: newStatus }))
+        dispatch(updateUserRegisterStatus({id: items[index]._id, status: newStatus }))
         console.log({newStatus})
         // dispatch({ type: 'usersRegister/updateRegisterStatus', payload: { idNumber: reg.idNumber, status: newStatus } })
     }
     
     useEffect(()=> {
         dispatch(fetchUserRegisters())
-        console.log("dispatched fetchUserRegisters", userReg.items)
+        console.log("dispatched fetchUserRegisters", items)
     }, [dispatch])
     return (
         <div className="users-registers">
             <h2>Registrations</h2>
             <div className="grid gap-4">
-                {userReg.items.length === 0 && <div>No registrations found.</div>}
-                {userReg.items.map((r, idx) =>{ 
+                {items.length === 0 && <div>No registrations found.</div>}
+                {items.map((r, idx) =>{ 
                     console.log(idx)
                 return (
                     <UserRegisterCard
@@ -59,7 +59,7 @@ function UserRegisterCard({ reg, onChangeStatus, idx }: { reg: UserRegister, onC
                 </div>
                 <div className="text-sm">
                     <span className="mr-2">{reg.participantType}</span>
-                    <select value={reg.status ?? 'pending'} onChange={(e) => onChangeStatus(e, idx)}
+                    <select value={reg.status ?? 'معلق'} onChange={(e) => onChangeStatus(e, idx)}
                         className="ml-2 rounded border px-2 py-1 text-sm">
                         <option value="معلق">معلق</option>
                         <option value="مؤكد">مؤكد</option>

@@ -48,9 +48,7 @@ function TeachersList() {
   };
 
   // Clear errors when user interacts
-  const clearErrors = () => {
-    setDeleteError(null);
-  };
+
 
   // Handle delete teacher
   const handleDeleteTeacher = async (teacherId: string) => {
@@ -78,9 +76,10 @@ function TeachersList() {
         dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }));
       }
     } catch (error: any) {
-      setDeleteError(error || 'Failed to delete teacher');
+      setDeleteError(error || 'فشل بحذف الاستاذ');
     } finally {
       setDeletingTeacherId(null);
+      setShowDeleteConfirm(null)
     }
   };
 
@@ -102,7 +101,6 @@ function TeachersList() {
   //     return teacher[property + 'En'] || teacher[property] || '';
   //   }
   // };
-
   return (
     <div className={`space-y-6 `}>
       <div className="flex items-center justify-between">
@@ -122,7 +120,7 @@ function TeachersList() {
               </div>
               <div className="mt-4">
                 <button
-                  onClick={clearErrors}
+                  onClick={()=> {dispatch(clearError()); dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }))}}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
                   {/* {translations.teachers.dismiss} */}
@@ -135,7 +133,7 @@ function TeachersList() {
       )}
 
       {/* Delete error message */}
-      {deleteError && (
+      {/* {deleteError && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="ml-3">
@@ -148,14 +146,13 @@ function TeachersList() {
                   onClick={clearErrors}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {/* {translations.teachers.dismiss} */}
                   تجاهل
                 </button>
               </div>
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
     {status === 'loading' && (
       <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">جاري تحميل الاساتذة</div>
