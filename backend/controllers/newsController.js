@@ -90,27 +90,83 @@ export const getNewsById = async (req, res) => {
 };
 
 // Create new news article
+// export const createNews = async (req, res) => {
+//   try {
+//     const news = new News(req.body);
+//     const savedNews = await news.save();
+    
+//     res.status(201).json({
+//       success: true,
+//       data: savedNews,
+//       message: 'News article created successfully'
+//     });
+//   } catch (error) {
+//     if (error.name === 'ValidationError') {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Validation error',
+//         errors: Object.values(error.errors).map(e => e.message)
+//       });
+//     }
+//     res.status(500).json({
+//       success: false,
+//       message: 'Error creating news article',
+//       error: error.message
+//     });
+//   }
+// };
+
+
+
 export const createNews = async (req, res) => {
   try {
-    const news = new News(req.body);
+    // إنشاء كائن الخبر مع البيانات من req.body
+    const newsData = { ...req.body };
+    
+    // إذا كان هناك ملف مرفوع، إضافة معلومات الصورة
+    if (req.file) {
+      newsData.image = {
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        path: req.file.path,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      };
+      
+      // إضافة رابط للصورة
+      newsData.imageUrl = `/uploads/news/${req.file.filename}`;
+    }
+    
+    const news = new News(newsData);
     const savedNews = await news.save();
     
     res.status(201).json({
       success: true,
       data: savedNews,
-      message: 'News article created successfully'
+      message: 'تم إنشاء الخبر بنجاح'
     });
+    
   } catch (error) {
     if (error.name === 'ValidationError') {
       return res.status(400).json({
         success: false,
-        message: 'Validation error',
+        message: 'خطأ في التحقق',
         errors: Object.values(error.errors).map(e => e.message)
       });
     }
+    
+    // في حالة وجود خطأ متعلق برفع الملف
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        message: 'حجم الملف كبير جداً',
+        error: 'الحد الأقصى لحجم الملف هو 5MB'
+      });
+    }
+    
     res.status(500).json({
       success: false,
-      message: 'Error creating news article',
+      message: 'خطأ في إنشاء الخبر',
       error: error.message
     });
   }

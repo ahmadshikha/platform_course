@@ -1,6 +1,6 @@
 // controllers/userRegisterController.js
 import UserRegister from "../models/UserRegister.js";
-
+import Course  from "../models/Course.js";
 // Create new registration
 export const createRegistration = async (req, res) => {
   try {
@@ -64,35 +64,37 @@ export const getRegistrationById = async (req, res) => {
 };
 
 // Update registration status
-export const updateRegistrationStatus = async (req, res) => {
-  try {
-    console.log("Updating registration status");
-    const { status, notes } = req.body;
-    const registration = await UserRegister.findByIdAndUpdate(
-      req.params.id,
-      { status, notes },
-      { new: true, runValidators: true }
-    );
+// export const updateRegistrationStatus = async (req, res) => {
+//   try {
+//     console.log("Updating registration status");
+//     const { status, notes } = req.body;
+//     const registration = await UserRegister.findByIdAndUpdate(
+//       req.params.id,
+//       { status, notes },
+//       { new: true, runValidators: true }
+//     );
     
-    if (!registration) {
-      return res.status(404).json({
-        success: false,
-        message: "لم يتم العثور على التسجيل"
-      });
-    }
+//     if (!registration) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "لم يتم العثور على التسجيل"
+//       });
+//     }
     
-    res.json({
-      success: true,
-      message: "تم تحديث حالة التسجيل بنجاح",
-      data: registration
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+//     res.json({
+//       success: true,
+//       message: "تم تحديث حالة التسجيل بنجاح",
+//       data: registration
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
+
+
 
 // Get registrations by course
 export const getRegistrationsByCourse = async (req, res) => {
@@ -153,6 +155,94 @@ export const deleteRegistration = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
+
+
+export const updateRegistrationStatus = async (req, res) => {
+  try {
+    console.log("Updating registration status");
+    const { status, notes } = req.body;
+    const registrationId = req.params.id;
+    
+    // البحث عن التسجيل
+    const registration = await UserRegister.findById(registrationId);
+    
+    if (!registration) {
+      return res.status(404).json({
+        success: false,
+        message: "لم يتم العثور على التسجيل"
+      });
+    }
+    
+    // إذا كان التحديث لتأكيد التسجيل
+    if (status === "مؤكد" && registration.status !== "مؤكد") {
+      // البحث عن الكورس باستخدام courseNumber
+      const course = await Course.findOne({ id: registration.courseNumber });
+      
+      if (!course) {
+        return res.status(404).json({
+          success: false,
+          message: "لم يتم العثور على الكورس"
+        });
+      }
+      
+      // التحقق من توفر مقاعد
+      if (course.enrolled >= course.seats) {
+        return res.status(400).json({
+          success: false,
+          message: "لا توجد مقاعد متاحة في هذا الكورس"
+        });
+      }
+      
+      // زيادة عدد المسجلين في الكورس
+      course.enrolled += 1;
+      
+      // تحديث حالة الكورس إذا امتلأت المقاعد
+      if (course.enrolled >= course.seats) {
+        course.status = "ممتلئ";
+      }
+      
+      await course.save();
+    }
+    
+    // إذا كان التحديث لإلغاء تأكيد التسجيل (كان مؤكداً وأصبح غير ذلك)
+    if (status !== "مؤكد" && registration.status === "مؤكد") {
+      // البحث عن الكورس باستخدام courseNumber
+      const course = await Course.findOne({ id: registration.courseNumber });
+      
+      if (course) {
+        // تقليل عدد المسجلين في الكورس
+        course.enrolled = Math.max(0, course.enrolled - 1);
+        
+        // تحديث حالة الكورس إذا أصبحت هناك مقاعد متاحة
+        if (course.enrolled < course.seats && course.status === "ممتلئ") {
+          course.status = "متوفر";
+        }
+        
+        await course.save();
+      }
+    }
+    
+    // تحديث حالة التسجيل
+    const updatedRegistration = await UserRegister.findByIdAndUpdate(
+      registrationId,
+      { status, notes },
+      { new: true, runValidators: true }
+    );
+    
+    res.json({
+      success: true,
+      message: "تم تحديث حالة التسجيل بنجاح",
+      data: updatedRegistration
+    });
+  } catch (error) {
+    res.status(400).json({
       success: false,
       message: error.message
     });
