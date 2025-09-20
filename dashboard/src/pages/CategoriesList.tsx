@@ -34,7 +34,19 @@ function CategoriesList() {
   const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-
+  useEffect(() => {
+    if(status == 'succeeded') {
+      dispatch(clearError());
+      dispatch(clearStatus())
+    }
+    if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+      setTimeout(() => {
+        navigate('/login');
+        dispatch(clearError());
+        dispatch(clearStatus())
+      }, 500);
+    }
+  }, [status, error]);
   useEffect(() => {
     dispatch(fetchCategories({ page: currentPage, limit: itemsPerPage }));
     // if(status !== "idle") dispatch(clearStatus())
@@ -100,7 +112,7 @@ function CategoriesList() {
     <div className={`space-y-4`}>
       <div className="flex items-center justify-between">
         {/* <h1 className="text-xl font-semibold">{translations.categories.title}</h1> */}
-        <h1 className="text-xl font-semibold">الفئات</h1>
+        <h1 className="text-2xl font-bold">الفئات</h1>
         {/* <Link to="/categories/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">{translations.categories.addCategory}</Link> */}
         <Link to="/categories/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">اضافة فئة</Link>
       </div>
@@ -140,12 +152,12 @@ function CategoriesList() {
       <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">فشل بتحميل الفئات</div>
     )}
 
-    {status === 'succeeded' && categories.length === 0 && (
+    {status !== "loading" && status !== "failed" && categories.length === 0 && (
       // <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">{translations.categories.noCategories}</div>
       <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">لايوجد فئات</div>
     )}
 
-    {status === 'succeeded' && categories.length > 0 && (
+    {categories.length > 0 && (
       <>
         {/* Pagination info */}
         <div className="flex items-center justify-between">
@@ -157,50 +169,44 @@ function CategoriesList() {
         {/* categories list */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category)=> {
-            // console.log(category)
-            const a = category.image.split('backend')[1]
-            // console.log(category.image)
-            // console.log(`http://localhost:5000${category.image}`)
             return (
-          <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <div onClick={()=> navigate(`/category-courses/id=${category._id}`)} className="p-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">{category.name}</h3>
+              <div key={category._id} className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col">
+                <div onClick={() => navigate(`/category-courses/id=${category._id}`)} className="cursor-pointer">
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <img 
+                      src={`http://localhost:5000${category.image}`} 
+                      alt={category.name} 
+                      className=""
+                      onError={(e) => { e.currentTarget.src = avatar }}
+                    />
+                    {/* <div className="absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-30 transition-opacity duration-300"></div> */}
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate">{category.name}</h3>
+                    <p className="text-sm text-gray-600 line-clamp-2">{category.description}</p>
+                  </div>
+                </div>
+                <div className="mt-auto bg-gray-50/70 px-6 py-3 border-t border-gray-200 flex items-center justify-end">
+                  <button
+                    onClick={() => confirmDelete(category._id)}
+                    disabled={deletingCategoryId === category._id}
+                    className="p-2 rounded-full text-gray-500 hover:bg-red-100 hover:text-red-600 transition-colors"
+                    aria-label="Delete category"
+                  >
+                    {deletingCategoryId === category._id ? (
+                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
-              <p className="mt-2 text-sm text-gray-600 line-clamp-3">{category.description}</p>
-              <img src={`http://localhost:5000${category.image}`} alt={category.name} className="mt-4 w-full h-48 object-cover rounded-md"
-              onError={(e)=> {
-                e.currentTarget.src = avatar
-              }}
-              />
-
-            </div>
-            <div className={`flex items-center justify-between border-t border-gray-100 px-4 py-3 `}>
-              {/* <div className="text-xs text-gray-500">
-                {new Date(category.createdAt).toLocaleDateString()}
-              </div> */}
-              <div className={`space-x-2 `}>
-                {/* <button 
-                  onClick={() => navigate(`/categories/id=${category._id}/edit`)} 
-                  className="rounded-md border border-green-300 px-2 py-1 text-sm text-green-600 hover:bg-gray-50"
-                >
-                  {translations.categories.edit}
-                </button> */}
-                <button 
-                  onClick={() => confirmDelete(category._id)} 
-                  disabled={deletingCategoryId === category._id}
-                  className={`rounded-md border px-2 py-1 text-sm ${
-                    deletingCategoryId === category._id 
-                      ? 'border-gray-300 text-gray-400 cursor-not-allowed' 
-                      : 'border-red-300 text-red-600 hover:bg-red-50'
-                  }`}
-                >
-                  {deletingCategoryId === category._id ? "جاري الحذف..." : "حذف"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )
+            )
           } )}
         </div>
 

@@ -11,7 +11,7 @@ export default function TeacherCourses() {
   const courses = useSelector((s: RootState) => s.courses.items);
   const status = useSelector((s: RootState) => s.courses.status);
   const error = useSelector((s: RootState) => s.courses.error);
-  const { lang } = useSelector((s: RootState) => s.lang);
+  const teacher = useSelector((s: RootState) => s.courses.error)
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -22,11 +22,7 @@ export default function TeacherCourses() {
   const itemsPerPage = 10;
 
   // Translation
-  const translate = {
-    en,
-    ar
-  };
-  const translations = translate[lang];
+
 
   // Delete state
   const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null);
@@ -94,15 +90,15 @@ export default function TeacherCourses() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">{translations.teacherCourses.title}</h1>
+          <h1 className="text-2xl font-bold">كورسات الاستاذ</h1>
           <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
-            {translations.courses.addCourse}
+            اضافة كورس
           </Link>
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-sm text-gray-600">{translations.courses.loading}</p>
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل كورسات الاستاذ...</p>
           </div>
         </div>
       </div>
@@ -131,7 +127,7 @@ export default function TeacherCourses() {
               <h3 className="text-sm font-medium text-red-800">حصل خطأ</h3>
               <div className="mt-2 text-sm text-red-700">
                 {/* <p>{error || translations.teacherCourses.failed}</p> */}
-                {error == "معرف غير صالح"? "الاستاذ غير موجود": "حدث خطأ"}
+                {error}
               </div>
               <div className="mt-4">
                 <button
@@ -217,6 +213,7 @@ export default function TeacherCourses() {
             <div key={course._id}>
               <CourseCard
                 course={course}
+
                 onEdit={(courseId) => navigate(`/courses/${courseId}/edit`)}
                 onDelete={(courseId) => setShowDeleteConfirm(courseId)}
               />
@@ -278,7 +275,7 @@ export default function TeacherCourses() {
                     </svg>
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">{translations.courses.deleteConfirm}</h3>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">حذف الكورس</h3>
                     <div className="mt-2">
                       {/* <p className="text-sm text-gray-500">{translations.courses.deleteMessage}</p> */}
                       <p className="text-sm text-gray-500">هل انت متاكد من حذف الكورس؟</p>

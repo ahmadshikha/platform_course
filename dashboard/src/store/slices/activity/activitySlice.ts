@@ -59,13 +59,16 @@ export const addActivity = createAsyncThunk<IActivity, NewActivityData, { reject
         try {
             const response = await fetch(`${apiUrl}/api/activities`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activityData),
             });
             // console.log(response)
             if (!response.ok) {
                 const errorData = await response.json();
-                if(errorData.message == 'ValidationError') return rejectWithValue("تحقق من صحة البيانات")
+                if (errorData.message == 'ValidationError') return rejectWithValue("تحقق من صحة البيانات");
+                if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+                if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
                 return rejectWithValue("فشل اضافة نشاط")
             }
             const data = await response.json()
@@ -84,12 +87,16 @@ export const deleteActivity = createAsyncThunk<string, string, { rejectValue: st
         try {
             const response = await fetch(`${apiUrl}/api/activities/${id}`, {
                 method: 'DELETE',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 // body: JSON.stringify(activityId),
             });
             if (!response.ok) {
                 const errorData = await response.json();
-                if(errorData == 'Activity not found') return rejectWithValue('هذا النشاط غير موجود')
+                console.log(errorData)
+                if (errorData == 'Activity not found') return rejectWithValue('هذا النشاط غير موجود');
+                if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+                if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
                 return rejectWithValue('فشل حذف النشاط')
             }
             return id;

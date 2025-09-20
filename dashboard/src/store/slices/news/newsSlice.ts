@@ -82,13 +82,16 @@ export const addNews = createAsyncThunk<INews, IAddNews, { rejectValue: string }
 
       const res = await fetch(`${apiUrl}/api/news`, {
         method: 'POST',
+        credentials: 'include',
         body: formData, // no Content-Type header
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        if(data.message = "ValidationError") rejectWithValue("تحقق من صحة البيانات")
+        if (data.message == "ValidationError") return rejectWithValue("تحقق من صحة البيانات");
+        if (data.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (data.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         return rejectWithValue('فشل باضافة الخبر');
       }
 
@@ -106,6 +109,7 @@ export const deleteNews = createAsyncThunk<string, string, { rejectValue: string
     async (_id, { rejectWithValue }) => {
         try {
             const response = await fetch(`${apiUrl}/api/news/${_id}`, {
+                credentials: 'include',
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -118,7 +122,9 @@ export const deleteNews = createAsyncThunk<string, string, { rejectValue: string
             if (!response.ok) {
                 const errorData = await response.json();
                 // console.log(errorData)
-                if(errorData.message == "News article not found") return rejectWithValue("هذا الخبر غير موجود")
+                if (errorData.message == "News article not found") return rejectWithValue("هذا الخبر غير موجود");
+                if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+                if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
                 return rejectWithValue('فشل حذف الخبر');
             }
             return _id;

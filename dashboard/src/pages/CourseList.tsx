@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { RootState, AppDispatch } from '../store/store';
-import { deleteCourse, fetchCourses, clearError } from '../store/slices/courses/coursesSlice';
+import { deleteCourse, fetchCourses, clearError, clearStatus } from '../store/slices/courses/coursesSlice';
 import CourseCard from '../component/CourseCard';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
@@ -26,6 +26,19 @@ export default function CourseList() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
+  useEffect(() => {
+      if(status == 'succeeded') {
+          dispatch(clearError());
+          dispatch(clearStatus())
+      }
+      if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+        setTimeout(() => {
+          navigate('/login');
+          dispatch(clearError());
+          dispatch(clearStatus())
+        }, 500);
+      }
+  }, [status, error]);
   useEffect(() => {
     dispatch(fetchCourses({ page: currentPage, limit: itemsPerPage }));
     // Clear any existing errors when component mounts
@@ -87,7 +100,7 @@ export default function CourseList() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
-          <h1 className="text-xl font-semibold">الكورسات</h1>
+          <h1 className="text-2xl font-bold">الكورسات</h1>
           <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
             {/* {translations.courses.addCourse} */}
             اضافة كورس
@@ -110,7 +123,7 @@ export default function CourseList() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
-          <h1 className="text-xl font-semibold">الكورسات</h1>
+          <h1 className="text-2xl font-bold">الكورسات</h1>
           <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
             {/* {translations.courses.addCourse} */}
             اضافة كورس
@@ -148,7 +161,7 @@ export default function CourseList() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">الكورسات</h1>
+        <h1 className="text-2xl font-bold">الكورسات</h1>
         <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

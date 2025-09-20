@@ -1,5 +1,30 @@
 import jwt from "jsonwebtoken";
 import Admin from "../models/Admin.js";
+import { verifyToken } from "../js/jwt.js";
+
+export function _protect(req, res, next) {
+  try {
+    console.log('_protect middleware')
+    const token = req.cookies.token
+    if (!token) {
+      return res.status(401).json({ message: "unauthenticated" })
+    }
+    verifyToken(token)
+    next()
+    
+  } catch (e) {
+    console.log('auth middleware error', e)
+    if (e.name == "TokenExpiredError") {
+        res.clearCookie("token")
+        return res.status(401).json({ message: "token expired" })
+    }
+    if (e.name == "JsonWebTokenError") {
+        res.clearCookie("token")
+        return res.status(401).json({ message: "unauthenticated" })
+    }
+    return res.status(500).json({ message: "server error" })
+  }
+}
 
 // Middleware to protect routes
 export const protect = async (req, res, next) => {

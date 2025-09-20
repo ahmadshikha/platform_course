@@ -2,9 +2,9 @@ import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { deleteContact, fetchContacts, clearError } from "../store/slices/contacts/conatctsSlice";
+import { deleteContact, fetchContacts, clearError, clearStatus } from "../store/slices/contacts/conatctsSlice";
 import ErrorDisplay from "../component/ErrorDisplay";
-
+import { useNavigate } from "react-router-dom";
 
 export default function ContactList() {
   const {items,pagination,status,error} = useSelector((s:RootState)=> s.contacts);
@@ -13,10 +13,20 @@ export default function ContactList() {
 
   const [deletingContactId, setDeletingContactId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
+    dispatch(clearError())
     dispatch(fetchContacts());
   }, [dispatch]);
+  useEffect(()=> {
+    if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+      setTimeout(() => {
+        navigate('/login');
+        dispatch(clearError());
+        dispatch(clearStatus())
+      }, 500);
+    }
+  }, [error])
 
   const handleDeleteContact = async (id: string) => {
     if (!id) return;
@@ -44,7 +54,7 @@ export default function ContactList() {
     <div className="p-6 space-y-6 -100 min-h-screen">
       <div className="container mx-auto max-w-5xl">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-extrabold text-center text-gray-800">قائمة التواصلات</h1>
+          <h1 className="text-2xl font-bold">قائمة التواصلات</h1>
         </div>
 
         <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
@@ -64,24 +74,52 @@ export default function ContactList() {
         {/* {status === 'succeeded' && contacts.length > 0 && ( */}
           <div className="grid gap-6">
             {items.map(contact => (
-              <div key={contact._id} className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">من: {contact.username}</h3>
-                  <p className="text-sm text-gray-500 mb-4">البريد الالكتروني: {contact.email}</p>
-                  <p className="text-gray-700 mb-2">{contact.message}</p>
-                </div>
-                <div className="flex justify-end mt-4">
-                  <button
-                    onClick={() => confirmDelete(contact._id)}
-                    disabled={deletingContactId === contact._id}
-                    className={`rounded-md border px-4 py-2 text-sm ${
-                      deletingContactId === contact._id 
-                        ? 'border-gray-300 text-gray-400 cursor-not-allowed' 
-                        : 'border-red-300 text-red-600 hover:bg-red-50'
-                    }`}
-                  >
-                    {deletingContactId === contact._id ? "جاري الحذف..." : "حذف"}
-                  </button>
+              <div key={contact._id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden">
+                <div className="p-6">
+                  <div className="flex items-start space-x-4 rtl:space-x-reverse">
+                    {/* Avatar */}
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl font-bold">
+                        {contact.username.charAt(0).toUpperCase()}
+                      </div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-1">
+                        <h3 className="text-lg font-semibold text-gray-800 truncate">{contact.username}</h3>
+                        <button
+                          onClick={() => confirmDelete(contact._id)}
+                          disabled={deletingContactId === contact._id}
+                          className={`p-1.5 rounded-full transition-colors ${
+                            deletingContactId === contact._id 
+                              ? 'text-gray-400 cursor-not-allowed' 
+                              : 'text-gray-500 hover:bg-red-100 hover:text-red-600'
+                          }`}
+                          aria-label="Delete message"
+                        >
+                          {deletingContactId === contact._id ? (
+                            <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-500 flex items-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5 rtl:ml-1.5 rtl:mr-0" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
+                        {contact.email}
+                      </p>
+                      
+                      <div className="bg-gray-50 border-l-4 border-blue-500 rtl:border-l-0 rtl:border-r-4 p-4 rounded-r-lg rtl:rounded-r-none rtl:rounded-l-lg">
+                        <p className="text-gray-800">{contact.message}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}

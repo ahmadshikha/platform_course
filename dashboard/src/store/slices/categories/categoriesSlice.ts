@@ -55,6 +55,7 @@ export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination?:
       
       const url = `${apiUrl}/api/categories/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const res = await fetch(url, {
+        credentials: 'include',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ export const addCategory = createAsyncThunk(
       if (newCategory.image.files && newCategory.image.files[0]) {
         formdata.append("image", newCategory.image.files[0]);
       } else {
-        return rejectWithValue("No image file provided.");
+        return rejectWithValue("لم يتم تحميل الصورة");
       }
 
       // 4. Make the fetch request with the formdata object as the body.
@@ -106,14 +107,16 @@ export const addCategory = createAsyncThunk(
       //    automatically set it to 'multipart/form-data' with the correct boundary.
       const res = await fetch(`${apiUrl}/api/categories`, {
         method: 'POST',
+        credentials: 'include',
         body: formdata,
       });
 
       if (!res.ok) {
         const errorData = await res.json();
-        // console.log(errorData)
-        if(errorData.message == 'Only image files are allowed!') return rejectWithValue('مسموح فقط برفع الصور')
-        if(errorData.message == 'No file uploaded') return rejectWithValue("قم بتحميل الصورة اولا")
+        if (errorData.message == 'Only image files are allowed!') return rejectWithValue('مسموح فقط برفع الصور');
+        if (errorData.message == 'No file uploaded') return rejectWithValue("قم بتحميل الصورة اولا");
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         return rejectWithValue('فشل باضافة الفئة');
       }
 
@@ -132,6 +135,7 @@ export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValu
   async (updatedCategory, {rejectWithValue}) => {
     try {
       const response = await fetch(`${apiUrl}/api/categories/${updatedCategory._id}`, {
+        credentials: 'include',
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -141,13 +145,15 @@ export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValu
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to update category');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue("فشل تعديل الفئة");
       }
       
       const data = await response.json();
       return data.data;
     } catch (error) {
-      return rejectWithValue(error.message || 'Failed to update category');
+      return rejectWithValue("حدث خطا نعمل على اصلاحه");
     }
   }
 );
@@ -156,6 +162,7 @@ export const deleteCategory = createAsyncThunk<string, string, {rejectValue: str
   async (categoryId, {rejectWithValue}) => {
     try {
       const response = await fetch(`${apiUrl}/api/categories/${categoryId}`, {
+        credentials: 'include',
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -167,12 +174,14 @@ export const deleteCategory = createAsyncThunk<string, string, {rejectValue: str
       }
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to delete category');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue("فشل حذف الفئة");
       }
       return categoryId;
     } catch (error) {
       alert('error')
-      return rejectWithValue(error.message || 'Failed to delete category');
+      return rejectWithValue("حدث خطا نعمل على اصلاحه");
     }
   }
 );

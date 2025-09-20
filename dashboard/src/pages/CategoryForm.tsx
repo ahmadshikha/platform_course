@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { addCategory, updateCategory, ICategory, clearError, clearStatus } from "../store/slices/categories/categoriesSlice";
 import { useSelector } from "react-redux";
 
@@ -9,31 +9,31 @@ import en from '../lang/en.json'
 import ar from '../lang/ar.json'
 
 export function CategoryForm() {
-    const [name, setName] = useState('');
-    const [nameEn, setNameEn] = useState('');
-    const [description, setDescription] = useState('');
-    const [image, setImage] = useState<HTMLInputElement>();
-    const [descriptionEn, setDescriptionEn] = useState('');
-    const [actionForm, setActionForm] = useState("اضافة فئة");
-    
-    // Error handling states
-    const [errors, setErrors] = useState<{[key: string]: string}>({})
-    const [isLoading, setIsLoading] = useState(false)
-    const [isEditMode, setIsEditMode] = useState(false)
-    const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [nameEn, setNameEn] = useState('');
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState<HTMLInputElement>();
+  const [descriptionEn, setDescriptionEn] = useState('');
+  const [actionForm, setActionForm] = useState("اضافة فئة");
+  
+  // Error handling states
+  const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
 
-    // New state for success message
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  // New state for success message
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-    // Ref to track initial mount
-    const isMounted = useRef(false);
-    
-    const categories = useSelector((s: RootState) => s.categories.items);
-    const { status, error } = useSelector((s: RootState) => s.categories);
+  // Ref to track initial mount
+  const isMounted = useRef(false);
+  
+  const categories = useSelector((s: RootState) => s.categories.items);
+  const { status, error } = useSelector((s: RootState) => s.categories);
 
 
-    const dispatch = useDispatch<AppDispatch>();
-
+  const dispatch = useDispatch<AppDispatch>();
   useEffect((): any => {
     const url = window.location.href
     if(url.includes("/edit")) {
@@ -57,27 +57,23 @@ export function CategoryForm() {
   }, [categories, name, description])
 
   // Clear Redux errors and status when component mounts
-  useEffect(() => {
-    dispatch(clearError());
-    // Dispatch a new action to clear the status, preventing old messages from showing.
-    dispatch(clearStatus()); 
-  }, [dispatch]);
-
-  // Handle success message visibility
-  useEffect(() => {
-    // Only show success message if the status changes to 'succeeded' after the initial mount.
-    // This prevents showing a stale success message when navigating to the form.
-    if (isMounted.current && status === 'succeeded') {
-      setShowSuccessMessage(true);
-      const timer = setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000); // Hide after 3 seconds
-      return () => clearTimeout(timer); // Clean up the timer
-    } else if (status !== 'succeeded') {
-      // Ensure the message is hidden if status is not 'succeeded'
-      setShowSuccessMessage(false);
-    }
-  }, [status, isMounted]);
+    useEffect(() => {
+        if(status == 'succeeded') {
+            setShowSuccessMessage(true);
+            const timer = setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 3000);
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }
+        if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+            setTimeout(() => {
+                navigate('/login');
+                dispatch(clearError());
+                dispatch(clearStatus())
+            }, 500);
+        }
+    }, [status, error]);
 
   // Clear errors when user starts typing
   const clearFieldError = (field: string) => {
@@ -166,6 +162,12 @@ export function CategoryForm() {
     } catch (error: any) {
     } finally {
       setIsLoading(false)
+      if(status !== 'failed') {
+        setTimeout(() => {
+            navigate('/categories');
+        }, 3000);
+      }
+        
     }
   }
 

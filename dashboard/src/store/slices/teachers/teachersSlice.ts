@@ -110,7 +110,7 @@ export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination?
       // console.log("get teachers",{res})
       if(!res.ok) {
         const errorData = await res.json();
-        return rejectWithValue(errorData.message || 'Failed to fetch teachers');
+        return rejectWithValue("حدث خطأ بجلب البيانات");
       }
       const data = await res.json();
       // console.log(res)
@@ -125,7 +125,7 @@ export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination?
       };
 
     } catch(e) {
-      return rejectWithValue(e.message || 'Failed to fetch teachers');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
 });
 
@@ -150,11 +150,12 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
       if (newTeacher.image.files && newTeacher.image.files[0]) {
         formdata.append("image", newTeacher.image.files[0]);
       } else {
-        return rejectWithValue("No image file provided.");
+        return rejectWithValue("لم تقم بتحميل صورة");
       }
       // console.log(formdata)
       const res = await fetch(`${apiUrl}/api/teachers/`, {
         method: 'POST',
+        credentials: 'include',
         // headers: {
         //   'Content-Type': 'application/json',
         // },
@@ -163,7 +164,9 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
       });
       if(!res.ok) {
         const errorData = await res.json();
-        return rejectWithValue(errorData.message || 'Failed to add teacher');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue("فشل اضافة الاستاذ");
       }
       const data = await res.json();
       // console.log(res)
@@ -172,7 +175,7 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
 
     } catch(e) {
       // console.log(e)
-      return rejectWithValue(e.message || 'Failed to add techer');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
 });
 
@@ -180,6 +183,7 @@ export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teacher
   async (updatedTeacher, {rejectWithValue}) => {
     try {
       const response = await fetch(`${apiUrl}/api/teachers/${updatedTeacher._id}`, {
+        credentials: 'include',
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -189,13 +193,15 @@ export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teacher
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to update teacher');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue('فشل تعديل استاذ');
       }
       
       const data = await response.json();
       return data;
     } catch (error) {
-      return rejectWithValue(error.message || 'Failed to update teacher');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
   }
 );
@@ -204,6 +210,7 @@ export const deleteTeacher = createAsyncThunk<string, string, {rejectValue: stri
   async (teacherId, {rejectWithValue}) => {
     try {
       const response = await fetch(`${apiUrl}/api/teachers/${teacherId}`, {
+        credentials: 'include',
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -212,6 +219,8 @@ export const deleteTeacher = createAsyncThunk<string, string, {rejectValue: stri
       
       if (!response.ok) {
         const errorData = await response.json();
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         if (errorData.message == 'Teacher not found') return rejectWithValue('هذا المعلم غير موجود');
         return rejectWithValue('فشل بحذف الاستاذ');
       }

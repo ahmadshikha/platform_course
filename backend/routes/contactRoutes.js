@@ -1,4 +1,5 @@
 import express from 'express';
+import { _protect } from '../middlewares/authMiddleware.js';
 import {
   createContact,
   getContacts,
@@ -13,9 +14,9 @@ const router = express.Router();
 router.post('/', createContact);
 
 // routes للادمن (يمكن إضافة middleware للتحقق من الصلاحيات)
-router.get('/', getContacts);
+router.get('/', _protect, getContacts);
 router.get('/admin/contacts/:id', getContact);
-router.patch('/admin/contacts/:id/status', updateContactStatus);
-router.delete('/:id', deleteContact);
+router.patch('/admin/contacts/:id/status', _protect, updateContactStatus);
+router.delete('/admin/contacts/:id', _protect, deleteContact);
 
 export default router;

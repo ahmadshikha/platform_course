@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { addTeacher, updateTeacher, ITeacher, clearError, clearStatus } from "../store/slices/teachers/teachersSlice";
 import { useSelector } from "react-redux";
 
@@ -41,7 +41,7 @@ export function TeachersForm() {
     const [specialties, setSpecialties] = useState<string[]>([])
     const [specialtiesEn, setSpecialtiesEn] = useState<string[]>([])
     const [isActive, setActive] = useState(true)
-    
+    const navigate = useNavigate();
     // Education
     const [education, setEducation] = useState<Education[]>([])
     const [newEducation, setNewEducation] = useState<Education>({
@@ -126,6 +126,24 @@ export function TeachersForm() {
   }, [dispatch]);
 
   // Clear errors when user starts typing
+  useEffect(() => {
+        if(status == 'succeeded') {
+            setShowSuccessMessage(true);
+            const timer = setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 3000);
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }
+        if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+            setTimeout(() => {
+                navigate('/login');
+                dispatch(clearError());
+                dispatch(clearStatus())
+            }, 500);
+        }
+    }, [status, error]);
+  // Clear errors when user starts typing
   const clearFieldError = (field: string) => {
     if (errors[field]) {
       setErrors(prev => {
@@ -135,29 +153,8 @@ export function TeachersForm() {
       })
     }
   }
-  useEffect(() => {
-    // Only show success message if the status changes to 'succeeded' after the initial mount.
-    // This prevents showing a stale success message when navigating to the form.
-    if (isMounted.current && status === 'succeeded') {
-      setShowSuccessMessage(true);
-      const timer = setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000); // Hide after 3 seconds
-      return () => clearTimeout(timer); // Clean up the timer
-    } else if (status !== 'succeeded') {
-      // Ensure the message is hidden if status is not 'succeeded'
-      setShowSuccessMessage(false);
-    }
-  }, [status, isMounted]);
   // Add specialty
 
-  // Set isMounted to true after the first render
-  useEffect(() => {
-    isMounted.current = true;
-    // const regex = /^09\d{8}$/;
-        const regex = /^09\d{8}$/;
-    console.log(/^09\d{8}$/.test("099999"))
-  }, []);
 
   const addSpecialty = (specialty: string, isEn: boolean = false) => {
     if (specialty.trim()) {
@@ -224,7 +221,7 @@ export function TeachersForm() {
     if (!contact.phone.trim()) {
       newErrors.phone = "رقم الهاتف مطلوب"
     } else if(!/^09\d{8}$/.test(contact.phone)) {
-      newErrors.email = "09xxxxxxxxرقم الهاتف غير صالح مثال:"
+      newErrors.phone = "09xxxxxxxxرقم الهاتف غير صالح مثال:"
     }
 
 
@@ -298,6 +295,11 @@ export function TeachersForm() {
       setErrors({ general: error || "خطأاثناء حفظ الاستاذ" })
     } finally {
       setIsLoading(false)
+      if(status !== 'failed') {
+          setTimeout(() => {
+              navigate('/teachers');
+          }, 3000);
+      }
     }
   }
 

@@ -24,7 +24,7 @@ export default function UsersRegisters() {
         <div className="p-6 space-y-6 min-h-screen">
             <div className="container mx-auto max-w-7xl">
                 <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-4xl font-extrabold text-gray-800">حجوزات الطلاب</h1>
+                    <h1 className="text-2xl font-bold">حجوزات الطلاب</h1>
                 </div>
 
                 <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
@@ -67,33 +67,51 @@ function UserRegisterCard({ reg, onChangeStatus }: { reg: UserRegister, onChange
     const currentStatusStyle = statusClasses[reg.status || 'معلق'] || statusClasses['معلق'];
 
     return (
-        <article className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-            <div>
-                <div className="flex items-start justify-between mb-4">
-                    <div>
-                        <div className="text-xl font-bold text-gray-900">{reg.firstName} {reg.lastName}</div>
-                        <div className="text-sm text-gray-500">{reg.title} - {reg.participantType}</div>
+        <article className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col">
+            <div className="p-6 flex-grow">
+                <div className="flex items-start space-x-4 rtl:space-x-reverse">
+                    {/* Avatar */}
+                    <div className="flex-shrink-0">
+                        <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                            {reg.firstName.charAt(0).toUpperCase()}
+                        </div>
                     </div>
-                    <select 
-                        value={reg.status ?? 'معلق'} 
-                        onChange={(e) => onChangeStatus(e, reg._id!)}
-                        className={`text-sm font-semibold rounded-full px-3 py-1 appearance-none focus:outline-none focus:ring-2 focus:ring-offset-2 ${currentStatusStyle.bg} ${currentStatusStyle.text} ${currentStatusStyle.border} focus:${currentStatusStyle.border}`}
-                    >
-                        <option value="معلق">معلق</option>
-                        <option value="مؤكد">مؤكد</option>
-                    </select>
-                </div>
 
-                <div>
-                    <p className="text-sm text-gray-700 mb-1"><span className="font-semibold">البريد:</span> {reg.email}</p>
-                    <p className="text-sm text-gray-700 mb-1"><span className="font-semibold">الهاتف:</span> {reg.phone}</p>
-                    <p className="text-sm text-gray-700 mb-3"><span className="font-semibold">الكورس:</span> {reg.courseTitle} ({reg.courseNumber})</p>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-800 truncate">{reg.firstName} {reg.lastName}</h3>
+                                <p className="text-sm text-gray-500">{reg.title} - {reg.participantType}</p>
+                            </div>
+                            <div className="relative">
+                                <select 
+                                    value={reg.status ?? 'معلق'} 
+                                    onChange={(e) => onChangeStatus(e, reg._id!)}
+                                    className={`text-xs font-bold rounded-full pl-8 pr-3 py-1.5 appearance-none focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${currentStatusStyle.bg} ${currentStatusStyle.text} ${currentStatusStyle.border} focus:${currentStatusStyle.border}`}
+                                >
+                                    <option value="معلق">معلق</option>
+                                    <option value="مؤكد">مؤكد</option>
+                                </select>
+                                <div className={`pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2 rtl:left-auto rtl:right-0 rtl:pl-0 rtl:pr-2 ${currentStatusStyle.text}`}>
+                                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2 text-sm">
+                            <div className="flex items-center text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg><span>{reg.email}</span></div>
+                            <div className="flex items-center text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg><span>{reg.phone}</span></div>
+                            <div className="flex items-start text-gray-600 mt-2 pt-3 border-t border-gray-100"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0 text-gray-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.342.12L10 12.42l4.408-4.249a.999.999 0 01.342-.12l2.644-1.23a1 1 0 000-1.84l-7-3zM10 15a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" /></svg><span className="font-medium">{reg.courseTitle} <span className="text-gray-500">({reg.courseNumber})</span></span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div className="border-t border-gray-200 pt-4 mt-4 flex items-center justify-between">
+            <div className="bg-gray-50/70 px-6 py-3 border-t border-gray-200 flex items-center justify-between">
                 <p className="text-xs text-gray-500">تاريخ التسجيل: {new Date(reg.registrationDate || Date.now()).toLocaleDateString()}</p>
-                <button onClick={() => navigate(`/user-register/${reg._id}/details`)} className='text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline'>
+                <button onClick={() => navigate(`/user-register/${reg._id}/details`)} className='inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline'>
                     عرض التفاصيل
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 rtl:mr-1 rtl:ml-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                 </button>
             </div>
         </article>

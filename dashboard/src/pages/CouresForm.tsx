@@ -47,33 +47,31 @@ export function CourseForm() {
     const categoriesStatus = useSelector((s: RootState) => s.categories.status);
     const coursesStatus = useSelector((s: RootState) => s.courses.status);
     const coursesError = useSelector((s: RootState) => s.courses.error);
-
+    useEffect(() => {
+        if(coursesStatus == 'succeeded') {
+            setShowSuccessMessage(true);
+            const timer = setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 3000);
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }
+        if(coursesError == 'يجب تسجيل الدخول اولاً' || coursesError == "انتهت صلاحية الجلسة ..") {
+            setTimeout(() => {
+                navigate('/login');
+                dispatch(clearError());
+                dispatch(clearStatus())
+            }, 500);
+        }
+    }, [coursesStatus, coursesError]);
     // Fetch teachers and categories on component mount
     useEffect(() => {
         dispatch(clearStatus());
         dispatch(clearError());
-    }, [dispatch]);
-
-    // Set isMounted to true after the first render
-    useEffect(() => {
-        isMounted.current = true;
-    }, []);
-
-    // Handle success message visibility
-    useEffect(() => {
-    // Only show success message if the status changes to 'succeeded' after the initial mount.
-    // This prevents showing a stale success message when navigating to the form.
-    if (isMounted.current && coursesStatus === 'succeeded') {
-      setShowSuccessMessage(true);
-      const timer = setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000); // Hide after 3 seconds
-      return () => clearTimeout(timer); // Clean up the timer
-    } else if (coursesStatus !== 'succeeded') {
-      // Ensure the message is hidden if status is not 'succeeded'
-      setShowSuccessMessage(false);
     }
-    }, [coursesStatus, isMounted]);
+    ,[dispatch]
+    );
+
 
     // Load course data in edit mode
     useEffect(() => {
@@ -236,6 +234,11 @@ export function CourseForm() {
             setSubmitError('Failed to create course. Please try again.');
         } finally {
             setIsSubmitting(false);
+            if(coursesStatus !== 'failed') {
+                setTimeout(() => {
+                    navigate('/courses');
+                }, 3000);
+            }
         }
     };
 

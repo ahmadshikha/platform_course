@@ -38,8 +38,9 @@ export const fetchContacts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       // Replace with your actual API endpoint for fetching contacts
-      const response = await fetch(`${apiUrl}/api/contact/admin/contacts`, {
-        method: "GET"
+      const response = await fetch(`${apiUrl}/api/contact`, {
+        method: "GET",
+        credentials: 'include'
       });
       if (!response.ok) {
         return rejectWithValue('فشل بتحميل قائمة التواصل');
@@ -69,10 +70,13 @@ export const deleteContact = createAsyncThunk(
       // Replace with your actual API endpoint for deleting a contact
       const response = await fetch(`${apiUrl}/api/contact/admin/contacts/${id}`, {
         method: 'DELETE',
+        credentials: 'include'
       });
       if (!response.ok) {
         const errorData = await response.json()
-        if(errorData.message == "لم يتم العثور على الرسالة") return rejectWithValue("لم يتم العثور على الرسالة")
+        if (errorData.message == "لم يتم العثور على الرسالة") return rejectWithValue("لم يتم العثور على الرسالة");
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         return rejectWithValue("فشل حذف الرسالة")
       }
       // The API should ideally return the ID of the deleted item
@@ -88,6 +92,9 @@ const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
   reducers: {
+    clearStatus(state) {
+      state.status = 'idle';
+    },
     clearError(state) {
       state.error = null;
     }
@@ -122,5 +129,5 @@ const contactsSlice = createSlice({
   },
 });
 
-export const { clearError } = contactsSlice.actions;
+export const { clearError, clearStatus } = contactsSlice.actions;
 export default contactsSlice.reducer;

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { addActivity, clearError, clearStatus } from '../store/slices/activity/activitySlice';
 import { AppDispatch, RootState } from '../store/store';
 import ErrorDisplay from '../component/ErrorDisplay';
@@ -15,7 +15,24 @@ interface IActivity {
 export default function ActivityForm() {
     const dispatch = useDispatch<AppDispatch>()
     const { status, error } = useSelector((s: RootState) => s.activities);
-
+    const navigate = useNavigate();
+    useEffect(() => {
+        if(status == 'succeeded') {
+            setShowSuccessMessage(true);
+            const timer = setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 3000);
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }
+        if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+            setTimeout(() => {
+                navigate('/login');
+                dispatch(clearError());
+                dispatch(clearStatus())
+            }, 500);
+        }
+    }, [status, error]);
     const [form, setForm] = useState<IActivity>({
         name: '',
         description: '',
@@ -30,27 +47,27 @@ export default function ActivityForm() {
     // TODO: Implement edit mode logic similar to other forms
     const isEditMode = false; 
 
-    useEffect(() => {
-        isMounted.current = true;
-        // Assuming clearStatus exists in activitySlice, if not, it should be added.
-        dispatch(clearStatus()); 
-        dispatch(clearError());
-        return () => {
-            isMounted.current = false;
-        };
-    }, [dispatch]);
+    // useEffect(() => {
+    //     isMounted.current = true;
+    //     // Assuming clearStatus exists in activitySlice, if not, it should be added.
+    //     dispatch(clearStatus()); 
+    //     dispatch(clearError());
+    //     return () => {
+    //         isMounted.current = false;
+    //     };
+    // }, [dispatch]);
 
-  useEffect(() => {
-    if (isMounted.current && status === "succeeded") {
-      setShowSuccessMessage(true);
-      const timer = setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    } else if (status !== "succeeded") {
-      setShowSuccessMessage(false);
-    }
-  }, [status]);
+//   useEffect(() => {
+//     if (isMounted.current && status === "succeeded") {
+//       setShowSuccessMessage(true);
+//       const timer = setTimeout(() => {
+//         setShowSuccessMessage(false);
+//       }, 3000);
+//       return () => clearTimeout(timer);
+//     } else if (status !== "succeeded") {
+//       setShowSuccessMessage(false);
+//     }
+//   }, [status]);
 
 
     const validateForm = () => {
@@ -83,6 +100,12 @@ export default function ActivityForm() {
             // The error is now handled by the global error display from the slice.
         } finally {
             setIsLoading(false);
+            if(status !== 'failed') {
+                setTimeout(() => {
+                    // navigate('/activities');
+                }, 3000);
+
+            }
         }
     };
 

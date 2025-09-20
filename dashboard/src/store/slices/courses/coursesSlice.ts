@@ -163,6 +163,7 @@ const addCourse = createAsyncThunk(
     try {
       const response = await fetch('http://localhost:5000/api/courses/', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -171,7 +172,9 @@ const addCourse = createAsyncThunk(
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to create course');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue("فشل اضافة الدورة");
       }
       
       const result = await response.json();
@@ -182,7 +185,7 @@ const addCourse = createAsyncThunk(
       
       return result.data;
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'An error occurred');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
   }
 );
@@ -194,6 +197,7 @@ const updateCourse = createAsyncThunk(
     try {
       const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -202,18 +206,20 @@ const updateCourse = createAsyncThunk(
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to update course');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue('فشل بتعديل الدورة');
       }
       
       const result = await response.json();
       
       if (result.success === false) {
-        return rejectWithValue(result.message || 'Failed to update course');
+        return rejectWithValue('فشل بتعديل الدورة');
       }
       
       return result.data;
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'An error occurred');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
   }
 );
@@ -221,9 +227,11 @@ const updateCourse = createAsyncThunk(
 const deleteCourse = createAsyncThunk(
   'courses/deleteCourse',
   async (courseId: string, { rejectWithValue }) => {
+    
     try {
       const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -231,18 +239,20 @@ const deleteCourse = createAsyncThunk(
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to delete course');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue('فشل بحذف الدورة');
       }
       
       const result = await response.json();
       
       if (result.success === false) {
-        return rejectWithValue(result.message || 'Failed to delete course');
+        return rejectWithValue('فشل بحذف الدورة');
       }
       
       return courseId;
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'An error occurred');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
   }
 );

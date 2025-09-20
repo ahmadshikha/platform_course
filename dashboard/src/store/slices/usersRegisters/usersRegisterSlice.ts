@@ -48,6 +48,7 @@ export const fetchUserRegisters = createAsyncThunk<UserRegister[]>(`${apiUrl}/ap
       const url = `${apiUrl}/api/userRegister`;
       const res = await fetch(url, {
         method: 'GET',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -78,6 +79,7 @@ export const updateUserRegisterStatus = createAsyncThunk<
       const url = `${apiUrl}/api/userRegister/${id}/status`;
       const res = await fetch(url, {
         method: 'PATCH',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -89,6 +91,8 @@ export const updateUserRegisterStatus = createAsyncThunk<
           // console.log(errorData)
           if(errorData.message == 'لا توجد مقاعد متاحة في هذا الكورس') return rejectWithValue(errorData.message)
           if(errorData.message == 'لم يتم العثور على الكورس') return rejectWithValue(errorData.message)
+          if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+          if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
           return rejectWithValue("فشل تحديث حالة التسجيل");
         }
         
