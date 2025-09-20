@@ -86,19 +86,37 @@ String,
   registrationDate: { type: Date, default: Date.now },
 
  
-  notes: { type: String } 
+  notes: { type: String },
+  isActive: { type: Boolean, default: true }, // هل الدورة مفعلة؟
+
 });
 
 courseRegistrationSchema.index({ email: 1, courseNumber: 1 });
 courseRegistrationSchema.index({ status: 1, registrationDate: -1 });
 
 //hi
+
+
 courseRegistrationSchema.pre('save', function(next) {
   if (this.email !== this.confirmEmail) {
     return next(new Error('البريد الإلكتروني غير متطابق'));
   }
   next();
 });
+courseRegistrationSchema.pre('save', function(next) {
+  // إذا كانت الحالة "ملغى" أو "مكتمل"، نجعل isActive = false تلقائياً
+  if (this.isModified('status') && ( this.status === "مؤكد")) {
+    this.isActive = false;
+  }
+  
+  // إذا كانت الحالة تتغير من "ملغى" أو "مكتمل" إلى حالة أخرى، يمكن جعلها نشطة مرة أخرى
+  if (this.isModified('status') && this.status !== "ملغى" && this.status !== "مكتمل") {
+    this.isActive = true;
+  }
+  
+  next();
+});
+
 
 const UserRegister = mongoose.model("UserRegister", courseRegistrationSchema);
 export default UserRegister;

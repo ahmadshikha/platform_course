@@ -8,15 +8,14 @@ export const createContact = async (req, res) => {
     const { username, email, message } = req.body;
     
     // الحصول على معلومات إضافية عن الطلب
-    const ipAddress = req.ip || req.connection.remoteAddress;
-    const userAgent = req.get('User-Agent');
+  
+
 
     const newContact = new Contact({
       username,
       email,
       message,
-      ipAddress,
-      userAgent
+   
     });
 
     const savedContact = await newContact.save();
