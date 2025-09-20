@@ -1,6 +1,7 @@
 // controllers/userRegisterController.js
 import UserRegister from "../models/UserRegister.js";
 import Course  from "../models/Course.js";
+import { log } from "console";
 // Create new registration
 export const createRegistration = async (req, res) => {
   try {
@@ -23,10 +24,30 @@ export const createRegistration = async (req, res) => {
 };
 
 // Get all registrations
+// export const getRegistrations = async (req, res) => {
+//   try {
+//     console.log("Fetching all registrations");
+//     const registrations = await UserRegister.find().sort({ registrationDate: -1 });
+//     res.json({
+//       success: true,
+//       count: registrations.length,
+//       data: registrations
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
+
 export const getRegistrations = async (req, res) => {
   try {
-    console.log("Fetching all registrations");
-    const registrations = await UserRegister.find().sort({ registrationDate: -1 });
+    console.log("Fetching all active registrations");
+    
+    // جلب فقط التسجيلات النشطة (isActive = true)
+    const registrations = await UserRegister.find({ isActive: true }).sort({ registrationDate: -1 });
+    
     res.json({
       success: true,
       count: registrations.length,
@@ -164,11 +185,102 @@ export const deleteRegistration = async (req, res) => {
 
 
 
+// export const updateRegistrationStatus = async (req, res) => {
+//   try {
+//     console.log("Updating registration status");
+//     console.log(req.body);
+    
+//     const { status, notes } = req.body;
+//     const registrationId = req.params.id;
+    
+//     // البحث عن التسجيل
+//     const registration = await UserRegister.findById(registrationId);
+    
+//     if (!registration) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "لم يتم العثور على التسجيل"
+//       });
+//     }
+    
+//     // إذا كان التحديث لتأكيد التسجيل
+//     if (status === "مؤكد" && registration.status !== "مؤكد") {
+//       // البحث عن الكورس باستخدام courseNumber
+//       const course = await Course.findOne({ id: registration.courseNumber });
+      
+//       if (!course) {
+//         return res.status(404).json({
+//           success: false,
+//           message: "لم يتم العثور على الكورس"
+//         });
+//       }
+      
+//       // التحقق من توفر مقاعد
+//       if (course.enrolled >= course.seats) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "لا توجد مقاعد متاحة في هذا الكورس"
+//         });
+//       }
+      
+//       // زيادة عدد المسجلين في الكورس
+//       course.enrolled += 1;
+      
+     
+//       // تحديث حالة الكورس إذا امتلأت المقاعد
+//       if (course.enrolled >= course.seats) {
+//         course.status = "ممتلئ";
+//       }
+      
+//       await course.save();
+//     }
+    
+//     // إذا كان التحديث لإلغاء تأكيد التسجيل (كان مؤكداً وأصبح غير ذلك)
+//     if (status !== "مؤكد" && registration.status === "مؤكد") {
+//       // البحث عن الكورس باستخدام courseNumber
+//       const course = await Course.findOne({ id: registration.courseNumber });
+      
+//       if (course) {
+//         // تقليل عدد المسجلين في الكورس
+//         course.enrolled = Math.max(0, course.enrolled - 1);
+        
+//         // تحديث حالة الكورس إذا أصبحت هناك مقاعد متاحة
+//         if (course.enrolled < course.seats && course.status === "ممتلئ") {
+//           course.status = "متوفر";
+//         }
+        
+//         await course.save();
+//       }
+//     }
+    
+//     // تحديث حالة التسجيل
+//     const updatedRegistration = await UserRegister.findByIdAndUpdate(
+//       registrationId,
+//       { status, notes },
+//       { new: true, runValidators: true }
+//     );
+    
+//     res.json({
+//       success: true,
+//       message: "تم تحديث حالة التسجيل بنجاح",
+//       data: updatedRegistration
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
 export const updateRegistrationStatus = async (req, res) => {
   try {
     console.log("Updating registration status");
     const { status, notes } = req.body;
     const registrationId = req.params.id;
+    
+    // إعداد بيانات التحديث
+    const updateData = { notes };
+    if (status) updateData.status = status;
     
     // البحث عن التسجيل
     const registration = await UserRegister.findById(registrationId);
@@ -178,6 +290,13 @@ export const updateRegistrationStatus = async (req, res) => {
         success: false,
         message: "لم يتم العثور على التسجيل"
       });
+    }
+    
+    // تحديد قيمة isActive بناءً على الحالة الجديدة
+    if ( status === "مؤكد") {
+      updateData.isActive = false;
+    } else if ( status === "معلق" || status === "قائمة_الانتظار") {
+      updateData.isActive = true;
     }
     
     // إذا كان التحديث لتأكيد التسجيل
@@ -212,7 +331,7 @@ export const updateRegistrationStatus = async (req, res) => {
     }
     
     // إذا كان التحديث لإلغاء تأكيد التسجيل (كان مؤكداً وأصبح غير ذلك)
-    if (status !== "مؤكد" && registration.status === "مؤكد") {
+    if (status && status !== "مؤكد" && registration.status === "مؤكد") {
       // البحث عن الكورس باستخدام courseNumber
       const course = await Course.findOne({ id: registration.courseNumber });
       
@@ -232,7 +351,7 @@ export const updateRegistrationStatus = async (req, res) => {
     // تحديث حالة التسجيل
     const updatedRegistration = await UserRegister.findByIdAndUpdate(
       registrationId,
-      { status, notes },
+      updateData,
       { new: true, runValidators: true }
     );
     
