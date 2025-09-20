@@ -21,7 +21,7 @@ const router = express.Router();
 // Routes
 router.post('/', createCourse);
 router.get('/', getCourses);
-router.get('/getteacherwithcourse/:teacherId', getTeacherCourses);
+router.get('/teacher/:teacherId', getTeacherCourses);
 router.get('/category/:categoryId',  getCategoryCourses);
 router.get('/:id',  getCourseById);
 router.get('/custom/:courseId', getCourseByCustomId);

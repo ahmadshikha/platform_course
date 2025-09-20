@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 // GET /api/activities - Get all activities
-router.get('/', getAllActivities);
+router.get('/', getAllActivities);  
 
 // GET /api/activities/date-range - Get activities by date range
 router.get('/date-range', getActivitiesByDateRange);

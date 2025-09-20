@@ -3,22 +3,22 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs'; 
 // Get all activities
-export const getAllActivities = async (req, res) => {
-  try {
-    const activities = await Activity.find().sort({ date: 1 });
-    res.status(200).json({
-      success: true,
-      data: activities,
-      count: activities.length
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching activities',
-      error: error.message
-    });
-  }
-};
+  export const getAllActivities = async (req, res) => {
+    try {
+      const activities = await Activity.find().sort({ date: 1 });
+      res.status(200).json({
+        success: true,
+        data: activities,
+        count: activities.length
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Error fetching activities',
+        error: error.message
+      });
+    }
+  };
 
 // Get single activity by ID
 export const getActivityById = async (req, res) => {
