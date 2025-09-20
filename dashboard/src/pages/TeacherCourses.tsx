@@ -35,15 +35,15 @@ export default function TeacherCourses() {
 
   const { id } = useParams<{ id: string }>();
   useEffect(() => {
-    console.log({id});
+    // console.log({id});
     const _id = id.split('id=')[1]
-    console.log(_id)
+    // console.log(_id)
     dispatch(_fetchTeacherCourses({teacherId: _id,params: {page: currentPage, limit: itemsPerPage}}));
   }, [navigate, currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // console.log('pagination')
+    // // console.log('pagination')
   };
 
   // Validate date strings: accept ISO (YYYY-MM-DD) or long form (e.g., "January 15, 2024")
@@ -220,11 +220,6 @@ export default function TeacherCourses() {
                 onEdit={(courseId) => navigate(`/courses/${courseId}/edit`)}
                 onDelete={(courseId) => setShowDeleteConfirm(courseId)}
               />
-              {!isValidDateFormat(course.date) && (
-                // <p className="mt-1 text-xs text-red-600 px-4">Invalid date format — use YYYY-MM-DD or "January 15, 2024"</p>
-                <p className="mt-1 text-xs text-red-600 px-4">تنسيق التاريخ غير صالح — استخدم DD-MM-YYYY ex: 01-03-2000</p>
-
-              )}
             </div>
           ))}
         </div>

@@ -24,6 +24,7 @@ export function CourseForm() {
     const [status, setStatus] = useState<"متوفر" | "ممتلئ" | "ملغى" | "مكتمل">("متوفر");
     const [price, setPrice] = useState('');
     const [seats, setSeats] = useState(1);
+    const [enrolled, setEnrolled] = useState(0)
     const [description, setDescription] = useState("");
     const [details, setDetails] = useState("");
     const [teacher, setTeacher] = useState<ITeacher | null>(null);
@@ -39,7 +40,6 @@ export function CourseForm() {
 
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
-    const { lang } = useSelector((s: RootState) => s.lang);
     const teachers = useSelector((s: RootState) => s.teachers.items);
     const categories = useSelector((s: RootState) => s.categories.items);
     const courses = useSelector((s: RootState) => s.courses);
@@ -82,7 +82,7 @@ export function CourseForm() {
         if(url.includes("/edit")) {
             setActionForm("تعديل كورس")
             setIsEditMode(true)
-			console.log(11111, courseId)
+			// console.log(11111, courseId)
             const course = courses.items.find(c => c._id === courseId);
             if (course) {
                 setId(course.id);
@@ -96,6 +96,7 @@ export function CourseForm() {
                 setLocation(course.location);
                 // setLocationEn(course.locationEn);
                 setStatus(course.status);
+                setEnrolled(course.enrolled)
                 setPrice(course.price);
                 setSeats(course.seats);
                 setDescription(course.description);
@@ -109,6 +110,10 @@ export function CourseForm() {
                 setActive(course.isActive);
             }
         }
+        else {
+            dispatch(fetchTeachers({}))
+            dispatch(fetchCategories({}))
+        }
         return ()=> {
             setErrors({});
         }
@@ -118,7 +123,7 @@ export function CourseForm() {
     const validateForm = () => {
         // clear previous errors before validating to avoid showing stale messages
         const newErrors: { [key: string]: string } = {};
-        console.log(teacher)
+        // console.log(teacher)
         if (!id.trim()) {
             newErrors.id = 'معرف الكورس مطلوب';
         }
@@ -211,7 +216,7 @@ export function CourseForm() {
                 categoryId: selectedCategory || undefined,
                 isActive
             };
-			console.log(courseData)
+			// console.log(courseData)
             if (isEditMode && courseId) {
                 await dispatch(updateCourse({ courseId, courseData }));
             } else {
@@ -267,7 +272,7 @@ export function CourseForm() {
 		<form className="space-y-6">
 				<div>
 					<label className="block text-gray-700 font-medium mb-2">معرف الكورس *</label>
-					<input value={id} onChange={e => {setId(e.target.value); console.log(id)}} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.id ? 'border-red-500' : 'border-gray-300'}`} required />
+					<input value={id} onChange={e => {setId(e.target.value); }} className={`border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.id ? 'border-red-500' : 'border-gray-300'}`} required />
 					<p className="mt-1 text-sm text-gray-500">معرف فريد للطلب</p>
 					{errors.id && <p className="mt-1 text-sm text-red-600">{errors.id}</p>}
 				</div>
@@ -320,6 +325,10 @@ export function CourseForm() {
 				<div>
 					<label className="block text-gray-700 font-medium mb-2">المقاعد *</label>
 					<input type="number" min="1" value={seats} onChange={e => setSeats(Number(e.target.value))} className="border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition border-gray-300" required />
+				</div>
+				<div>
+					<label className=" text-gray-700 font-medium mb-2"><p className="inline text-red-500 text-xs">للقراءة فقط</p> عدد المسجلين</label>
+					<input type="number" disabled={true} min="1" value={enrolled} onChange={e => setSeats(Number(e.target.value))} className="border rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition border-gray-300" required />
 				</div>
 				<div>
 					<label className="block text-gray-700 font-medium mb-2">الوصف *</label>

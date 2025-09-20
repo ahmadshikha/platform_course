@@ -74,7 +74,7 @@ const fetchCourses = createAsyncThunk(
         return rejectWithValue(errorData.message || 'Failed to fetch courses');
       }
       const result = await response.json();
-      console.log('courses')
+      // console.log('courses')
       if (result.success === false) {
         return rejectWithValue(result.message || 'Failed to fetch courses');
       }
@@ -114,7 +114,7 @@ const fetchCategoryCourses = createAsyncThunk(
         return rejectWithValue(errorData.message || 'Failed to fetch teacher courses');
       }
       const result = await response.json();
-      console.log('category courses result:', result)
+      // console.log('category courses result:', result)
       if (result.success === false) {
        return rejectWithValue(result.message || 'Failed to fetch teacher courses');
       }
@@ -145,7 +145,7 @@ export const fetchTeacherCourses = createAsyncThunk(
         return rejectWithValue(errorData.message || 'Failed to fetch teacher courses');
       }
       const result = await response.json();
-      console.log('teacher courses result:', result)
+      // console.log('teacher courses result:', result)
       if (result.success === false) {
        return rejectWithValue(result.message || 'Failed to fetch teacher courses');
       }
@@ -190,7 +190,7 @@ const addCourse = createAsyncThunk(
 const updateCourse = createAsyncThunk(
   'courses/updateCourse',
   async ({ courseId, courseData }: { courseId: string, courseData: Partial<Course> }, { rejectWithValue }) => {
-    console.log('Updating course:', courseId, courseData);
+    // console.log('Updating course:', courseId, courseData);
     try {
       const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
         method: 'PUT',

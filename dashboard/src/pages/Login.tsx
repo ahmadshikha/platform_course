@@ -34,7 +34,7 @@ export default function Login() {
             } else {
 
                 const err: any = resultAction.payload || resultAction.error;
-                console.log(loginError)
+                // console.log(loginError)
                 if(loginError == 'Invalid credentials') setError("اسم المستخدم او كلمة السر خطأ");
                 else
                 setError('خطأ بتسجيل الدخول');
@@ -58,7 +58,7 @@ export default function Login() {
         // await new Promise(resolve => setTimeout(resolve, 1000));
 
         // if (username === 'admin' && password === 'password') {
-        //     console.log('Login successful');
+        //     // console.log('Login successful');
         //     // navigate('/courses'); // Redirect to a protected route
         // } else {
         //     setError('Invalid credentials. Please try again.');

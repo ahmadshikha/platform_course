@@ -13,7 +13,6 @@ interface CourseCardProps {
 
 export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
   // const { lang } = useSelector((s: RootState) => s.lang);
-  const { lang } = useSelector((s: RootState) => s.lang);
   let date = new Date(course.date);
   let dataString = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   // Translation
@@ -22,11 +21,7 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
   //   ar
   // };
   // const translations = translate[lang];
-  const translate = {
-    en,
-    ar
-  };
-  const translations = translate[lang];
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -46,9 +41,9 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
   // const getStatusText = (status: string) => {
   //   return translations.courses.status[status as keyof typeof translations.courses.status] || status;
   // };
-  const getStatusText = (status: string) => {
-    return translations.courses.status[status as keyof typeof translations.courses.status] || status;
-  };
+  // const getStatusText = (status: string) => {
+  //   return translations.courses.status[status as keyof typeof translations.courses.status] || status;
+  // };
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-200">
@@ -66,8 +61,8 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
             </p>
           </div>
           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(course.status)}`}>
-            {/* {course.status} */}
-            {getStatusText(course.status)}
+            {course.status}
+            {/* {getStatusText(course.status)} */}
           </span>
         </div>
 

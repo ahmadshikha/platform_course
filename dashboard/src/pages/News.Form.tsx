@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import { addNews, clearStatus, clearError } from "../store/slices/news/newsSlice";
 import { Link } from "react-router-dom";
+import ErrorDisplay from "../component/ErrorDisplay";
 
 export default function AddNewsForm() {
   const dispatch = useDispatch<AppDispatch>();
@@ -90,7 +91,7 @@ export default function AddNewsForm() {
         eventDate: new Date(eventDate),
         imageURL: imageURL,
       }
-      console.log(newsData)
+      // console.log(newsData)
       dispatch(addNews(newsData));
       setTitle('')
       setContent('')
@@ -121,6 +122,9 @@ export default function AddNewsForm() {
             <p className="text-sm text-green-600">تم إضافة الخبر بنجاح</p>
           </div>
         )}
+
+        {/* Global error message */}
+        <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
         {/* العنوان */}
         <div>
@@ -194,9 +198,6 @@ export default function AddNewsForm() {
                         الغاء
                     </Link>
                 </div>
-
-        {/* رسالة خطأ عامة */}
-        {error && <p className="text-red-500 mt-3 text-center">{error}</p>}
       </div>
     </div>
   );

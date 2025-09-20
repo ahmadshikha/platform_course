@@ -31,12 +31,7 @@ export function CategoryForm() {
     const categories = useSelector((s: RootState) => s.categories.items);
     const { status, error } = useSelector((s: RootState) => s.categories);
 
-    const {lang} = useSelector((s: RootState) => s.lang);
-    const translate = {
-      en,
-      ar
-    }
-    const translations = translate[lang];
+
     const dispatch = useDispatch<AppDispatch>();
 
   useEffect((): any => {
@@ -47,7 +42,7 @@ export function CategoryForm() {
         const start = url.indexOf('=')
         const end = url.indexOf('/edit')
         const id = url.slice(start+1, end)
-        console.log(id)
+        // console.log(id)
         setEditingCategoryId(id)
         
         const category = categories.find(c => c._id === id)
@@ -95,7 +90,7 @@ export function CategoryForm() {
     }
   }
   useEffect(()=> {
-    console.log("error category list", error)
+    // console.log("error category list", error)
   },[error])
 
   // Set isMounted to true after the first render
@@ -127,7 +122,7 @@ export function CategoryForm() {
   }
   // useEffect(()=> {
   //   if(image.files) {
-  //     console.log(image.files)
+  //     // console.log(image.files)
   //   }
 
 
@@ -174,9 +169,9 @@ export function CategoryForm() {
     }
   }
 
-    return(
+  return(
     <>
-    <div className={`max-w-lg mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
+    <div className={`max-w-lg mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100`}>
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل الفئة" : "إضافة فئة جديدة"}</h1>
         
         {/* Global error message */}
@@ -252,7 +247,7 @@ export function CategoryForm() {
                   onChange={e => {
                     setImage(e.target)
                     clearFieldError('name')
-                    console.log(e.target.files[0])
+                    // console.log(e.target.files[0])
                   }} 
                   className={`file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                 />
@@ -296,5 +291,5 @@ export function CategoryForm() {
         </div>
     </div>
     </>
-    )
+  )
 }

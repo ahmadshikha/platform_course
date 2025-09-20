@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { apiUrl } from '../../../const';
 
 export interface IUser {
   _id: string;
@@ -30,7 +31,7 @@ const initialState: UserState = {
 export const loginUser = createAsyncThunk<IUser, LoginCredentials>(
   'users/loginUser',
   async (credentials, { rejectWithValue }) => {
-    const user: IUser = await fetch('http://localhost:5000/api/admin/login', {
+    const user: IUser = await fetch(`${apiUrl}/api/admin/login`, {
       method: 'POST',
       credentials: "include",
       headers: {
@@ -39,7 +40,7 @@ export const loginUser = createAsyncThunk<IUser, LoginCredentials>(
       body: JSON.stringify(credentials),
     })
     .then((res)=> {
-      console.log(res)
+      // console.log(res)
       var data = res.json()
       if(res.ok) {
           return data
@@ -47,15 +48,15 @@ export const loginUser = createAsyncThunk<IUser, LoginCredentials>(
       return data.then(err => {throw err;});
     })
     .then((data)=> {
-        console.log(data)
-        console.log(data)
+        // console.log(data)
+        // console.log(data)
         return data;
     })
     .catch((err) => {
-      console.log(err)
+      // console.log(err)
       return rejectWithValue(err.message || 'Failed to fetch user');
     })
-    console.log("user from login", user)
+    // console.log("user from login", user)
 
     return user;
   }
@@ -63,7 +64,7 @@ export const loginUser = createAsyncThunk<IUser, LoginCredentials>(
 export const authUser = createAsyncThunk(
   'users/auth',
   async (credentials, { rejectWithValue }) => {
-    const user = await fetch('http://localhost:5000/api/admin/auth', {
+    const user = await fetch(`${apiUrl}/api/admin/auth`, {
       method: 'POST',
       credentials: "include",
       headers: {
@@ -71,7 +72,7 @@ export const authUser = createAsyncThunk(
       },
     })
     .then((res)=> {
-      console.log(res)
+      // console.log(res)
       var data = res.json()
       if(res.ok) {
           return data
@@ -79,15 +80,15 @@ export const authUser = createAsyncThunk(
       return data.then(err => {throw err;});
     })
     .then((data)=> {
-        console.log(data)
-        console.log(data)
+        // console.log(data)
+        // console.log(data)
         return data;
     })
     .catch((err) => {
-      console.log(err)
+      // console.log(err)
       return rejectWithValue(err.message || 'Failed to fetch user');
     })
-    console.log("user from auth", user)
+    // console.log("user from auth", user)
 
     return user;
   }
@@ -115,7 +116,7 @@ const usersSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<IUser>) => {
         state.loading = 'succeeded';
-        console.log(action.payload)
+        // console.log(action.payload)
         state.user = action.payload;
         state.islogged = true;
       

@@ -81,12 +81,6 @@ export function TeachersForm() {
     const teachers = useSelector((s: RootState) => s.teachers.items);
     const { status, error } = useSelector((s: RootState) => s.teachers);
 
-    const {lang} = useSelector((s: RootState) => s.lang);
-    const translate = {
-        en,
-        ar
-    }
-    const translations = translate[lang];
     const dispatch = useDispatch<AppDispatch>();
   useEffect((): any => {
     const url = window.location.href
@@ -96,7 +90,7 @@ export function TeachersForm() {
         const start = url.indexOf('=')
         const end = url.indexOf('/edit')
         const id = url.slice(start+1, end)
-        console.log(id)
+        // console.log(id)
         setEditingTeacherId(id)
         
         const teacher = teachers.find(t => t._id === id)
@@ -160,6 +154,9 @@ export function TeachersForm() {
   // Set isMounted to true after the first render
   useEffect(() => {
     isMounted.current = true;
+    // const regex = /^09\d{8}$/;
+        const regex = /^09\d{8}$/;
+    console.log(/^09\d{8}$/.test("099999"))
   }, []);
 
   const addSpecialty = (specialty: string, isEn: boolean = false) => {
@@ -226,8 +223,11 @@ export function TeachersForm() {
     }
     if (!contact.phone.trim()) {
       newErrors.phone = "رقم الهاتف مطلوب"
+    } else if(!/^09\d{8}$/.test(contact.phone)) {
+      newErrors.email = "09xxxxxxxxرقم الهاتف غير صالح مثال:"
     }
-    
+
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -268,7 +268,7 @@ export function TeachersForm() {
       if (isEditMode && editingTeacherId) {
         await dispatch(updateTeacher(teacherData))
       } else {
-        console.log(teacherData)
+        // console.log(teacherData)
         await dispatch(addTeacher(teacherData)).unwrap()
       }
       
@@ -303,7 +303,7 @@ export function TeachersForm() {
 
     return(
     <>
-    <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
+    <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100`}>
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل بيانات الأستاذ" : "إضافة أستاذ جديد"}</h1>
         {/* Global error message */}
         {errors.general && (
@@ -384,7 +384,7 @@ export function TeachersForm() {
                   onChange={e => {
                     setImage(e.target)
                     clearFieldError('name')
-                    console.log(e.target.files[0])
+                    // console.log(e.target.files[0])
                   }} 
                   className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
@@ -452,7 +452,7 @@ export function TeachersForm() {
                     </div>
                     <div>
                         {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.phone}</label> */}
-                        <label className="block text-sm font-medium text-gray-700">رقم الهاتف</label>
+                        <label className="block text-gray-700 font-medium mb-2">رقم الهاتف</label>
                         <input 
                           value={contact.phone} 
                           onChange={e => {
@@ -620,6 +620,7 @@ export function TeachersForm() {
                             <label className="block text-gray-700 font-medium mb-2">السنة</label>
                             <input 
                               type="number"
+                              min={1}
                               value={newEducation.year} 
                               onChange={e => setNewEducation(prev => ({ ...prev, year: e.target.value }))} 
                               className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"

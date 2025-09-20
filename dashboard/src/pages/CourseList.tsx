@@ -11,22 +11,15 @@ export default function CourseList() {
   const courses = useSelector((s: RootState) => s.courses.items);
   const status = useSelector((s: RootState) => s.courses.status);
   const error = useSelector((s: RootState) => s.courses.error);
-  const { lang } = useSelector((s: RootState) => s.lang);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
+  
   const pagination = useSelector((s: RootState) => (s.courses as any).pagination || { totalPages: 1, currentPage: 1, total: 0 });
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
 
-  // Translation
-  const translate = {
-    en,
-    ar
-  };
-  const translations = translate[lang];
 
   // Delete state
   const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null);

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../store/store";
-import { fetchActivities, IActivity, deleteActivity } from "../store/slices/activity/activitySlice";
+import { fetchActivities, IActivity, deleteActivity, clearError } from "../store/slices/activity/activitySlice";
 import { Link } from "react-router-dom";
+import ErrorDisplay from "../component/ErrorDisplay";
 
 export default function ActivityList() {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,14 +18,6 @@ export default function ActivityList() {
     return <div>Loading...</div>;
   }
 
-  if (status === "failed") {
-    return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">
-        {error}
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -37,6 +30,8 @@ export default function ActivityList() {
           اضافة نشاط
         </Link>
       </div>
+
+      <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
       {/* Content */}
       {activities.length === 0 ? (
@@ -168,5 +163,3 @@ const ActivityCard: React.FC<Props> = ({ activity, onDelete, deletingId }) => {
     </div>
   );
 };
-
-

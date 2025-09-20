@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { apiUrl } from '../../../const';
 
 export type Education = {
   degree: string;
@@ -91,7 +92,7 @@ const initialState: TeachersState = {
 };
 
 // Async Thunks
-export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination: {totalPages: number, currentPage: number, total: number}}, {page?: number, limit?: number} | undefined>('teachers/fetchTeachers', 
+export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination?: {totalPages: number, currentPage: number, total: number}}, {page?: number, limit?: number} | undefined>('teachers/fetchTeachers', 
   async (params, {rejectWithValue}) => {
     const { page, limit } = params || {};
     try {
@@ -99,21 +100,21 @@ export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination:
       if (page) queryParams.append('page', page.toString());
       if (limit) queryParams.append('limit', limit.toString());
       
-      const url = `http://localhost:5000/api/teachers/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${apiUrl}/api/teachers/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const res = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      console.log("get teachers",{res})
+      // console.log("get teachers",{res})
       if(!res.ok) {
         const errorData = await res.json();
         return rejectWithValue(errorData.message || 'Failed to fetch teachers');
       }
       const data = await res.json();
-      console.log(res)
-      console.log({data})
+      // console.log(res)
+      // console.log({data})
       return {
         teachers: data.teachers,
         pagination: {
@@ -151,8 +152,8 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
       } else {
         return rejectWithValue("No image file provided.");
       }
-      console.log(formdata)
-      const res = await fetch('http://localhost:5000/api/teachers/', {
+      // console.log(formdata)
+      const res = await fetch(`${apiUrl}/api/teachers/`, {
         method: 'POST',
         // headers: {
         //   'Content-Type': 'application/json',
@@ -165,12 +166,12 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
         return rejectWithValue(errorData.message || 'Failed to add teacher');
       }
       const data = await res.json();
-      console.log(res)
-      console.log({data})
+      // console.log(res)
+      // console.log({data})
       return data;
 
     } catch(e) {
-      console.log(e)
+      // console.log(e)
       return rejectWithValue(e.message || 'Failed to add techer');
     }
 });
@@ -178,7 +179,7 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
 export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teachers/updateTeacher', 
   async (updatedTeacher, {rejectWithValue}) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/teachers/${updatedTeacher._id}`, {
+      const response = await fetch(`${apiUrl}/api/teachers/${updatedTeacher._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +203,7 @@ export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teacher
 export const deleteTeacher = createAsyncThunk<string, string, {rejectValue: string}>('teachers/deleteTeacher', 
   async (teacherId, {rejectWithValue}) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/teachers/${teacherId}`, {
+      const response = await fetch(`${apiUrl}/api/teachers/${teacherId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

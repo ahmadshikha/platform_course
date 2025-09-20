@@ -44,18 +44,18 @@ export const store = configureStore({
 		courses: coursesReducer,
 		teachers: teachersReducer,
 		categories: categoriesReducer,
-		lang: langReducer,
+		// lang: langReducer,
 		usersRegisters: usersRegistersReducer,
 		login: adminLoginReducer,
 		news: newsReducer,
 		activities: activitiesReducer,
-		conatcts: contactsReducer
+		contacts: contactsReducer
 	},
 	preloadedState: loadState() as {
 		courses: CoursesState, 
 		teachers: TeachersState,
 		categories: CategoriesState,
-		lang: ILang,
+		// lang: ILang,
 		usersRegisters: UserRegisterState,
 		login: UserState,
 		news: NewsState,

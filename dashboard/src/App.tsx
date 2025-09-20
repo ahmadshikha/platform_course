@@ -2,7 +2,6 @@ import React from "react";
 import './App.css';
 import { Routes, HashRouter, Route, Navigate } from "react-router-dom";
 import Layout from "./component/Layout";
-import UsersList from "./pages/UsersList";
 import CourseList from "./pages/CourseList";
 import { CourseForm } from "./pages/CouresForm";
 import { TeachersForm } from "./pages/TeachersForm";

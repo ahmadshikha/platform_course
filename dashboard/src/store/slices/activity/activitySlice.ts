@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import {apiUrl} from '../../../const'
 
 // Define the Activity interface for your state
 export interface IActivity {
@@ -32,16 +33,14 @@ const initialState: ActivitiesState = {
     error: null,
 };
 
-// Define the base URL for your API. Adjust if necessary.
-const API_URL = 'http://localhost:5000/api/activities';
 
-// --- Async Thunks for CRUD Operations ---
+
 
 export const fetchActivities = createAsyncThunk<IActivity[], void, { rejectValue: string }>(
     'activities/fetchActivities',
     async (_, { rejectWithValue }) => {
         try {
-            const res = await fetch(API_URL);
+            const res = await fetch(`${apiUrl}/api/activities`);
             if (!res.ok) {
                 const errorData = await res.json();
                 return rejectWithValue('فشل بتحميل النشاطات')
@@ -58,19 +57,19 @@ export const addActivity = createAsyncThunk<IActivity, NewActivityData, { reject
     'activities/addActivity',
     async (activityData, { rejectWithValue }) => {
         try {
-            const response = await fetch(API_URL, {
+            const response = await fetch(`${apiUrl}/api/activities`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activityData),
             });
-            console.log(response)
+            // console.log(response)
             if (!response.ok) {
                 const errorData = await response.json();
                 if(errorData.message == 'ValidationError') return rejectWithValue("تحقق من صحة البيانات")
                 return rejectWithValue("فشل اضافة نشاط")
             }
             const data = await response.json()
-            console.log(data)
+            // console.log(data)
             return data.data;
         } catch (error: any) {
             return rejectWithValue("فشل اضافة نشاط")
@@ -83,7 +82,7 @@ export const deleteActivity = createAsyncThunk<string, string, { rejectValue: st
     async (id, { rejectWithValue }) => {
         // Implementation using fetch
         try {
-            const response = await fetch(`http://localhost:5000/api/activities/${id}`, {
+            const response = await fetch(`${apiUrl}/api/activities/${id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 // body: JSON.stringify(activityId),
@@ -137,7 +136,7 @@ const activitiesSlice = createSlice({
             })
             .addCase(addActivity.rejected, (state, action) => {
                 state.status = 'failed';
-                console.log("add activity case rejected",action.payload)
+                // console.log("add activity case rejected",action.payload)
                 state.error = action.payload || 'فشل اضافة نشاط'
             })
 
@@ -148,7 +147,13 @@ const activitiesSlice = createSlice({
             .addCase(deleteActivity.fulfilled, (state, action: PayloadAction<string>) => {
                 state.status = 'succeeded';
                 state.items = state.items.filter(item => item._id !== action.payload);
-                console.log(state.items)
+                // console.log(state.items)
+
+            })
+            .addCase(deleteActivity.rejected, (state, action: PayloadAction<string>) => {
+                state.status = 'failed';
+                state.error = action.payload || 'فشل حذف النشاط';
+                // console.log(state.items)
 
             })
             // Generic pending and rejected for add/update/delete

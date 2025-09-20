@@ -5,6 +5,8 @@ import { AppDispatch, RootState } from '../store/store';
 import { deleteCategory, fetchCategories, clearError, clearStatus } from '../store/slices/categories/categoriesSlice';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
+import ErrorDisplay from '../component/ErrorDisplay';
+
 
 import avatar from '../images/teacher-1758091670690-778911984.png'
 
@@ -23,7 +25,7 @@ function CategoriesList() {
   //   ar
   // };
   // const translations = translate[lang];
-      console.log(categories)
+      // console.log(categories)
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -48,6 +50,7 @@ function CategoriesList() {
   // Clear errors when user interacts
   const clearErrors = () => {
     setDeleteError(null);
+    dispatch(clearError())
   };
   // Handle delete category
   const handleDeleteCategory = async (categoryId: string) => {
@@ -103,35 +106,13 @@ function CategoriesList() {
       </div>
 
       {/* Global error message */}
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-          <div className="flex">
-            <div className="ml-3">
-              {/* <h3 className="text-sm font-medium text-red-800">{translations.categories.error}</h3> */}
-              <h3 className="text-sm font-medium text-red-800">خطأ</h3>
-              <div className="mt-2 text-sm text-red-700">
-                <p>{error}</p>
-              </div>
-              <div className="mt-4">
-                <button
-                  onClick={clearErrors}
-                  className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
-                >
-                  {/* {translations.categories.dismiss} */}
-                  تجاهل
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ErrorDisplay error={error} onDismiss={clearErrors} />
 
       {/* Delete error message */}
-      {deleteError && (
+      {/* {deleteError && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="ml-3">
-              {/* <h3 className="text-sm font-medium text-red-800">{translations.categories.deleteError}</h3> */}
               <h3 className="text-sm font-medium text-red-800">خطا بالحذف</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{deleteError}</p>
@@ -141,14 +122,13 @@ function CategoriesList() {
                   onClick={clearErrors}
                   className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  {/* {translations.categories.dismiss} */}
                   تجاهل
                 </button>
               </div>
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
     {status === 'loading' && (
       // <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">{translations.categories.loading}</div>
@@ -177,10 +157,10 @@ function CategoriesList() {
         {/* categories list */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category)=> {
-            console.log(category)
+            // console.log(category)
             const a = category.image.split('backend')[1]
-            console.log(category.image)
-            console.log(`http://localhost:5000${category.image}`)
+            // console.log(category.image)
+            // console.log(`http://localhost:5000${category.image}`)
             return (
           <div key={category._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
             <div onClick={()=> navigate(`/category-courses/id=${category._id}`)} className="p-4">

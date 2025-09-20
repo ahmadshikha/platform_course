@@ -21,7 +21,7 @@ export default function NewsCard({ _id, title, content, imageURL, category, even
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const {error, status} = useSelector((s: RootState)=> s.news)
-  console.log(`http://localhost:5000${imageURL}`)
+  // console.log(`http://localhost:5000${imageURL}`)
   const handleDelete = () => {
     // Dispatch the deleteNews async thunk, passing the unique ID of the news item.
     dispatch(deleteNews(_id) as any);

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { addActivity } from '../store/slices/activity/activitySlice';
+import { addActivity, clearError, clearStatus } from '../store/slices/activity/activitySlice';
 import { AppDispatch, RootState } from '../store/store';
+import ErrorDisplay from '../component/ErrorDisplay';
 
 interface IActivity {
     name: string;
@@ -13,6 +14,8 @@ interface IActivity {
 
 export default function ActivityForm() {
     const dispatch = useDispatch<AppDispatch>()
+    const { status, error } = useSelector((s: RootState) => s.activities);
+
     const [form, setForm] = useState<IActivity>({
         name: '',
         description: '',
@@ -22,8 +25,33 @@ export default function ActivityForm() {
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isLoading, setIsLoading] = useState(false);
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const isMounted = useRef(false);
     // TODO: Implement edit mode logic similar to other forms
     const isEditMode = false; 
+
+    useEffect(() => {
+        isMounted.current = true;
+        // Assuming clearStatus exists in activitySlice, if not, it should be added.
+        dispatch(clearStatus()); 
+        dispatch(clearError());
+        return () => {
+            isMounted.current = false;
+        };
+    }, [dispatch]);
+
+  useEffect(() => {
+    if (isMounted.current && status === "succeeded") {
+      setShowSuccessMessage(true);
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else if (status !== "succeeded") {
+      setShowSuccessMessage(false);
+    }
+  }, [status]);
+
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
@@ -45,17 +73,14 @@ export default function ActivityForm() {
         setErrors({});
 
         try {
-            // TODO: Dispatch an action to add/update the activity in your Redux store
-            console.log("Submitting activity:", { ...form, date: new Date(form.date) });
-            dispatch(addActivity({ ...form, date: new Date(form.date) }))
-            // Example: await dispatch(addActivity({ ...form, date: new Date(form.date) })).unwrap();
+            await dispatch(addActivity({ ...form, date: new Date(form.date) })).unwrap();
             
             // Reset form if not in edit mode
             if (!isEditMode) {
                 setForm({ name: '', description: '', date: '', location: '' });
             }
         } catch (error: any) {
-            setErrors({ general: "حدث خطأ أثناء حفظ النشاط" });
+            // The error is now handled by the global error display from the slice.
         } finally {
             setIsLoading(false);
         }
@@ -77,13 +102,15 @@ export default function ActivityForm() {
         <div className={`max-w-lg mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100 rtl`}>
             <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل النشاط" : "إضافة نشاط جديد"}</h1>
             
-            {errors.general && (
-                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-                    <p className="text-sm text-red-600">{errors.general}</p>
-                </div>
-            )}
+            {/* Global error message */}
+            <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
-            {/* TODO: Add success message display like in CategoryForm */}
+            {/* Success message */}
+            {showSuccessMessage && (
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                  <p className="text-sm text-green-600">تم حفظ النشاط بنجاح</p>
+              </div>
+            )}
 
             <div className="space-y-6">
                 <div>
