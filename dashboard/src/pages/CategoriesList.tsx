@@ -167,30 +167,28 @@ function CategoriesList() {
           </div>
         </div>
         {/* categories list */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {categories.map((category)=> {
             return (
               <div key={category._id} className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col">
-                <div onClick={() => navigate(`/category-courses/id=${category._id}`)} className="cursor-pointer">
-                  <div className="relative h-48 w-full overflow-hidden">
-                    <img 
-                      src={`http://localhost:5000${category.image}`} 
-                      alt={category.name} 
-                      className=""
-                      onError={(e) => { e.currentTarget.src = avatar }}
-                    />
-                    {/* <div className="absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-30 transition-opacity duration-300"></div> */}
+                <div className="relative h-48 w-full overflow-hidden">
+                  <img 
+                    src={`http://localhost:5000${category.image}`} 
+                    alt={category.name} 
+                    className="w-full h-full object-fill"
+                    onError={(e) => { e.currentTarget.src = avatar }}
+                  />
+                  <div 
+                    onClick={() => navigate(`/category-courses/id=${category._id}`)} 
+                    className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent cursor-pointer"
+                  ></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                    <h3 className="text-xl font-bold truncate">{category.name}</h3>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate">{category.name}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">{category.description}</p>
-                  </div>
-                </div>
-                <div className="mt-auto bg-gray-50/70 px-6 py-3 border-t border-gray-200 flex items-center justify-end">
                   <button
                     onClick={() => confirmDelete(category._id)}
                     disabled={deletingCategoryId === category._id}
-                    className="p-2 rounded-full text-gray-500 hover:bg-red-100 hover:text-red-600 transition-colors"
+                    className="absolute top-3 right-3 p-2 rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-red-500/80 transition-colors"
                     aria-label="Delete category"
                   >
                     {deletingCategoryId === category._id ? (
@@ -204,6 +202,9 @@ function CategoriesList() {
                       </svg>
                     )}
                   </button>
+                </div>
+                <div className="p-6 flex-grow flex flex-col">
+                  <p className="text-sm text-gray-600 line-clamp-3 flex-grow">{category.description}</p>
                 </div>
               </div>
             )

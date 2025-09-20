@@ -295,6 +295,7 @@ export function TeachersForm() {
       setErrors({ general: error || "خطأاثناء حفظ الاستاذ" })
     } finally {
       setIsLoading(false)
+      window.scrollTo(0, 0);
       if(status !== 'failed') {
           setTimeout(() => {
               navigate('/teachers');

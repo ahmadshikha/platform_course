@@ -101,6 +101,7 @@ export default function AddNewsForm() {
       
     } finally {
       setIsLoading(false)
+      window.scrollTo(0, 0);
       if(status !== 'failed') {
           setTimeout(() => {
             navigate('/news');

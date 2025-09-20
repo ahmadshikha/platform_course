@@ -100,6 +100,7 @@ export default function ActivityForm() {
             // The error is now handled by the global error display from the slice.
         } finally {
             setIsLoading(false);
+            window.scrollTo(0, 0);
             if(status !== 'failed') {
                 setTimeout(() => {
                     // navigate('/activities');

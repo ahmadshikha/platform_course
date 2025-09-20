@@ -21,7 +21,7 @@ export default function UsersRegisters() {
     }, [dispatch])
 
     return (
-        <div className="p-6 space-y-6 min-h-screen">
+        <div className="md:p-6 md:space-y-6 min-h-screen">
             <div className="container mx-auto max-w-7xl">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-2xl font-bold">حجوزات الطلاب</h1>
@@ -42,13 +42,11 @@ export default function UsersRegisters() {
                 )}
 
                 {items.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="flex flex-wrap gap-6">
                         {items.map((r) => (
-                            <UserRegisterCard
-                                key={r._id} 
-                                onChangeStatus={onChangeStatus}
-                                reg={r}
-                            />
+                            <div key={r._id} className="flex-1 min-w-[350px]">
+                                <UserRegisterCard onChangeStatus={onChangeStatus} reg={r} />
+                            </div>
                         ))}
                     </div>
                 )}
@@ -67,8 +65,8 @@ function UserRegisterCard({ reg, onChangeStatus }: { reg: UserRegister, onChange
     const currentStatusStyle = statusClasses[reg.status || 'معلق'] || statusClasses['معلق'];
 
     return (
-        <article className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col">
-            <div className="p-6 flex-grow">
+        <article className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col h-full">
+            <div className="p-3 sm:p-6 flex-grow">
                 <div className="flex items-start space-x-4 rtl:space-x-reverse">
                     {/* Avatar */}
                     <div className="flex-shrink-0">

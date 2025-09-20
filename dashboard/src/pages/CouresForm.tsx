@@ -234,6 +234,7 @@ export function CourseForm() {
             setSubmitError('Failed to create course. Please try again.');
         } finally {
             setIsSubmitting(false);
+            window.scrollTo(0, 0);
             if(coursesStatus !== 'failed') {
                 setTimeout(() => {
                     navigate('/courses');
