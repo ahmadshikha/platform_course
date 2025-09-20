@@ -8,8 +8,7 @@ import { Link } from 'react-router-dom';
 export default function NewsList() {
   const dispatch = useDispatch<AppDispatch>();
   const news = useSelector((state: RootState) => state.news.items);
-  const status = useSelector((state: RootState) => state.news.status);
-  const error = useSelector((state: RootState) => state.news.error);
+  const {error, status} = useSelector((state: RootState) => state.news);
 
   useEffect(() => {
     dispatch(fetchNews(undefined));
@@ -20,7 +19,8 @@ export default function NewsList() {
   }
 
   if (status === 'failed') {
-    return <div>Error: {error}</div>;
+    return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">{error}</div>
+
   }
 
   return (

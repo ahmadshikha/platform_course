@@ -13,7 +13,7 @@ import contactRoutes from "./routes/contactRoutes.js";
 // import adminRoute from "./routes/AdminRoute.js";
 import admin from './routes/admin.js'
 import newsRoutes from "./routes/newsRoutes.js";
-// import activityRoutes from "./routes/activityRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -67,8 +67,8 @@ app.use("/api/teachers", teacherRoutes);
 app.use("/api/userRegister", userRegisterRoute);
 app.use("/api/admin", admin);
 app.use("/api/contact", contactRoutes);
-// app.use("/api/news", newsRoutes);
-// app.use("/api/activities", activityRoutes);
+app.use("/api/news", newsRoutes);
+app.use("/api/activities", activityRoutes);
 
 app.get("/", (req, res) => {
   res.send(" API with MVC is running...");

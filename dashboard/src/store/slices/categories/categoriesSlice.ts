@@ -195,6 +195,9 @@ const categoriesSlice = createSlice({
     clearError(state) {
       state.error = null;
     },
+    clearStatus(state) {
+      state.status = 'idle';
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -211,6 +214,7 @@ const categoriesSlice = createSlice({
         state.error = action.error.message || 'Failed to fetch categories';
       })
       .addCase(addCategory.fulfilled, (state, action: PayloadAction<ICategory>) => {
+        state.status = 'succeeded';
         state.items.push(action.payload);
       })
       .addCase(addCategory.rejected, (state, action) => {
@@ -221,6 +225,7 @@ const categoriesSlice = createSlice({
         if (index !== -1) {
           state.items[index] = action.payload;
         }
+        state.status = 'succeeded';
       })
       .addCase(updateCategory.rejected, (state, action) => {
         state.error = (action.payload as string) || action.error.message || 'Failed to update category';
@@ -234,5 +239,5 @@ const categoriesSlice = createSlice({
   },
 });
 
-export const { setCategories, updateCategoryLocally, deleteCategoryLocally, clearError } = categoriesSlice.actions;
+export const { setCategories, updateCategoryLocally, deleteCategoryLocally, clearError, clearStatus } = categoriesSlice.actions;
 export default categoriesSlice.reducer;

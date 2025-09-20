@@ -9,7 +9,7 @@ import {
   getNewsByCategory,
   getFeaturedNews
 } from '../controllers/newsController.js';
-import upload from '../middlewares/upload.js';
+import upload, {singleImageUpload} from '../middlewares/upload.js';
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.get('/category/:category', getNewsByCategory);
 router.get('/:id', getNewsById);
 
 // POST /api/news - Create new news article
-router.post('/',upload.single('image'), createNews);
+router.post('/',singleImageUpload, createNews);
 
 // PUT /api/news/:id - Update news article
 router.put('/:id', updateNews);

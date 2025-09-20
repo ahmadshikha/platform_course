@@ -260,6 +260,9 @@ const coursesSlice = createSlice({
       const index = state.items.findIndex(c => c._id === action.payload._id);
       if (index !== -1) state.items[index] = action.payload;
     },
+    clearStatus(state) {
+      state.status = 'idle';
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -309,12 +312,12 @@ const coursesSlice = createSlice({
         state.error = null;
       })
       .addCase(updateCourse.fulfilled, (state, action) => {
-        state.status = 'succeeded';
         const index = state.items.findIndex(c => c._id === action.payload._id);
         if (index !== -1) {
           state.items[index] = action.payload;
         }
         state.error = null;
+        state.status = 'succeeded';
       })
       .addCase(updateCourse.rejected, (state, action) => {
         state.status = 'failed';
@@ -351,7 +354,7 @@ const coursesSlice = createSlice({
   },
 });
 
-export const { clearError } = coursesSlice.actions;
+export const { clearError, clearStatus } = coursesSlice.actions;
 export { 
   fetchCourses,
   addCourse, 
@@ -359,5 +362,6 @@ export {
   updateCourse, 
   fetchTeacherCourses as _fetchTeacherCourses,
   fetchCategoryCourses,
+
 };
 export default coursesSlice.reducer;

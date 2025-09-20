@@ -13,6 +13,8 @@ import { UserState } from './slices/login/logging';
 import adminLoginReducer from './slices/login/logging';
 
 import newsReducer from './slices/news/newsSlice';
+import activitiesReducer, {ActivitiesState} from './slices/activity/activitySlice';
+import contactsReducer, {ContactsState} from './slices/contacts/conatctsSlice';
 import type { NewsState } from './slices/news/newsSlice';
 
 const LOCAL_STORAGE_KEY = 'app_state';
@@ -45,7 +47,9 @@ export const store = configureStore({
 		lang: langReducer,
 		usersRegisters: usersRegistersReducer,
 		login: adminLoginReducer,
-		news: newsReducer,		
+		news: newsReducer,
+		activities: activitiesReducer,
+		conatcts: contactsReducer
 	},
 	preloadedState: loadState() as {
 		courses: CoursesState, 
@@ -55,6 +59,8 @@ export const store = configureStore({
 		usersRegisters: UserRegisterState,
 		login: UserState,
 		news: NewsState,
+		activities: ActivitiesState,
+		contacts: ContactsState
 	} | undefined,
 });
 

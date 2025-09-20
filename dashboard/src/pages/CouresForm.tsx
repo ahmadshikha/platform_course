@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { Course } from "../store/slices/courses/coursesSlice";
 import { fetchTeachers } from '../store/slices/teachers/teachersSlice';
 import { fetchCategories } from '../store/slices/categories/categoriesSlice';
-import { addCourse, updateCourse } from '../store/slices/courses/coursesSlice';
+import { addCourse, updateCourse, clearStatus, clearError } from '../store/slices/courses/coursesSlice';
 import { ITeacher } from '../store/slices/teachers/teachersSlice';
 
 export function CourseForm() {
@@ -33,6 +33,9 @@ export function CourseForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+    const isMounted = useRef(false);
 
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
@@ -47,13 +50,30 @@ export function CourseForm() {
 
     // Fetch teachers and categories on component mount
     useEffect(() => {
-        if (teachersStatus === 'idle') {
-            dispatch(fetchTeachers({}));
-        }
-        if (categoriesStatus === 'idle') {
-            dispatch(fetchCategories({}));
-        }
-    }, [dispatch, teachersStatus, categoriesStatus]);
+        dispatch(clearStatus());
+        dispatch(clearError());
+    }, [dispatch]);
+
+    // Set isMounted to true after the first render
+    useEffect(() => {
+        isMounted.current = true;
+    }, []);
+
+    // Handle success message visibility
+    useEffect(() => {
+    // Only show success message if the status changes to 'succeeded' after the initial mount.
+    // This prevents showing a stale success message when navigating to the form.
+    if (isMounted.current && coursesStatus === 'succeeded') {
+      setShowSuccessMessage(true);
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000); // Hide after 3 seconds
+      return () => clearTimeout(timer); // Clean up the timer
+    } else if (coursesStatus !== 'succeeded') {
+      // Ensure the message is hidden if status is not 'succeeded'
+      setShowSuccessMessage(false);
+    }
+    }, [coursesStatus, isMounted]);
 
     // Load course data in edit mode
     useEffect(() => {
@@ -156,6 +176,7 @@ export function CourseForm() {
         setIsSubmitting(true);
         setSubmitError(null);
         // clear any previous errors when starting a submit attempt
+        setShowSuccessMessage(false);
         setErrors({});
 
         if (!validateForm()) {
@@ -237,6 +258,12 @@ export function CourseForm() {
 			</div>
 		)}
 
+        {/* Success message */}
+        {showSuccessMessage && (
+            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                <p className="text-sm text-green-600">تم حفظ الكورس بنجاح</p>
+            </div>
+        )}
 		<form className="space-y-6">
 				<div>
 					<label className="block text-gray-700 font-medium mb-2">معرف الكورس *</label>

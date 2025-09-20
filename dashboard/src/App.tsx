@@ -16,6 +16,9 @@ import Login from "./pages/Login";
 import CategoryCourses from "./pages/CategoryCourses";
 import NewsList from "./pages/NewsList";
 import AddNewsForm from "./pages/News.Form";
+import ActivityForm from "./pages/ActivityForm";
+import ActivityList from "./pages/ActivityList";
+import ContactList from "./pages/ContactList";
 
 function App() {
 	return (
@@ -44,6 +47,12 @@ function App() {
 					{/* News */}
 					<Route path="news" element={<NewsList/>}/>
 					<Route path="news/new" element={<AddNewsForm/>}/>
+					{/* activity */}
+					<Route path="activities/" element={<ActivityList/>}/>
+					<Route path="activities/new" element={<ActivityForm/>}/>
+					{/* contacts */}
+					<Route path="contacts" element={<ContactList/>}/>
+
 				</Route>
 			</Routes>
 		</HashRouter>
