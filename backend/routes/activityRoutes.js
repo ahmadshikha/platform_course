@@ -7,6 +7,7 @@ import {
   deleteActivity,
   getActivitiesByDateRange
 } from '../controllers/activityController.js';
+import { _protect } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 // GET /api/activities - Get all activities
@@ -19,12 +20,12 @@ router.get('/date-range', getActivitiesByDateRange);
 router.get('/:id', getActivityById);
 
 // POST /api/activities - Create new activity
-router.post('/', createActivity);
+router.post('/', _protect,createActivity);
 
 // PUT /api/activities/:id - Update activity
 router.put('/:id', updateActivity);
 
 // DELETE /api/activities/:id - Delete activity
-router.delete('/:id', deleteActivity);
+router.delete('/:id',_protect ,deleteActivity);
 
 export default router;

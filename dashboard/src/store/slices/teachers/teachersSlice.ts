@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { apiUrl } from '../../../const';
 
 export type Education = {
   degree: string;
@@ -91,7 +92,7 @@ const initialState: TeachersState = {
 };
 
 // Async Thunks
-export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination: {totalPages: number, currentPage: number, total: number}}, {page?: number, limit?: number} | undefined>('teachers/fetchTeachers', 
+export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination?: {totalPages: number, currentPage: number, total: number}}, {page?: number, limit?: number} | undefined>('teachers/fetchTeachers', 
   async (params, {rejectWithValue}) => {
     const { page, limit } = params || {};
     try {
@@ -99,21 +100,21 @@ export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination:
       if (page) queryParams.append('page', page.toString());
       if (limit) queryParams.append('limit', limit.toString());
       
-      const url = `http://localhost:5000/api/teachers/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${apiUrl}/api/teachers/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const res = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      console.log("get teachers",{res})
+      // console.log("get teachers",{res})
       if(!res.ok) {
         const errorData = await res.json();
-        return rejectWithValue(errorData.message || 'Failed to fetch teachers');
+        return rejectWithValue("حدث خطأ بجلب البيانات");
       }
       const data = await res.json();
-      console.log(res)
-      console.log({data})
+      // console.log(res)
+      // console.log({data})
       return {
         teachers: data.teachers,
         pagination: {
@@ -124,7 +125,7 @@ export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination:
       };
 
     } catch(e) {
-      return rejectWithValue(e.message || 'Failed to fetch teachers');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
 });
 
@@ -149,11 +150,12 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
       if (newTeacher.image.files && newTeacher.image.files[0]) {
         formdata.append("image", newTeacher.image.files[0]);
       } else {
-        return rejectWithValue("No image file provided.");
+        return rejectWithValue("لم تقم بتحميل صورة");
       }
-      console.log(formdata)
-      const res = await fetch('http://localhost:5000/api/teachers/', {
+      // console.log(formdata)
+      const res = await fetch(`${apiUrl}/api/teachers/`, {
         method: 'POST',
+        credentials: 'include',
         // headers: {
         //   'Content-Type': 'application/json',
         // },
@@ -162,23 +164,26 @@ export const addTeacher = createAsyncThunk<ITeacher,IAddTeacher>('teachers/addTe
       });
       if(!res.ok) {
         const errorData = await res.json();
-        return rejectWithValue(errorData.message || 'Failed to add teacher');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue("فشل اضافة الاستاذ");
       }
       const data = await res.json();
-      console.log(res)
-      console.log({data})
+      // console.log(res)
+      // console.log({data})
       return data;
 
     } catch(e) {
-      console.log(e)
-      return rejectWithValue(e.message || 'Failed to add techer');
+      // console.log(e)
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
 });
 
 export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teachers/updateTeacher', 
   async (updatedTeacher, {rejectWithValue}) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/teachers/${updatedTeacher._id}`, {
+      const response = await fetch(`${apiUrl}/api/teachers/${updatedTeacher._id}`, {
+        credentials: 'include',
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -188,13 +193,15 @@ export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teacher
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to update teacher');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue('فشل تعديل استاذ');
       }
       
       const data = await response.json();
       return data;
     } catch (error) {
-      return rejectWithValue(error.message || 'Failed to update teacher');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
   }
 );
@@ -202,7 +209,8 @@ export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teacher
 export const deleteTeacher = createAsyncThunk<string, string, {rejectValue: string}>('teachers/deleteTeacher', 
   async (teacherId, {rejectWithValue}) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/teachers/${teacherId}`, {
+      const response = await fetch(`${apiUrl}/api/teachers/${teacherId}`, {
+        credentials: 'include',
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -211,6 +219,8 @@ export const deleteTeacher = createAsyncThunk<string, string, {rejectValue: stri
       
       if (!response.ok) {
         const errorData = await response.json();
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         if (errorData.message == 'Teacher not found') return rejectWithValue('هذا المعلم غير موجود');
         return rejectWithValue('فشل بحذف الاستاذ');
       }

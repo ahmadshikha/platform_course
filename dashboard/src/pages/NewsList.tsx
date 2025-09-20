@@ -1,22 +1,36 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
-import { fetchNews,INews } from '../store/slices/news/newsSlice';
-import NewsCard from '../component/NewsCard';
-import { Link } from 'react-router-dom';
+import { fetchNews,INews,clearError, clearStatus } from '../store/slices/news/newsSlice';
+import NewsCard  from '../component/NewsCard';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function NewsList() {
   const dispatch = useDispatch<AppDispatch>();
   const news = useSelector((state: RootState) => state.news.items);
   const {error, status} = useSelector((state: RootState) => state.news);
-
+  const navigate = useNavigate()
+  useEffect(() => {
+    if(status == 'succeeded') {
+      dispatch(clearError());
+      dispatch(clearStatus())
+    }
+    if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+      setTimeout(() => {
+        navigate('/login');
+        dispatch(clearError());
+        dispatch(clearStatus())
+      }, 500);
+    }
+  }, [status, error]);
   useEffect(() => {
     dispatch(fetchNews(undefined));
   }, [dispatch]);
 
-  if (status === 'loading') {
-    return <div>Loading...</div>;
-  }
+  {status === 'loading' && (
+    // <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">{translations.categories.loading}</div>
+    <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">جاري تحميل الفئات</div>
+  )}
 
   if (status === 'failed') {
     return <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">{error}</div>

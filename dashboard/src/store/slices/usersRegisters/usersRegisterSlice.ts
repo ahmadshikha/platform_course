@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import {apiUrl} from '../../../const'
 export interface EmergencyContact {
-    name: string;
-    relationship: string;
-    phone: string;
+  name: string;
+  relationship: string;
+  phone: string;
 }
 
 export interface UserRegister {
@@ -35,23 +36,24 @@ export interface UserRegister {
     agreeTerms: boolean;
     agreeDataProcessing: boolean;
     receiveNewsletter?: boolean;
-    status?: "معلق"|"مؤكد"| "ملغى"| "مكتمل"| "قائمة_الانتظار";
+    status?: "معلق"|"مؤكد";
     registrationDate?: string; // ISO date string
     notes?: string;
     _id?: string;
 }
 
-export const fetchUserRegisters = createAsyncThunk<UserRegister[]>('http://localhost:5000/api/userRegister',
-      async (_, {rejectWithValue}) => {
+export const fetchUserRegisters = createAsyncThunk<UserRegister[]>(`${apiUrl}/api/userRegister`,
+    async (_, {rejectWithValue}) => {
     try {      
-      const url = `http://localhost:5000/api/userRegister`;
+      const url = `${apiUrl}/api/userRegister`;
       const res = await fetch(url, {
         method: 'GET',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      
+      console.log(res)
       if(!res.ok) {
         const errorData = await res.json();
         return rejectWithValue(errorData.message || 'Failed to fetch users Registration');
@@ -74,27 +76,31 @@ export const updateUserRegisterStatus = createAsyncThunk<
   'usersRegister/updateUserRegisterStatus',
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const url = `http://localhost:5000/api/userRegister/${id}/status`;
+      const url = `${apiUrl}/api/userRegister/${id}/status`;
       const res = await fetch(url, {
         method: 'PATCH',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ status }),
       });
-      console.log("update user register status", res)
+      // console.log("update user register status", res)
       if (!res.ok) {
           const errorData = await res.json();
-          console.log(errorData)
+          // console.log(errorData)
           if(errorData.message == 'لا توجد مقاعد متاحة في هذا الكورس') return rejectWithValue(errorData.message)
-          return rejectWithValue(errorData.message || 'Failed to update registration status');
+          if(errorData.message == 'لم يتم العثور على الكورس') return rejectWithValue(errorData.message)
+          if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+          if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+          return rejectWithValue("فشل تحديث حالة التسجيل");
         }
         
         const data = await res.json();
-        console.log("update user register status", data)
+        // console.log("update user register status", data)
         return data.data;
     } catch (e: any) {
-      return rejectWithValue(e.message || 'Failed to update registration status');
+      return rejectWithValue("فشل تحديث حالة التسجيل");
     }
   }
 );
@@ -129,6 +135,11 @@ const usersRegisterSlice = createSlice({
             if (idx !== -1) {
                 state.items[idx].status = status;
             }
+        },
+        clearError(state) {
+          state.error = null;
+          state.status = "succeeded"
+            
         }
     },
   extraReducers: (builder) => {
@@ -138,8 +149,16 @@ const usersRegisterSlice = createSlice({
     })
     .addCase(fetchUserRegisters.fulfilled, (state, action) => {
       state.status = 'succeeded';
-      console.log(action.payload)
-      state.items = action.payload
+      // console.log(action.payload)
+      state.items = action.payload.filter((i) => {
+        // console.log(i.status !== "معلق");
+        // console.log("-------");
+        
+        return i.status == "معلق";
+      })
+      // console.log(action.payload)
+      
+      // state.items = action.payload
     })
     .addCase(updateUserRegisterStatus.pending, (state) => {
       // keep previous status but mark loading if desired
@@ -147,29 +166,36 @@ const usersRegisterSlice = createSlice({
     })
     .addCase(updateUserRegisterStatus.fulfilled, (state, action) => {
       state.status = 'succeeded';
-      const updated = action.payload;
-      if (!updated) return;
-      const idx = state.items.findIndex(i => (i._id && updated._id && i._id === updated._id) || i.idNumber === updated.idNumber);
-      if (idx !== -1) {
-        // replace the item so React/Redux sees the change
-        state.items[idx] = {
-          ...state.items[idx],
-          ...updated
-        };
-      } else {
-        // if not found, optionally add it
-        state.items.push(updated);
-      }
+      state.items = state.items.filter((i) => {
+        // console.log(i.status !== action.payload.status);
+        // console.log(i.status, action.payload.status);
+        // console.log("-------");
+        
+        return i.status == action.payload.status;
+      })
+      // const updated = action.payload;
+      // if (!updated) return;
+      // const idx = state.items.findIndex(i => (i._id && updated._id && i._id === updated._id) || i.idNumber === updated.idNumber);
+      // if (idx !== -1) {
+      //   // replace the item so React/Redux sees the change
+      //   state.items[idx] = {
+      //     ...state.items[idx],
+      //     ...updated
+      //   };
+      // } else {
+      //   // if not found, optionally add it
+      //   state.items.push(updated);
+      // }
     })
     .addCase(updateUserRegisterStatus.rejected, (state, action) => {
       state.status = 'failed';
       // action.payload will be the rejectWithValue string when available
-      state.error = (action.payload as string) || action.error.message || 'Failed to update status';
+      // console.log(action.payload)
+      state.error = action.payload || 'فشل بتحديث حالة التسجيل';
     })
   }
 });
 
-export const { addRegister, removeRegister, updateRegisterStatus } = usersRegisterSlice.actions;
+export const { addRegister, removeRegister, updateRegisterStatus, clearError } = usersRegisterSlice.actions;
 
 export default usersRegisterSlice.reducer;
-

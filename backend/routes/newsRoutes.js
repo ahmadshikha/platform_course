@@ -9,6 +9,7 @@ import {
   getNewsByCategory,
   getFeaturedNews
 } from '../controllers/newsController.js';
+import { _protect } from '../middlewares/authMiddleware.js';
 import upload, {singleImageUpload} from '../middlewares/upload.js';
 
 const router = express.Router();
@@ -29,12 +30,12 @@ router.get('/category/:category', getNewsByCategory);
 router.get('/:id', getNewsById);
 
 // POST /api/news - Create new news article
-router.post('/',singleImageUpload, createNews);
+router.post('/', _protect, singleImageUpload, createNews);
 
 // PUT /api/news/:id - Update news article
-router.put('/:id', updateNews);
+router.put('/:id', _protect, updateNews);
 
 // DELETE /api/news/:id - Delete news article
-router.delete('/:id', deleteNews);
+router.delete('/:id', _protect, deleteNews);
 
 export default router;

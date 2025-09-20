@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { addCategory, updateCategory, ICategory, clearError, clearStatus } from "../store/slices/categories/categoriesSlice";
 import { useSelector } from "react-redux";
 
@@ -9,36 +9,31 @@ import en from '../lang/en.json'
 import ar from '../lang/ar.json'
 
 export function CategoryForm() {
-    const [name, setName] = useState('');
-    const [nameEn, setNameEn] = useState('');
-    const [description, setDescription] = useState('');
-    const [image, setImage] = useState<HTMLInputElement>();
-    const [descriptionEn, setDescriptionEn] = useState('');
-    const [actionForm, setActionForm] = useState("اضافة فئة");
-    
-    // Error handling states
-    const [errors, setErrors] = useState<{[key: string]: string}>({})
-    const [isLoading, setIsLoading] = useState(false)
-    const [isEditMode, setIsEditMode] = useState(false)
-    const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [nameEn, setNameEn] = useState('');
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState<HTMLInputElement>();
+  const [descriptionEn, setDescriptionEn] = useState('');
+  const [actionForm, setActionForm] = useState("اضافة فئة");
+  
+  // Error handling states
+  const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
 
-    // New state for success message
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  // New state for success message
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-    // Ref to track initial mount
-    const isMounted = useRef(false);
-    
-    const categories = useSelector((s: RootState) => s.categories.items);
-    const { status, error } = useSelector((s: RootState) => s.categories);
+  // Ref to track initial mount
+  const isMounted = useRef(false);
+  
+  const categories = useSelector((s: RootState) => s.categories.items);
+  const { status, error } = useSelector((s: RootState) => s.categories);
 
-    const {lang} = useSelector((s: RootState) => s.lang);
-    const translate = {
-      en,
-      ar
-    }
-    const translations = translate[lang];
-    const dispatch = useDispatch<AppDispatch>();
 
+  const dispatch = useDispatch<AppDispatch>();
   useEffect((): any => {
     const url = window.location.href
     if(url.includes("/edit")) {
@@ -47,7 +42,7 @@ export function CategoryForm() {
         const start = url.indexOf('=')
         const end = url.indexOf('/edit')
         const id = url.slice(start+1, end)
-        console.log(id)
+        // console.log(id)
         setEditingCategoryId(id)
         
         const category = categories.find(c => c._id === id)
@@ -62,27 +57,23 @@ export function CategoryForm() {
   }, [categories, name, description])
 
   // Clear Redux errors and status when component mounts
-  useEffect(() => {
-    dispatch(clearError());
-    // Dispatch a new action to clear the status, preventing old messages from showing.
-    dispatch(clearStatus()); 
-  }, [dispatch]);
-
-  // Handle success message visibility
-  useEffect(() => {
-    // Only show success message if the status changes to 'succeeded' after the initial mount.
-    // This prevents showing a stale success message when navigating to the form.
-    if (isMounted.current && status === 'succeeded') {
-      setShowSuccessMessage(true);
-      const timer = setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000); // Hide after 3 seconds
-      return () => clearTimeout(timer); // Clean up the timer
-    } else if (status !== 'succeeded') {
-      // Ensure the message is hidden if status is not 'succeeded'
-      setShowSuccessMessage(false);
-    }
-  }, [status, isMounted]);
+    useEffect(() => {
+        if(status == 'succeeded') {
+            setShowSuccessMessage(true);
+            const timer = setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 3000);
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }
+        if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+            setTimeout(() => {
+                navigate('/login');
+                dispatch(clearError());
+                dispatch(clearStatus())
+            }, 500);
+        }
+    }, [status, error]);
 
   // Clear errors when user starts typing
   const clearFieldError = (field: string) => {
@@ -95,7 +86,7 @@ export function CategoryForm() {
     }
   }
   useEffect(()=> {
-    console.log("error category list", error)
+    // console.log("error category list", error)
   },[error])
 
   // Set isMounted to true after the first render
@@ -127,7 +118,7 @@ export function CategoryForm() {
   }
   // useEffect(()=> {
   //   if(image.files) {
-  //     console.log(image.files)
+  //     // console.log(image.files)
   //   }
 
 
@@ -171,12 +162,18 @@ export function CategoryForm() {
     } catch (error: any) {
     } finally {
       setIsLoading(false)
+      if(status !== 'failed') {
+        setTimeout(() => {
+            navigate('/categories');
+        }, 3000);
+      }
+        
     }
   }
 
-    return(
+  return(
     <>
-    <div className={`max-w-lg mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
+    <div className={`max-w-lg mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100`}>
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل الفئة" : "إضافة فئة جديدة"}</h1>
         
         {/* Global error message */}
@@ -252,7 +249,7 @@ export function CategoryForm() {
                   onChange={e => {
                     setImage(e.target)
                     clearFieldError('name')
-                    console.log(e.target.files[0])
+                    // console.log(e.target.files[0])
                   }} 
                   className={`file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                 />
@@ -296,5 +293,5 @@ export function CategoryForm() {
         </div>
     </div>
     </>
-    )
+  )
 }

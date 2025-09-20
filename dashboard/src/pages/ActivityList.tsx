@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../store/store";
-import { fetchActivities, IActivity, deleteActivity } from "../store/slices/activity/activitySlice";
-import { Link } from "react-router-dom";
+import { fetchActivities, IActivity, deleteActivity, clearError, clearStatus } from "../store/slices/activity/activitySlice";
+import { Link, useNavigate } from "react-router-dom";
+import ErrorDisplay from "../component/ErrorDisplay";
 
 export default function ActivityList() {
   const dispatch = useDispatch<AppDispatch>();
   const activities = useSelector((state: RootState) => state.activities.items);
   const { error, status } = useSelector((state: RootState) => state.activities);
-
+  const navigate = useNavigate()
   useEffect(() => {
     dispatch(fetchActivities(undefined));
   }, [dispatch]);
+  useEffect(() => {
+    if(status == 'succeeded') {
+      dispatch(clearError());
+      dispatch(clearStatus())
+    }
+    if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+      setTimeout(() => {
+        navigate('/login');
+        dispatch(clearError());
+        dispatch(clearStatus())
+      }, 500);
+    }
+  }, [status, error]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
-  }
-
-  if (status === "failed") {
-    return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">
-        {error}
-      </div>
-    );
   }
 
   return (
@@ -37,6 +43,8 @@ export default function ActivityList() {
           اضافة نشاط
         </Link>
       </div>
+
+      <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
       {/* Content */}
       {activities.length === 0 ? (
@@ -168,5 +176,3 @@ const ActivityCard: React.FC<Props> = ({ activity, onDelete, deletingId }) => {
     </div>
   );
 };
-
-

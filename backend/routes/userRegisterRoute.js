@@ -9,16 +9,17 @@ import {
   getRegistrationsByStatus,
   deleteRegistration
 } from "../controllers/UserRegisterController.js";
+import { _protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
 // Registration routes
-router.post("/", createRegistration);
-router.get("/", getRegistrations);
-router.get("/:id", getRegistrationById);
-router.patch("/:id/status", updateRegistrationStatus);
-router.get("/course/:courseNumber", getRegistrationsByCourse);
-router.get("/status/:status", getRegistrationsByStatus);
-router.delete("/:id", deleteRegistration);
+router.post("/", createRegistration); // Public route for users to register
+router.get("/", _protect, getRegistrations);
+router.get("/:id", _protect, getRegistrationById);
+router.patch("/:id/status", _protect, updateRegistrationStatus);
+router.get("/course/:courseNumber", _protect, getRegistrationsByCourse);
+router.get("/status/:status", _protect, getRegistrationsByStatus);
+router.delete("/:id", _protect, deleteRegistration);
 
 export default router;

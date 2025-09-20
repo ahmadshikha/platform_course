@@ -16,16 +16,9 @@ function TeachersList() {
   const pagination = useSelector((s: RootState) => s.teachers.pagination);
   const status = useSelector((s: RootState) => s.teachers.status);
   const error = useSelector((s: RootState) => s.teachers.error);
-  const { lang } = useSelector((s: RootState) => s.lang);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Translation
-  const translate = {
-    en,
-    ar
-  };
-  const translations = translate[lang];
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +31,7 @@ function TeachersList() {
   
   useEffect(() => {
     dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }));
-    console.log(pagination.currentPage === pagination.totalPages)
+    // console.log(pagination.currentPage === pagination.totalPages)
     // Clear any existing errors when component mounts
     dispatch(clearError());
   }, []);

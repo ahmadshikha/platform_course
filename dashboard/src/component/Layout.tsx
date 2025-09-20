@@ -80,6 +80,7 @@ export default function Layout({ children }: PropsWithChildren) {
 							<NavLink to="/users-register" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>حجوزات الطلاب</NavLink>
 							<NavLink to="/news" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>الاحبار</NavLink>
 							<NavLink to="/activities" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>النشاطات</NavLink>
+							<NavLink to="/contacts" onClick={() => setSidebarOpen(false)} className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>قائمة التواصل</NavLink>
 						</nav>
 					</aside>
 				</div>
@@ -97,6 +98,7 @@ export default function Layout({ children }: PropsWithChildren) {
 							<NavLink to="/users-register" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>حجوزات الطلاب</NavLink>
 							<NavLink to="/news" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>الاخبار</NavLink>
 							<NavLink to="/activities" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>النشاطات</NavLink>
+							<NavLink to="/contacts" className={({ isActive }) => `block rounded-md px-3 py-2 text-sm ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>قائمة التواصل</NavLink>
 						</nav>
 					</div>
 				</aside>

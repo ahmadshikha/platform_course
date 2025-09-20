@@ -14,19 +14,20 @@ import {
   getCategoryCourses
 } from '../controllers/CourseController.js';
 import { validateObjectId } from '../middlewares/validateObjectId.js';
+import { _protect } from '../middlewares/authMiddleware.js';
 // import { validateCourse } from '../middleware/validation.js';
 
 const router = express.Router();
 
 // Routes
-router.post('/', createCourse);
+router.post('/', _protect, createCourse);
 router.get('/', getCourses);
 router.get('/teacher/:teacherId', getTeacherCourses);
 router.get('/category/:categoryId',  getCategoryCourses);
 router.get('/:id',  getCourseById);
 router.get('/custom/:courseId', getCourseByCustomId);
-router.put('/:id', updateCourse);
-router.delete('/:id', validateObjectId, deleteCourse);
+router.put('/:id', _protect, updateCourse);
+router.delete('/:id', _protect, deleteCourse);
 
 
 

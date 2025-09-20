@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { apiUrl } from '../../../const';
 
 // --- INTERFACES ---
 export interface IContact {
@@ -10,8 +11,24 @@ export interface IContact {
 
 export interface ContactsState {
   items: IContact[];
+  pagination: {
+    totalPages: number,
+    currentPage: number,
+    total: number,
+  },
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+}
+
+const initialState: ContactsState = {
+  items: [],
+  pagination: {
+    totalPages: 0,
+    currentPage: 1,
+    total: 0,
+  },
+  status: "idle",
+  error: null
 }
 
 // --- ASYNC THUNKS (CRUD OPERATIONS) ---
@@ -21,17 +38,26 @@ export const fetchContacts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       // Replace with your actual API endpoint for fetching contacts
-      const response = await fetch('http://localhost:5000/api/contact/admin/contacts', {
-        method: "GET"
+      const response = await fetch(`${apiUrl}/api/contact`, {
+        method: "GET",
+        credentials: 'include'
       });
       if (!response.ok) {
-        return rejectWithValue('Failed to fetch contacts');
+        return rejectWithValue('فشل بتحميل قائمة التواصل');
       }
-      const data: IContact[] = await response.json();
-      return data;
+      const data = await response.json();
+      // console.log(data)
+        return {
+          contacts: data.data,
+          pagination: {
+            totalPages: data.pagination.totalPages,
+            currentPage: data.pagination.currentPage,
+            total: data.pagination.total,
+          }
+        }
     } catch (error: any) {
-      // console.log(error)
-      return rejectWithValue('Failed to fetch contacts');
+      // // console.log(error)
+      return rejectWithValue('فشل بتحميل قائمة التواصل');
     }
   }
 );
@@ -42,16 +68,21 @@ export const deleteContact = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       // Replace with your actual API endpoint for deleting a contact
-      const response = await fetch(`http://localhost:5000/api/contact/admin/contacts/${id}`, {
+      const response = await fetch(`${apiUrl}/api/contact/admin/contacts/${id}`, {
         method: 'DELETE',
+        credentials: 'include'
       });
       if (!response.ok) {
-        return rejectWithValue("فشل حذف التواصل")
+        const errorData = await response.json()
+        if (errorData.message == "لم يتم العثور على الرسالة") return rejectWithValue("لم يتم العثور على الرسالة");
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue("فشل حذف الرسالة")
       }
       // The API should ideally return the ID of the deleted item
       return id;
     } catch (error: any) {
-      return rejectWithValue("فشل حذف التواصل")
+      return rejectWithValue("فشل حذف الرسالة")
     }
   }
 );
@@ -59,12 +90,11 @@ export const deleteContact = createAsyncThunk(
 // --- REDUX SLICE ---
 const contactsSlice = createSlice({
   name: 'contacts',
-  initialState: {
-    items: [],
-    status: 'idle',
-    error: null,
-  } as ContactsState,
+  initialState,
   reducers: {
+    clearStatus(state) {
+      state.status = 'idle';
+    },
     clearError(state) {
       state.error = null;
     }
@@ -75,13 +105,14 @@ const contactsSlice = createSlice({
       .addCase(fetchContacts.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchContacts.fulfilled, (state, action: PayloadAction<IContact[]>) => {
+      .addCase(fetchContacts.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        state.items = action.payload.contacts;
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchContacts.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string;
+        state.error = action.payload as string || "فشل تحميل الرسائل";
       })
       // Delete Contact
       .addCase(deleteContact.pending, (state) => {
@@ -98,5 +129,5 @@ const contactsSlice = createSlice({
   },
 });
 
-export const { clearError } = contactsSlice.actions;
+export const { clearError, clearStatus } = contactsSlice.actions;
 export default contactsSlice.reducer;

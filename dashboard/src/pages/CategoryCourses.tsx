@@ -11,7 +11,6 @@ export default function CategoryCourses() {
   const courses = useSelector((s: RootState) => s.courses.items);
   const status = useSelector((s: RootState) => s.courses.status);
   const error = useSelector((s: RootState) => s.courses.error);
-  const { lang } = useSelector((s: RootState) => s.lang);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -21,12 +20,7 @@ export default function CategoryCourses() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
 
-  // Translation
-  const translate = {
-    en,
-    ar
-  };
-  const translations = translate[lang];
+
 
   // Delete state
   const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null);
@@ -35,15 +29,15 @@ export default function CategoryCourses() {
 
   const { id } = useParams<{ id: string }>();
   useEffect(() => {
-    console.log({id});
+    // console.log({id});
     const _id = id.split('id=')[1]
-    console.log(_id)
+    // console.log(_id)
     dispatch(fetchCategoryCourses({categoryId: _id,params: {page: currentPage, limit: itemsPerPage}}));
   }, [navigate, currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // console.log('pagination')
+    // // console.log('pagination')
   };
 
   // Validate date strings: accept ISO (YYYY-MM-DD) or long form (e.g., "January 15, 2024")
@@ -94,9 +88,9 @@ export default function CategoryCourses() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">كورسات الفئة</h1>
+          <h1 className="text-2xl font-bold">كورسات الفئة</h1>
           <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
-            {translations.courses.addCourse}
+            اضافة كورس
           </Link>
         </div>
         <div className="flex items-center justify-center py-12">
@@ -114,7 +108,7 @@ export default function CategoryCourses() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">كورسات الصنف</h1>
+          <h1 className="text-2xl font-bold">كورسات الصنف</h1>
           <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
             {/* {translations.courses.addCourse} */}
             اضافة كورس
@@ -152,7 +146,7 @@ export default function CategoryCourses() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         {/* <h1 className="text-2xl font-bold text-gray-900">{translations.teacherCourses.title}</h1> */}
-        <h1 className="text-2xl font-bold text-gray-900">كورسات الصنف</h1>
+        <h1 className="text-2xl font-bold">كورسات الصنف</h1>
         <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -220,10 +214,7 @@ export default function CategoryCourses() {
                 onEdit={(courseId) => navigate(`/courses/${courseId}/edit`)}
                 onDelete={(courseId) => setShowDeleteConfirm(courseId)}
               />
-              {!isValidDateFormat(course.date) && (
-                // <p className="mt-1 text-xs text-red-600 px-4">Invalid date format — use YYYY-MM-DD or "January 15, 2024"</p>
-                <p className="mt-1 text-xs text-red-600 px-4">تنسيق التاريخ غير صالح — استخدم DD-MM-YYYY ex: 01-03-2000</p>
-              )}
+
             </div>
           ))}
         </div>
@@ -282,7 +273,7 @@ export default function CategoryCourses() {
                     </svg>
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">{translations.courses.deleteConfirm}</h3>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">حذف الكورس</h3>
                     <div className="mt-2">
                       {/* <p className="text-sm text-gray-500">{translations.courses.deleteMessage}</p> */}
                       <p className="text-sm text-gray-500">هل انت متاكد من حذف الكورس؟</p>

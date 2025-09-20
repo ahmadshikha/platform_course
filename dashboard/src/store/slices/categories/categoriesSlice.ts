@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { apiUrl } from '../../../const';
 
 export interface ICategory {
   _id: string;
@@ -44,7 +45,7 @@ const initialState: CategoriesState = {
 };
 
 // Async Thunks
-export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination: {totalPages: number, currentPage: number, totalItems: number, itemsPerPage: number}}, {page?: number, limit?: number} | undefined>('categories/fetchCategories', 
+export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination?: {totalPages: number, currentPage: number, totalItems: number, itemsPerPage: number}}, {page?: number, limit?: number} | undefined>('categories/fetchCategories', 
   async (params, {rejectWithValue}) => {
     const { page, limit } = params || {};
     try {
@@ -52,8 +53,9 @@ export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination: 
       if (page) queryParams.append('page', page.toString());
       if (limit) queryParams.append('limit', limit.toString());
       
-      const url = `http://localhost:5000/api/categories/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${apiUrl}/api/categories/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const res = await fetch(url, {
+        credentials: 'include',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +68,7 @@ export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination: 
       }
       
       const data = await res.json();
-      console.log(res)
+      // console.log(res)
       return {
         data: data.data,
         pagination: data.pagination
@@ -97,22 +99,24 @@ export const addCategory = createAsyncThunk(
       if (newCategory.image.files && newCategory.image.files[0]) {
         formdata.append("image", newCategory.image.files[0]);
       } else {
-        return rejectWithValue("No image file provided.");
+        return rejectWithValue("لم يتم تحميل الصورة");
       }
 
       // 4. Make the fetch request with the formdata object as the body.
       //    IMPORTANT: Do NOT set the 'Content-Type' header. The browser will
       //    automatically set it to 'multipart/form-data' with the correct boundary.
-      const res = await fetch('http://localhost:5000/api/categories', {
+      const res = await fetch(`${apiUrl}/api/categories`, {
         method: 'POST',
+        credentials: 'include',
         body: formdata,
       });
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.log(errorData)
-        if(errorData.message == 'Only image files are allowed!') return rejectWithValue('مسموح فقط برفع الصور')
-        if(errorData.message == 'No file uploaded') return rejectWithValue("قم بتحميل الصورة اولا")
+        if (errorData.message == 'Only image files are allowed!') return rejectWithValue('مسموح فقط برفع الصور');
+        if (errorData.message == 'No file uploaded') return rejectWithValue("قم بتحميل الصورة اولا");
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         return rejectWithValue('فشل باضافة الفئة');
       }
 
@@ -120,7 +124,7 @@ export const addCategory = createAsyncThunk(
       return data;
     } catch (e) {
       // It's good practice to check if 'e' is an Error object before accessing its properties.
-      console.log(e.message)
+      // console.log(e.message)
       if(e.message == "Cannot read properties of undefined (reading 'files')") return rejectWithValue("قم بتحميل الصورة اولا")
       const errorMessage = 'خطا غير متوقع';
       return rejectWithValue(errorMessage);
@@ -130,7 +134,8 @@ export const addCategory = createAsyncThunk(
 export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValue: string}>('categories/updateCategory', 
   async (updatedCategory, {rejectWithValue}) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/categories/${updatedCategory._id}`, {
+      const response = await fetch(`${apiUrl}/api/categories/${updatedCategory._id}`, {
+        credentials: 'include',
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -140,13 +145,15 @@ export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValu
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to update category');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue("فشل تعديل الفئة");
       }
       
       const data = await response.json();
       return data.data;
     } catch (error) {
-      return rejectWithValue(error.message || 'Failed to update category');
+      return rejectWithValue("حدث خطا نعمل على اصلاحه");
     }
   }
 );
@@ -154,24 +161,27 @@ export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValu
 export const deleteCategory = createAsyncThunk<string, string, {rejectValue: string}>('categories/deleteCategory', 
   async (categoryId, {rejectWithValue}) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
+      const response = await fetch(`${apiUrl}/api/categories/${categoryId}`, {
+        credentials: 'include',
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      console.log(response)
+      // console.log(response)
       if(response.status == 500) {
         return rejectWithValue("حدث خطا");
       }
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to delete category');
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+        return rejectWithValue("فشل حذف الفئة");
       }
       return categoryId;
     } catch (error) {
       alert('error')
-      return rejectWithValue(error.message || 'Failed to delete category');
+      return rejectWithValue("حدث خطا نعمل على اصلاحه");
     }
   }
 );

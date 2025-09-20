@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { addTeacher, updateTeacher, ITeacher, clearError, clearStatus } from "../store/slices/teachers/teachersSlice";
 import { useSelector } from "react-redux";
 
@@ -41,7 +41,7 @@ export function TeachersForm() {
     const [specialties, setSpecialties] = useState<string[]>([])
     const [specialtiesEn, setSpecialtiesEn] = useState<string[]>([])
     const [isActive, setActive] = useState(true)
-    
+    const navigate = useNavigate();
     // Education
     const [education, setEducation] = useState<Education[]>([])
     const [newEducation, setNewEducation] = useState<Education>({
@@ -81,12 +81,6 @@ export function TeachersForm() {
     const teachers = useSelector((s: RootState) => s.teachers.items);
     const { status, error } = useSelector((s: RootState) => s.teachers);
 
-    const {lang} = useSelector((s: RootState) => s.lang);
-    const translate = {
-        en,
-        ar
-    }
-    const translations = translate[lang];
     const dispatch = useDispatch<AppDispatch>();
   useEffect((): any => {
     const url = window.location.href
@@ -96,7 +90,7 @@ export function TeachersForm() {
         const start = url.indexOf('=')
         const end = url.indexOf('/edit')
         const id = url.slice(start+1, end)
-        console.log(id)
+        // console.log(id)
         setEditingTeacherId(id)
         
         const teacher = teachers.find(t => t._id === id)
@@ -132,6 +126,24 @@ export function TeachersForm() {
   }, [dispatch]);
 
   // Clear errors when user starts typing
+  useEffect(() => {
+        if(status == 'succeeded') {
+            setShowSuccessMessage(true);
+            const timer = setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 3000);
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }
+        if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+            setTimeout(() => {
+                navigate('/login');
+                dispatch(clearError());
+                dispatch(clearStatus())
+            }, 500);
+        }
+    }, [status, error]);
+  // Clear errors when user starts typing
   const clearFieldError = (field: string) => {
     if (errors[field]) {
       setErrors(prev => {
@@ -141,26 +153,8 @@ export function TeachersForm() {
       })
     }
   }
-  useEffect(() => {
-    // Only show success message if the status changes to 'succeeded' after the initial mount.
-    // This prevents showing a stale success message when navigating to the form.
-    if (isMounted.current && status === 'succeeded') {
-      setShowSuccessMessage(true);
-      const timer = setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000); // Hide after 3 seconds
-      return () => clearTimeout(timer); // Clean up the timer
-    } else if (status !== 'succeeded') {
-      // Ensure the message is hidden if status is not 'succeeded'
-      setShowSuccessMessage(false);
-    }
-  }, [status, isMounted]);
   // Add specialty
 
-  // Set isMounted to true after the first render
-  useEffect(() => {
-    isMounted.current = true;
-  }, []);
 
   const addSpecialty = (specialty: string, isEn: boolean = false) => {
     if (specialty.trim()) {
@@ -226,8 +220,11 @@ export function TeachersForm() {
     }
     if (!contact.phone.trim()) {
       newErrors.phone = "رقم الهاتف مطلوب"
+    } else if(!/^09\d{8}$/.test(contact.phone)) {
+      newErrors.phone = "09xxxxxxxxرقم الهاتف غير صالح مثال:"
     }
-    
+
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -268,7 +265,7 @@ export function TeachersForm() {
       if (isEditMode && editingTeacherId) {
         await dispatch(updateTeacher(teacherData))
       } else {
-        console.log(teacherData)
+        // console.log(teacherData)
         await dispatch(addTeacher(teacherData)).unwrap()
       }
       
@@ -298,12 +295,17 @@ export function TeachersForm() {
       setErrors({ general: error || "خطأاثناء حفظ الاستاذ" })
     } finally {
       setIsLoading(false)
+      if(status !== 'failed') {
+          setTimeout(() => {
+              navigate('/teachers');
+          }, 3000);
+      }
     }
   }
 
     return(
     <>
-    <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100 ${lang === 'ar' ? 'rtl' : 'ltr'}`}>
+    <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100`}>
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل بيانات الأستاذ" : "إضافة أستاذ جديد"}</h1>
         {/* Global error message */}
         {errors.general && (
@@ -384,7 +386,7 @@ export function TeachersForm() {
                   onChange={e => {
                     setImage(e.target)
                     clearFieldError('name')
-                    console.log(e.target.files[0])
+                    // console.log(e.target.files[0])
                   }} 
                   className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
@@ -452,7 +454,7 @@ export function TeachersForm() {
                     </div>
                     <div>
                         {/* <label className="block text-sm font-medium text-gray-700">{translations.form.fields.phone}</label> */}
-                        <label className="block text-sm font-medium text-gray-700">رقم الهاتف</label>
+                        <label className="block text-gray-700 font-medium mb-2">رقم الهاتف</label>
                         <input 
                           value={contact.phone} 
                           onChange={e => {
@@ -620,6 +622,7 @@ export function TeachersForm() {
                             <label className="block text-gray-700 font-medium mb-2">السنة</label>
                             <input 
                               type="number"
+                              min={1}
                               value={newEducation.year} 
                               onChange={e => setNewEducation(prev => ({ ...prev, year: e.target.value }))} 
                               className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
