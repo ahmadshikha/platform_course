@@ -1,1 +1,6 @@
 /node_modules
+src/pages/DeleteConfirmationModal.tsx
+src/pages/Pagination.tsx
+src/pages/StatusMessages.tsx
+src/hooks
+src/pages/TeacherCard.tsx

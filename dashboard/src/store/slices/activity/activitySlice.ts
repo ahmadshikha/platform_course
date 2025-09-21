@@ -94,7 +94,7 @@ export const deleteActivity = createAsyncThunk<string, string, { rejectValue: st
             if (!response.ok) {
                 const errorData = await response.json();
                 console.log(errorData)
-                if (errorData == 'Activity not found') return rejectWithValue('هذا النشاط غير موجود');
+                if (errorData.message == 'Activity not found') return rejectWithValue('هذا النشاط غير موجود');
                 if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
                 if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
                 return rejectWithValue('فشل حذف النشاط')

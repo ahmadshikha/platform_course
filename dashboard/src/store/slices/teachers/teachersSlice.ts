@@ -193,6 +193,8 @@ export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teacher
       
       if (!response.ok) {
         const errorData = await response.json();
+        // console.log("🚀 ~ errorData:", errorData)
+        if(errorData.message == "Teacher not found") return rejectWithValue("هذا المعلم غير موجود ")
         if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
         if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         return rejectWithValue('فشل تعديل استاذ');
@@ -289,6 +291,7 @@ const teachersSlice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(updateTeacher.rejected, (state, action) => {
+        state.status = 'failed';
         state.error = (action.payload as string) || action.error.message || 'Failed to update teacher';
       })
       .addCase(deleteTeacher.fulfilled, (state, action: PayloadAction<string>) => {

@@ -118,7 +118,7 @@ function CategoriesList() {
       </div>
 
       {/* Global error message */}
-      <ErrorDisplay error={error} onDismiss={clearErrors} />
+      <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
       {/* Delete error message */}
       {/* {deleteError && (
