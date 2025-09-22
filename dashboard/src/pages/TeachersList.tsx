@@ -94,7 +94,12 @@ function TeachersList() {
     setShowDeleteConfirm(null);
     setDeleteError(null);
   };
-
+  if(status === 'loading'){
+    return (
+    <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">
+      جاري تحميل الاساتذة....
+    </div>
+  )}
   // Helper function to get language-specific properties
   // const getLocalizedProperty = (teacher: any, property: string) => {
   //   if (lang === 'ar') {
@@ -111,7 +116,6 @@ function TeachersList() {
         <Link to="/teachers/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">اضافة استاذ</Link>
       </div>
 
-      <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
       {/* Delete error message */}
       {/* {deleteError && (
@@ -135,13 +139,10 @@ function TeachersList() {
         </div>
       )} */}
 
-    {status === 'loading' && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">جاري تحميل الاساتذة</div>
-    )}
 
-    {status === 'failed' && (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">خطا بنحميل الاساتذة</div>
-    )}
+    <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
+    {/* {status === 'failed' && (
+    )} */}
 
     {teachers.length === 0 && (
       <div className="rounded-lg text-center border border-gray-200 bg-white p-6 text-gray-500">لا يوجد اساتذة</div>

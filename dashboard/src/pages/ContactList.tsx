@@ -50,6 +50,22 @@ export default function ContactList() {
 
   const contactToDelete = items.find(c => c._id === showDeleteConfirm);
 
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold"> الرسائل</h1>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل الرسائل</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="p-6 space-y-6 -100 min-h-screen">
       <div className="container mx-auto max-w-5xl">
@@ -59,11 +75,6 @@ export default function ContactList() {
 
         <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
-        {status === 'loading' && (
-          <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">
-            جاري تحميل الرسائل....
-          </div>
-        )}
 
         {status === 'succeeded' && items.length === 0 && (
           <div className="rounded-lg text-center border border-gray-200 bg-white p-6 text-gray-500">

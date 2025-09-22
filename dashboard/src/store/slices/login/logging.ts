@@ -64,33 +64,27 @@ export const loginUser = createAsyncThunk<IUser, LoginCredentials>(
 export const authUser = createAsyncThunk(
   'users/auth',
   async (credentials, { rejectWithValue }) => {
-    const user = await fetch(`${apiUrl}/api/admin/auth`, {
-      method: 'POST',
-      credentials: "include",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then((res)=> {
-      // console.log(res)
-      var data = res.json()
-      if(res.ok) {
-          return data
+    try {
+      const res = await fetch(`${apiUrl}/api/admin/auth`, {
+        method: 'POST',
+        credentials: "include",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      if(!res.ok) {
+        const errorData = await res.json();
+        // console.log(errorData)
+        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
       }
-      return data.then(err => {throw err;});
-    })
-    .then((data)=> {
-        // console.log(data)
-        // console.log(data)
-        return data;
-    })
-    .catch((err) => {
-      // console.log(err)
-      return rejectWithValue(err.message || 'Failed to fetch user');
-    })
-    // console.log("user from auth", user)
-
-    return user;
+      const data = await res.json();
+      console.log("🚀 ~ data: auth", data)
+      // console.log(data)
+      return data.message
+    } catch (error) {
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
+    }
   }
 );
 
@@ -102,6 +96,12 @@ const usersSlice = createSlice({
   reducers: {
     setCurrentUser: (state, action: PayloadAction<IUser | null>) => {
 
+    },
+    clearError(state) {
+      state.error = null;
+    },
+    clearStatus(state) {
+      state.loading = 'idle';
     },
     setManualLoading: (state) => {
       state.loading = "idle";
@@ -144,5 +144,5 @@ const usersSlice = createSlice({
   },
 });
 
-export const { setManualLoading } = usersSlice.actions;
+export const { setManualLoading, clearStatus, clearError } = usersSlice.actions;
 export default usersSlice.reducer;

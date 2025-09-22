@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from '../store/store';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 import { useDispatch } from 'react-redux';
-import { authUser } from '../store/slices/login/logging';
+import { authUser, clearError, clearStatus } from '../store/slices/login/logging';
 
 export default function Layout({ children }: PropsWithChildren) {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,6 +16,8 @@ export default function Layout({ children }: PropsWithChildren) {
 	// const { lang } = useSelector((s: RootState) => s.lang);
 	const location = useLocation();
 	useEffect(() => {
+		dispatch(clearError())
+		dispatch(clearStatus())
 		if(islogged) {
 		dispatch(authUser())
 		}

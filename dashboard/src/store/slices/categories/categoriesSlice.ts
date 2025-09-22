@@ -45,7 +45,7 @@ const initialState: CategoriesState = {
 };
 
 // Async Thunks
-export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination?: {totalPages: number, currentPage: number, totalItems: number, itemsPerPage: number}}, {page?: number, limit?: number} | undefined>('categories/fetchCategories', 
+export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination?: {totalPages: number, currentPage: number, totalItems: number, itemsPerPage: number}}, {page?: number, limit?: number} | undefined, {rejectValue: string}>('categories/fetchCategories', 
   async (params, {rejectWithValue}) => {
     const { page, limit } = params || {};
     try {
@@ -174,13 +174,13 @@ export const deleteCategory = createAsyncThunk<string, string, {rejectValue: str
       }
       if (!response.ok) {
         const errorData = await response.json();
+        if (errorData.message == "'الفئة غير موجودة'") return rejectWithValue("لم يتم العثور على الفئة المطلوبة");
         if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
         if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         return rejectWithValue("فشل حذف الفئة");
       }
       return categoryId;
     } catch (error) {
-      alert('error')
       return rejectWithValue("حدث خطا نعمل على اصلاحه");
     }
   }
@@ -221,7 +221,7 @@ const categoriesSlice = createSlice({
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch categories';
+        state.error = action.payload || 'فشل تحميل الفئات';
       })
       .addCase(addCategory.fulfilled, (state, action: PayloadAction<ICategory>) => {
         state.status = 'succeeded';
@@ -238,13 +238,13 @@ const categoriesSlice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(updateCategory.rejected, (state, action) => {
-        state.error = (action.payload as string) || action.error.message || 'Failed to update category';
+        state.error = (action.payload as string) || 'فشل تحديث الفئة';
       })
       .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<string>) => {
         state.items = state.items.filter(category => category._id !== action.payload);
       })
       .addCase(deleteCategory.rejected, (state, action) => {
-        state.error = (action.payload as string) || action.error.message || 'Failed to delete category';
+        state.error = (action.payload as string) || 'فشل حذف الفئة';
       });
   },
 });

@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "../store/store"
-import { fetchUserRegisters, updateUserRegisterStatus, UserRegister, clearError } from '../store/slices/usersRegisters/usersRegisterSlice'
+import { fetchUserRegisters, updateUserRegisterStatus, UserRegister, clearError,clearStatus } from '../store/slices/usersRegisters/usersRegisterSlice'
 import { useNavigate } from 'react-router-dom'
 import ErrorDisplay from '../component/ErrorDisplay'
 
 export default function UsersRegisters() {
+    const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
     const {items, error, status} = useSelector((s: RootState) => s.usersRegisters)
     // console.log(error)
@@ -15,11 +16,42 @@ export default function UsersRegisters() {
             dispatch(updateUserRegisterStatus({id, status: newStatus }))
         }
     }
-    
+    useEffect(() => {
+        if(status == 'succeeded') {
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }
+        if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+        setTimeout(() => {
+            navigate('/login');
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }, 500);
+        }
+    }, [status, error]);
     useEffect(()=> {
-        dispatch(fetchUserRegisters())
+        dispatch(fetchUserRegisters({}))
+        dispatch(clearError());
     }, [dispatch])
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
+          <h1 className="text-2xl font-bold">الحجوزات</h1>
 
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            {/* <p className="mt-2 text-sm text-gray-600">{translations.courses.loading}</p> */}
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل الحجوزات</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
     return (
         <div className="md:p-6 md:space-y-6 min-h-screen">
             <div className="container mx-auto max-w-7xl">
@@ -29,11 +61,11 @@ export default function UsersRegisters() {
 
                 <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
-                {status === 'loading' && (
+                {/* {status === 'loading' && (
                     <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">
                         جاري تحميل الحجوزات...
                     </div>
-                )}
+                )} */}
 
                 {status === 'succeeded' && items.length === 0 && (
                     <div className="rounded-lg text-center border border-gray-200 bg-white p-6 text-gray-500">

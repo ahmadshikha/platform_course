@@ -306,11 +306,11 @@ export function TeachersForm() {
     <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100`}>
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل بيانات الأستاذ" : "إضافة أستاذ جديد"}</h1>
         {/* Global error message */}
-        {errors.general && (
+        {/* {errors.general && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-600">{errors.general}</p>
           </div>
-        )}
+        )} */}
 
         {/* Redux error message */}
         <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />

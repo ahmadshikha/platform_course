@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { RootState, AppDispatch } from '../store/store';
 import { deleteCourse, fetchCourses, clearError, clearStatus } from '../store/slices/courses/coursesSlice';
 import CourseCard from '../component/CourseCard';
+import ErrorDisplay from '../component/ErrorDisplay';
+
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 
@@ -101,10 +103,6 @@ export default function CourseList() {
         <div className="flex items-center justify-between">
           {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
           <h1 className="text-2xl font-bold">الكورسات</h1>
-          <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
-            {/* {translations.courses.addCourse} */}
-            اضافة كورس
-          </Link>
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
@@ -118,46 +116,50 @@ export default function CourseList() {
   }
 
   // Error state
-  if (status === 'failed') {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
-          <h1 className="text-2xl font-bold">الكورسات</h1>
-          <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
-            {/* {translations.courses.addCourse} */}
-            اضافة كورس
-          </Link>
-        </div>
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">خطا</h3>
-              <div className="mt-2 text-sm text-red-700">
-                {/* <p>{error || translations.courses.failed}</p> */}
-                <p>فشل بتحميل الكورسات</p>
-              </div>
-              <div className="mt-4">
-                <button
-                  onClick={() => dispatch(fetchCourses({ page: currentPage, limit: itemsPerPage }))}
-                  className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
-                >
-                  {/* {translations.courses.dismiss} */}
-                  تجاهل
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // if (status === 'failed') {
+  //   return (
+  //     <div className="space-y-4">
+  //       <div className="flex items-center justify-between">
+  //         {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
+  //         <h1 className="text-2xl font-bold">الكورسات</h1>
+  //         <Link to="/courses/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
+  //           {/* {translations.courses.addCourse} */}
+  //           اضافة كورس
+  //         </Link>
+  //       </div>
+  //       <div className="bg-red-50 border border-red-200 rounded-md p-4">
+  //         <div className="flex">
+  //           <div className="flex-shrink-0">
+  //             <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+  //               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+  //             </svg>
+  //           </div>
+  //           <div className="ml-3">
+  //             <h3 className="text-sm font-medium text-red-800">خطا</h3>
+  //             <div className="mt-2 text-sm text-red-700">
+  //               {/* <p>{error || translations.courses.failed}</p> */}
+  //               <p>فشل بتحميل الكورسات</p>
+  //             </div>
+  //             <div className="mt-4">
+  //               <button
+  //                 onClick={() => dispatch(fetchCourses({ page: currentPage, limit: itemsPerPage }))}
+  //                 className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
+  //               >
+  //                 {/* {translations.courses.dismiss} */}
+  //                 تجاهل
+  //               </button>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+  // if (status === 'failed') {
+  //   return (
+  //   )
+  // }
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -170,6 +172,7 @@ export default function CourseList() {
           اضافة كورس
         </Link>
       </div>
+      <ErrorDisplay error={error} onDismiss={() => {dispatch(clearError()); dispatch(clearStatus())}} />
 
       {/* Error Messages */}
       {deleteError && (
