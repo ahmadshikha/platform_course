@@ -79,7 +79,7 @@ export const authUser = createAsyncThunk(
         if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
       }
       const data = await res.json();
-      console.log("🚀 ~ data: auth", data)
+      // console.log("🚀 ~ data: auth", data)
       // console.log(data)
       return data.message
     } catch (error) {

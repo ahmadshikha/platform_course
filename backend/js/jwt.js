@@ -6,6 +6,6 @@ export function verifyToken(token) {
 
 export const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET || 'awd', {
-        expiresIn: '10m',
+        expiresIn: '1h',
     });
 };

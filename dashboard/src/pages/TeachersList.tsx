@@ -8,6 +8,7 @@ import ar from '../lang/ar.json';
 
 import ErrorDisplay from '../component/ErrorDisplay';
 import image from '../images/teacher-1758091670690-778911984.png'
+import { apiUrl } from '../const';
 
 function TeachersList() {
   const teachers = useSelector((s: RootState) => {
@@ -163,7 +164,7 @@ function TeachersList() {
           return (
           <div  key={t._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
             <div onClick={() => navigate(`/teacher-courses/id=${t._id}`)} className={`flex items-center gap-4 p-4 `}>
-              <img src={`http://localhost:5000${t.image}`} alt="الاسم"
+              <img src={`${apiUrl}${t.image}`} alt="الاسم"
               onError={(e)=> {
                 e.currentTarget.src = image
               }}
