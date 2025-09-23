@@ -1,26 +1,23 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import {apiUrl} from '../../../const'
 
-// Define the Activity interface for your state
 export interface IActivity {
     _id: string;
     name: string;
     description: string;
-    date: Date; // Using string is safer for Redux state serialization
+    date: Date; 
     location: string;
     createdAt?: string;
     updatedAt?: string;
 }
 
-// Define the structure for a new activity, which won't have an _id yet
 interface NewActivityData {
     name: string;
     description: string;
-    date: Date; // Using string is safer for Redux state serialization
+    date: Date; 
     location: string;
 };
 
-// Define the state structure for the activities slice
 export interface ActivitiesState {
     items: IActivity[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -63,7 +60,6 @@ export const addActivity = createAsyncThunk<IActivity, NewActivityData, { reject
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activityData),
             });
-            // console.log(response)
             if (!response.ok) {
                 const errorData = await response.json();
                 if (errorData.message == 'ValidationError') return rejectWithValue("تحقق من صحة البيانات");
@@ -72,7 +68,6 @@ export const addActivity = createAsyncThunk<IActivity, NewActivityData, { reject
                 return rejectWithValue("فشل اضافة نشاط")
             }
             const data = await response.json()
-            // console.log(data)
             return data.data;
         } catch (error: any) {
             return rejectWithValue("فشل اضافة نشاط")
@@ -83,13 +78,11 @@ export const addActivity = createAsyncThunk<IActivity, NewActivityData, { reject
 export const deleteActivity = createAsyncThunk<string, string, { rejectValue: string }>(
     'activities/deleteActivity',
     async (id, { rejectWithValue }) => {
-        // Implementation using fetch
         try {
             const response = await fetch(`${apiUrl}/api/activities/${id}`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
-                // body: JSON.stringify(activityId),
             });
             if (!response.ok) {
                 const errorData = await response.json();
@@ -121,7 +114,6 @@ const activitiesSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Fetch Activities
             .addCase(fetchActivities.pending, (state) => {
                 state.status = 'loading';
             })
@@ -133,7 +125,6 @@ const activitiesSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.payload || "فشل بتحميل النشاطات"
             })
-            // Add Activity
             .addCase(addActivity.fulfilled, (state, action: PayloadAction<IActivity>) => {
                 state.status = 'succeeded';
                 state.items.push(action.payload);
@@ -143,27 +134,22 @@ const activitiesSlice = createSlice({
             })
             .addCase(addActivity.rejected, (state, action) => {
                 state.status = 'failed';
-                // console.log("add activity case rejected",action.payload)
                 state.error = action.payload || 'فشل اضافة نشاط'
             })
 
-            // Delete Activity
             .addCase(deleteActivity.pending, (state, action: PayloadAction<string>) => {
                 state.status = 'loading';
             })
             .addCase(deleteActivity.fulfilled, (state, action: PayloadAction<string>) => {
                 state.status = 'succeeded';
                 state.items = state.items.filter(item => item._id !== action.payload);
-                // console.log(state.items)
 
             })
             .addCase(deleteActivity.rejected, (state, action: PayloadAction<string>) => {
                 state.status = 'failed';
                 state.error = action.payload || 'فشل حذف النشاط';
-                // console.log(state.items)
 
             })
-            // Generic pending and rejected for add/update/delete
 
     },
 });

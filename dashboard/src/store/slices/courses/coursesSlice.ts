@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { ITeacher } from '../teachers/teachersSlice';
 import { ICategory } from '../categories/categoriesSlice';
+import { apiUrl } from '../../../const';
 
 export type Course = {
   _id: string,
@@ -62,7 +63,7 @@ const fetchCourses = createAsyncThunk(
       if (page) queryParams.append('page', page.toString());
       if (limit) queryParams.append('limit', limit.toString());
 
-      const url = `http://localhost:5000/api/courses/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${apiUrl}/api/courses/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const response = await fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -81,7 +82,6 @@ const fetchCourses = createAsyncThunk(
         return rejectWithValue("فشل تحميل الدورات");
       }
 
-      // If backend returns paginated structure, use it; otherwise fall back to list-only
       const courses = Array.isArray(result.data) ? result.data : (result.courses || []);
       const pagination = {
         totalPages: result.totalPages ?? result.pagination?.totalPages ?? 1,
@@ -104,7 +104,7 @@ const fetchCategoryCourses = createAsyncThunk(
       const queryParams = new URLSearchParams();
       if (page) queryParams.append('page', page.toString());
       if (limit) queryParams.append('limit', limit.toString());
-      const url = `http://localhost:5000/api/courses/category/${categoryId}/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${apiUrl}/api/courses/category/${categoryId}/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -135,7 +135,7 @@ export const fetchTeacherCourses = createAsyncThunk(
       const queryParams = new URLSearchParams();
       if (page) queryParams.append('page', page.toString());
       if (limit) queryParams.append('limit', limit.toString());
-      const url = `http://localhost:5000/api/courses/teacher/${teacherId}/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${apiUrl}/api/courses/teacher/${teacherId}/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -163,7 +163,7 @@ const addCourse = createAsyncThunk(
   'courses/addCourse',
   async (courseData: Omit<Course, '_id' | 'createdAt' | 'updatedAt'>, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:5000/api/courses/', {
+      const response = await fetch(`${apiUrl}/api/courses/`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -197,7 +197,7 @@ const updateCourse = createAsyncThunk(
   async ({ courseId, courseData }: { courseId: string, courseData: Partial<Course> }, { rejectWithValue }) => {
     // console.log('Updating course:', courseId, courseData);
     try {
-      const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+      const response = await fetch(`${apiUrl}/api/courses/${courseId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -231,7 +231,7 @@ const deleteCourse = createAsyncThunk(
   async (courseId: string, { rejectWithValue }) => {
     
     try {
-      const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+      const response = await fetch(`${apiUrl}/api/courses/${courseId}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

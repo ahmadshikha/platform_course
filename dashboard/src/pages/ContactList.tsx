@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function ContactList() {
   const {items,pagination,status,error} = useSelector((s:RootState)=> s.contacts);
-//   const items = useSelector((s:RootState)=> s.contacts.items);
   const dispatch = useDispatch<AppDispatch>();
 
   const [deletingContactId, setDeletingContactId] = useState<string | null>(null);
@@ -34,7 +33,6 @@ export default function ContactList() {
     try {
       await dispatch(deleteContact(id)).unwrap();
     } catch (err) {
-      // Error is handled by the slice's rejected case and displayed globally.
     }
     setDeletingContactId(null);
     setShowDeleteConfirm(null);
@@ -50,7 +48,7 @@ export default function ContactList() {
 
   const contactToDelete = items.find(c => c._id === showDeleteConfirm);
 
-  // Loading state
+
   if (status === 'loading') {
     return (
       <div className="space-y-4">
@@ -82,20 +80,17 @@ export default function ContactList() {
           </div>
         )}
 
-        {/* {status === 'succeeded' && contacts.length > 0 && ( */}
           <div className="grid gap-6">
             {items.map(contact => (
               <div key={contact._id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden">
                 <div className="p-6">
                   <div className="flex items-start space-x-4 rtl:space-x-reverse">
-                    {/* Avatar */}
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl font-bold">
                         {contact.username.charAt(0).toUpperCase()}
                       </div>
                     </div>
                     
-                    {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-center mb-1">
                         <h3 className="text-lg font-semibold text-gray-800 truncate">{contact.username}</h3>
@@ -137,14 +132,10 @@ export default function ContactList() {
           </div>
         {/* )} */}
 
-        {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            {/* Overlay */}
 
-
-            {/* Modal content */}
             <div className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">

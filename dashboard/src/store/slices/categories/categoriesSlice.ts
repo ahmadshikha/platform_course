@@ -4,20 +4,17 @@ import { apiUrl } from '../../../const';
 export interface ICategory {
   _id: string;
   name: string;
-  // nameEn: string;
   description: string;
   image: string
-  // descriptionEn: string;
   createdAt: string;
   updatedAt: string;
 }
 
 interface IAddCategory {
   name: string;
-  // nameEn: string;
   image: HTMLInputElement
   description: string;
-  // descriptionEn: string;
+
 }
 
 export type CategoriesState = {
@@ -68,7 +65,6 @@ export const fetchCategories = createAsyncThunk<{data: ICategory[], pagination?:
       }
       
       const data = await res.json();
-      // console.log(res)
       return {
         data: data.data,
         pagination: data.pagination
@@ -83,28 +79,19 @@ export const addCategory = createAsyncThunk(
   'categories/addCategory',
   async (newCategory: IAddCategory, { rejectWithValue }) => {
     try {
-      // 1. Create a new FormData instance. This is the correct way
-      //    to handle file uploads in a browser environment.
       const formdata = new FormData();
       
-      // 2. Append all fields to the FormData object. This includes
-      //    the file and any other data you want to send.
+
       formdata.append("name", newCategory.name);
       formdata.append("description", newCategory.description);
       
-      // 3. Append the actual file. The first argument is the field name
-      //    the server expects ("image"). The second argument is the file object itself.
-      //    The browser will automatically set the correct filename and content type.
-      //    We no longer need the local file path.
+
       if (newCategory.image.files && newCategory.image.files[0]) {
         formdata.append("image", newCategory.image.files[0]);
       } else {
         return rejectWithValue("لم يتم تحميل الصورة");
       }
 
-      // 4. Make the fetch request with the formdata object as the body.
-      //    IMPORTANT: Do NOT set the 'Content-Type' header. The browser will
-      //    automatically set it to 'multipart/form-data' with the correct boundary.
       const res = await fetch(`${apiUrl}/api/categories`, {
         method: 'POST',
         credentials: 'include',
@@ -123,7 +110,6 @@ export const addCategory = createAsyncThunk(
       const data = await res.json();
       return data;
     } catch (e) {
-      // It's good practice to check if 'e' is an Error object before accessing its properties.
       // console.log(e.message)
       if(e.message == "Cannot read properties of undefined (reading 'files')") return rejectWithValue("قم بتحميل الصورة اولا")
       const errorMessage = 'خطا غير متوقع';
@@ -131,32 +117,32 @@ export const addCategory = createAsyncThunk(
     }
   }
 );
-export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValue: string}>('categories/updateCategory', 
-  async (updatedCategory, {rejectWithValue}) => {
-    try {
-      const response = await fetch(`${apiUrl}/api/categories/${updatedCategory._id}`, {
-        credentials: 'include',
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: updatedCategory.name, description: updatedCategory.description,}),
-      });
+// export const updateCategory = createAsyncThunk<ICategory, ICategory, {rejectValue: string}>('categories/updateCategory', 
+//   async (updatedCategory, {rejectWithValue}) => {
+//     try {
+//       const response = await fetch(`${apiUrl}/api/categories/${updatedCategory._id}`, {
+//         credentials: 'include',
+//         method: 'PUT',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ name: updatedCategory.name, description: updatedCategory.description,}),
+//       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
-        if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
-        return rejectWithValue("فشل تعديل الفئة");
-      }
+//       if (!response.ok) {
+//         const errorData = await response.json();
+//         if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
+//         if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
+//         return rejectWithValue("فشل تعديل الفئة");
+//       }
       
-      const data = await response.json();
-      return data.data;
-    } catch (error) {
-      return rejectWithValue("حدث خطا نعمل على اصلاحه");
-    }
-  }
-);
+//       const data = await response.json();
+//       return data.data;
+//     } catch (error) {
+//       return rejectWithValue("حدث خطا نعمل على اصلاحه");
+//     }
+//   }
+// );
 
 export const deleteCategory = createAsyncThunk<string, string, {rejectValue: string}>('categories/deleteCategory', 
   async (categoryId, {rejectWithValue}) => {
@@ -168,7 +154,6 @@ export const deleteCategory = createAsyncThunk<string, string, {rejectValue: str
           'Content-Type': 'application/json',
         },
       });
-      // console.log(response)
       if(response.status == 500) {
         return rejectWithValue("حدث خطا");
       }
@@ -230,16 +215,16 @@ const categoriesSlice = createSlice({
       .addCase(addCategory.rejected, (state, action) => {
         state.error = (action.payload as string) || action.error.message || 'Failed to add category';
       })
-      .addCase(updateCategory.fulfilled, (state, action: PayloadAction<ICategory>) => {
-        const index = state.items.findIndex(category => category._id === action.payload._id);
-        if (index !== -1) {
-          state.items[index] = action.payload;
-        }
-        state.status = 'succeeded';
-      })
-      .addCase(updateCategory.rejected, (state, action) => {
-        state.error = (action.payload as string) || 'فشل تحديث الفئة';
-      })
+      // .addCase(updateCategory.fulfilled, (state, action: PayloadAction<ICategory>) => {
+      //   const index = state.items.findIndex(category => category._id === action.payload._id);
+      //   if (index !== -1) {
+      //     state.items[index] = action.payload;
+      //   }
+      //   state.status = 'succeeded';
+      // })
+      // .addCase(updateCategory.rejected, (state, action) => {
+      //   state.error = (action.payload as string) || 'فشل تحديث الفئة';
+      // })
       .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<string>) => {
         state.items = state.items.filter(category => category._id !== action.payload);
       })

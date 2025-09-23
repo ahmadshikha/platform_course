@@ -43,7 +43,7 @@ export function TeachersForm() {
     const [specialtiesEn, setSpecialtiesEn] = useState<string[]>([])
     const [isActive, setActive] = useState(true)
     const navigate = useNavigate();
-    // Education
+
     const [education, setEducation] = useState<Education[]>([])
     const [newEducation, setNewEducation] = useState<Education>({
         degree: '',
@@ -51,32 +51,29 @@ export function TeachersForm() {
         year: ''
     })
     
-    // Contact
+
     const [contact, setContact] = useState<Contact>({
         email: '',
         phone: ''
     })
     
-    // Social
+
     const [social, setSocial] = useState<Social>({
         linkedin: '',
         twitter: ''
     })
     
-    // Stats
     const [rating, setRating] = useState(0)
     const [review, setReview] = useState(0)
     const [students, setStudents] = useState(0)
     const [course, setCourse] = useState(0)
     
-    // Error handling states
     const [errors, setErrors] = useState<{[key: string]: string}>({})
     const [isLoading, setIsLoading] = useState(false)
     const [isEditMode, setIsEditMode] = useState(false)
     const [editingTeacherId, setEditingTeacherId] = useState<string | null>(null)
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-    // Ref to track initial mount
     const isMounted = useRef(false);
 
     const teachers = useSelector((s: RootState) => s.teachers.items);
@@ -91,21 +88,14 @@ export function TeachersForm() {
         const start = url.indexOf('=')
         const end = url.indexOf('/edit')
         const id = url.slice(start+1, end)
-        // console.log(id)
         setEditingTeacherId(id)
         
         const teacher = teachers.find(t => t._id === id)
         if (teacher) {
             setName(teacher.name || '')
-            // setNameEn(teacher.nameEn || '')
             setTitle(teacher.title || '')
-            // setTitleEn(teacher.titleEn || '')
             setBio(teacher.bio || '')
-            // setBioEn(teacher.bioEn || '')
-            // setExperience(teacher.experience || '')
-            // setImage(teacher.image)
             setSpecialties(teacher.specialties || [])
-            // setSpecialtiesEn(teacher.specialtiesEn || [])
             setActive(teacher.isActive !== undefined ? teacher.isActive : true)
             setEducation(teacher.education || [])
             setContact(teacher.contact || { email: '', phone: '' })
@@ -120,7 +110,6 @@ export function TeachersForm() {
     }
   }, [teachers,])
 
-  // Clear Redux errors when component mounts
   useEffect(() => {
     // dispatch(clearError());
     // dispatch(clearStatus());
@@ -144,7 +133,7 @@ export function TeachersForm() {
             }, 500);
         }
     }, [status, error]);
-  // Clear errors when user starts typing
+
   const clearFieldError = (field: string) => {
     if (errors[field]) {
       setErrors(prev => {
@@ -154,7 +143,6 @@ export function TeachersForm() {
       })
     }
   }
-  // Add specialty
 
 
   const addSpecialty = (specialty: string, isEn: boolean = false) => {
@@ -167,7 +155,6 @@ export function TeachersForm() {
     }
   }
 
-  // Remove specialty
   const removeSpecialty = (index: number, isEn: boolean = false) => {
     if (isEn) {
       setSpecialtiesEn(prev => prev.filter((_, i) => i !== index))
@@ -176,7 +163,6 @@ export function TeachersForm() {
     }
   }
 
-  // Add education
   const addEducation = () => {
     if (newEducation.degree.trim() && newEducation.institution.trim()) {
       setEducation(prev => [...prev, { ...newEducation }])
@@ -184,36 +170,24 @@ export function TeachersForm() {
     }
   }
 
-  // Remove education
   const removeEducation = (index: number) => {
     setEducation(prev => prev.filter((_, i) => i !== index))
   }
 
-  // Form validation
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {}
     
     if (!name.trim()) {
       newErrors.name = "الاسم مطلوب"
     }
-    // if (!nameEn.trim()) {
-    //   newErrors.nameEn = translations.form.validation.nameEnRequired
-    // }
+
     if (!title.trim()) {
       newErrors.title = "اللقب مطلوب"
     }
-    // if (!titleEn.trim()) {
-    //   newErrors.titleEn = translations.form.validation.titleEnRequired
-    // }
+
     if (!bio.trim()) {
       newErrors.bio = "السيرة الذاتية مطلوبة"
     }
-    // if (!bioEn.trim()) {
-    //   newErrors.bioEn = translations.form.validation.bioEnRequired
-    // }
-    // if (!experience.trim()) {
-    //   newErrors.experience = translations.form.validation.experienceRequired
-    // }
     if (!contact.email.trim()) {
       newErrors.email = "البريد الالكتروني مطلوب"
     } else if (!/\S+@\S+\.\S+/.test(contact.email)) {
@@ -230,7 +204,6 @@ export function TeachersForm() {
     return Object.keys(newErrors).length === 0
   }
 
-  // Handle form submission
   const handleSubmit = async () => {
     if (!validateForm()) {
       return
@@ -248,7 +221,6 @@ export function TeachersForm() {
         titleEn,
         bio,
         bioEn,
-        // experience,
         image,
         specialties,
         specialtiesEn,
@@ -266,18 +238,14 @@ export function TeachersForm() {
       if (isEditMode && editingTeacherId) {
         await dispatch(updateTeacher(teacherData))
       } else {
-        // console.log(teacherData)
         await dispatch(addTeacher(teacherData)).unwrap()
       }      
-      // Reset form after successful submission
       if (!isEditMode) {
         setName('')
 
         setTitle('')
 
         setBio('')
-
-        // setExperience('')
         setSpecialties([])
         setEducation([])
         setContact({ email: '', phone: '' })
@@ -359,20 +327,7 @@ export function TeachersForm() {
                 />
                 {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
             </div>
-            {/* <div>
-                <label className="block text-sm font-medium text-gray-700">{translations.form.fields.titleEn}</label>
-                <input 
-                  value={titleEn} 
-                  onChange={e => {
-                    setTitleEn(e.target.value)
-                    clearFieldError('titleEn')
-                  }} 
-                  className={`mt-1 w-full rounded-md border shadow-sm focus:ring-blue-500 ${
-                    errors.titleEn ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`} 
-                />
-                {errors.titleEn && <p className="mt-1 text-sm text-red-600">{errors.titleEn}</p>}
-            </div> */}
+
             <div>
                 <label className="block text-gray-700 font-medium mb-2">رابط الصورة</label>
                 <input 
@@ -380,7 +335,6 @@ export function TeachersForm() {
                   onChange={e => {
                     setImage(e.target)
                     clearFieldError('name')
-                    // console.log(e.target.files[0])
                   }} 
                   className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
@@ -499,7 +453,6 @@ export function TeachersForm() {
                         <div className="flex gap-2">
                             <input 
                               type="text"
-                              // placeholder={translations.form.placeholders.addSpecialty}
                               placeholder="اضافة تخصص"
                               onKeyPress={e => {
                                 if (e.key === 'Enter') {

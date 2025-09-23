@@ -11,8 +11,7 @@ export default function ActivityList() {
   const { error, status } = useSelector((state: RootState) => state.activities);
   const navigate = useNavigate()
   useEffect(() => {
-    dispatch(fetchActivities(undefined));
-    // clearError()
+    dispatch(fetchActivities());
   }, [dispatch]);
   useEffect(() => {
     if(status == 'succeeded') {
@@ -28,7 +27,6 @@ export default function ActivityList() {
     }
   }, [status, error]);
 
-  // Loading state
   if (status === 'loading') {
     return (
       <div className="space-y-4">
@@ -72,7 +70,6 @@ export default function ActivityList() {
             key={item.name + item.date} 
             activity={item}
             onDelete={(id) => {
-                // Dispatch Redux action or call API here
                 dispatch(deleteActivity(item._id));
             }}
             />
@@ -87,7 +84,7 @@ export default function ActivityList() {
 interface Props {
   activity: IActivity;
   onDelete: (id: string) => void;
-  deletingId?: string | null; // optional: track which activity is being deleted
+  deletingId?: string | null;
 }
 
 const ActivityCard: React.FC<Props> = ({ activity, onDelete, deletingId }) => {
@@ -162,7 +159,7 @@ const ActivityCard: React.FC<Props> = ({ activity, onDelete, deletingId }) => {
                 <button
                   type="button"
                   onClick={() => {
-                    onDelete(activity.name); // or activity.id
+                    onDelete(activity.name); 
                     setShowDeleteConfirm(false);
                   }}
                   disabled={deletingId === activity.name}

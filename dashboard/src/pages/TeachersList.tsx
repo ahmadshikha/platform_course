@@ -21,11 +21,9 @@ function TeachersList() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  // Delete state
   const [deletingTeacherId, setDeletingTeacherId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
@@ -53,7 +51,6 @@ function TeachersList() {
     setCurrentPage(page);
   };
 
-  // Handle delete teacher
   const handleDeleteTeacher = async (teacherId: string) => {
     setDeletingTeacherId(teacherId);
     setDeleteError(null);
@@ -61,21 +58,16 @@ function TeachersList() {
     try {
       await dispatch(deleteTeacher(teacherId)).unwrap();
       setShowDeleteConfirm(null);
-      // Clear Redux errors after successful operation
       dispatch(clearError());
       
-      // Handle pagination after delete
-      const remainingItems = pagination.total - 1; // Total items minus the deleted one
+      const remainingItems = pagination.total - 1; 
       const totalPages = Math.ceil(remainingItems / itemsPerPage);
       
-      // If current page is empty and not the first page, go to previous page
       if (remainingItems === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       } else if (currentPage > totalPages && totalPages > 0) {
-        // If current page exceeds total pages, go to last page
         setCurrentPage(totalPages);
       } else {
-        // Refresh current page data
         dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }));
       }
     } catch (error: any) {
@@ -86,7 +78,6 @@ function TeachersList() {
     }
   };
 
-  // Handle delete confirmation
   const confirmDelete = (teacherId: string) => {
     setShowDeleteConfirm(teacherId);
   };
@@ -95,20 +86,22 @@ function TeachersList() {
     setShowDeleteConfirm(null);
     setDeleteError(null);
   };
-  if(status === 'loading'){
+  if (status === 'loading') {
     return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">
-      جاري تحميل الاساتذة....
-    </div>
-  )}
-  // Helper function to get language-specific properties
-  // const getLocalizedProperty = (teacher: any, property: string) => {
-  //   if (lang === 'ar') {
-  //     return teacher[property] || teacher[property + 'En'] || '';
-  //   } else {
-  //     return teacher[property + 'En'] || teacher[property] || '';
-  //   }
-  // };
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">النشاطات</h1>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل النشاطات</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`space-y-6 `}>
       <div className="flex items-center justify-between">
@@ -118,27 +111,7 @@ function TeachersList() {
       </div>
 
 
-      {/* Delete error message */}
-      {/* {deleteError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-          <div className="flex">
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">خطأ بالحذف</h3>
-              <div className="mt-2 text-sm text-red-700">
-                <p>{deleteError}</p>
-              </div>
-              <div className="mt-4">
-                <button
-                  onClick={clearErrors}
-                  className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
-                >
-                  تجاهل
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
+
 
 
     <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />

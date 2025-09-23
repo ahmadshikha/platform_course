@@ -41,19 +41,6 @@ export default function UserRegister() {
 
     const registration = items.find(r => r._id === id);
 
-    // useEffect(() => {
-    //     if (items.length === 0 && status === 'idle') {
-    //         dispatch(fetchUserRegisters());
-    //     }
-    // }, [dispatch, items.length, status]);
-
-    // if (status === 'loading') {
-    //     return <div className="p-6 text-center">Loading registration details...</div>;
-    // }
-
-    // if (status === 'failed') {
-    //     return <div className="p-6 text-center text-red-600">Error: {error}</div>;
-    // }
 
     if (!registration) {
         return (

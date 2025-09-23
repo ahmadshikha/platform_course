@@ -18,40 +18,29 @@ export default function TeacherCourses() {
 
   const pagination = useSelector((s: RootState) => (s.courses as any).pagination || { totalPages: 1, currentPage: 1, total: 0 });
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
 
-  // Translation
-
-
-  // Delete state
   const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   const { id } = useParams<{ id: string }>();
   useEffect(() => {
-    // console.log({id});
     const _id = id.split('id=')[1]
-    // console.log(_id)
     dispatch(_fetchTeacherCourses({teacherId: _id,params: {page: currentPage, limit: itemsPerPage}}));
   }, [navigate, currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // // console.log('pagination')
   };
 
-  // Validate date strings: accept ISO (YYYY-MM-DD) or long form (e.g., "January 15, 2024")
   const isValidDateFormat = (s: string | undefined) => {
     if (!s) return false;
     const iso = /^\d{2}-\d{2}-\d{4}$/;    
-    // const long = /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}$/i;
     return iso.test(s.trim());
   };
 
-  // Clear errors when user interacts
   const clearErrors = () => {
     setDeleteError(null);
   };
@@ -65,18 +54,14 @@ export default function TeacherCourses() {
       setShowDeleteConfirm(null);
       dispatch(clearError());
 
-      // Handle pagination after delete similar to TeachersList
-      const remainingItems = (pagination.total || 0) - 1; // Total items minus the deleted one
+      const remainingItems = (pagination.total || 0) - 1; 
       const totalPages = Math.ceil(remainingItems / itemsPerPage);
 
-      // If current page is empty and not the first page, go to previous page
       if (remainingItems === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       } else if (currentPage > totalPages && totalPages > 0) {
-        // If current page exceeds total pages, go to last page
         setCurrentPage(totalPages);
       } else {
-        // Refresh current page data
         dispatch(fetchCourses({ page: currentPage, limit: itemsPerPage }));
       }
     } catch (error) {
@@ -86,7 +71,6 @@ export default function TeacherCourses() {
     }
   };
 
-  // Loading state
   if (status === 'loading') {
     return (
       <div className="space-y-4">

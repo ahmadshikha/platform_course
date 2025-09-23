@@ -12,7 +12,6 @@ export default function Login() {
     const navigate = useNavigate();
     const {islogged, error: loginError} = useSelector((s: RootState) => s.login);
 
-    // If already logged in, redirect to home
     useEffect(()=> {
         if (islogged) {
             navigate('/courses');
@@ -29,12 +28,10 @@ export default function Login() {
         try {
             const resultAction = await dispatch(loginUser({ email, password }));
             if (loginUser.fulfilled.match(resultAction)) {
-                // successful login
                 navigate('/');
             } else {
 
                 const err: any = resultAction.payload || resultAction.error;
-                // console.log(loginError)
                 if(loginError == 'Invalid credentials') setError("اسم المستخدم او كلمة السر خطأ");
                 else
                 setError('خطأ بتسجيل الدخول');
@@ -45,24 +42,6 @@ export default function Login() {
             setIsLoading(false);
         }
         
-        // Basic validation
-        // if (!username || !password) {
-        //     setError('Both username and password are required.');
-        //     setIsLoading(false);
-        //     return;
-        // }
-
-        // In a real app, you would dispatch an action to an auth slice here
-        // and handle success/failure from an API call.
-        // For demonstration, we'll use a timeout and mock credentials.
-        // await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // if (username === 'admin' && password === 'password') {
-        //     // console.log('Login successful');
-        //     // navigate('/courses'); // Redirect to a protected route
-        // } else {
-        //     setError('Invalid credentials. Please try again.');
-        // }
 
         setIsLoading(false);
     };

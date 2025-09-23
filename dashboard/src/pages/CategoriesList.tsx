@@ -9,28 +9,21 @@ import ErrorDisplay from '../component/ErrorDisplay';
 
 
 import avatar from '../images/teacher-1758091670690-778911984.png'
+import { apiUrl } from '../const';
 
 function CategoriesList() {
   const categories = useSelector((s: RootState) => s.categories.items);
   const pagination = useSelector((s: RootState) => s.categories.pagination);
   const status = useSelector((s: RootState) => s.categories.status);
   const error = useSelector((s: RootState) => s.categories.error);
-  // const { lang } = useSelector((s: RootState) => s.lang);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Translation
-  // const translate = {
-  //   en,
-  //   ar
-  // };
-  // const translations = translate[lang];
-      // console.log(categories)
-  // Pagination state
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  // Delete state
+
   const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
@@ -49,9 +42,7 @@ function CategoriesList() {
   }, [status, error]);
   useEffect(() => {
     dispatch(fetchCategories({ page: currentPage, limit: itemsPerPage }));
-    // if(status !== "idle") dispatch(clearStatus())
-    
-    // Clear any existing errors when component mounts
+
     dispatch(clearError());
   }, [currentPage, itemsPerPage, dispatch]);
 
@@ -59,12 +50,12 @@ function CategoriesList() {
     setCurrentPage(page);
   };
 
-  // Clear errors when user interacts
+
   const clearErrors = () => {
     setDeleteError(null);
     dispatch(clearError())
   };
-  // Handle delete category
+
   const handleDeleteCategory = async (categoryId: string) => {
     setDeletingCategoryId(categoryId);
     setDeleteError(null);
@@ -72,21 +63,16 @@ function CategoriesList() {
     try {
       await dispatch(deleteCategory(categoryId)).unwrap();
       setShowDeleteConfirm(null);
-      // Clear Redux errors after successful operation
       dispatch(clearError());
       
-      // Handle pagination after delete
-      const remainingItems = pagination.totalItems - 1; // Total items minus the deleted one
+      const remainingItems = pagination.totalItems - 1;
       const totalPages = Math.ceil(remainingItems / itemsPerPage);
       
-      // If current page is empty and not the first page, go to previous page
       if (remainingItems === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       } else if (currentPage > totalPages && totalPages > 0) {
-        // If current page exceeds total pages, go to last page
         setCurrentPage(totalPages);
       } else {
-        // Refresh current page data
         dispatch(fetchCategories({ page: currentPage, limit: itemsPerPage }));
       }
     } catch (error: any) {
@@ -96,7 +82,6 @@ function CategoriesList() {
     }
   };
 
-  // Handle delete confirmation
   const confirmDelete = (categoryId: string) => {
     setShowDeleteConfirm(categoryId);
   };
@@ -106,7 +91,7 @@ function CategoriesList() {
     setDeleteError(null);
   };
 
-  // Loading state
+
   if (status === 'loading') {
     return (
       <div className="space-y-4">
@@ -162,29 +147,27 @@ function CategoriesList() {
 
 
     {categories.length === 0 && (
-      // <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">{translations.categories.noCategories}</div>
       <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">لايوجد فئات</div>
     )}
 
     {categories.length > 0 && (
       <>
-        {/* Pagination info */}
+
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-700">
-            {/* {translations.categories.showing} {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)} {translations.categories.of} {pagination.totalItems} {translations.categories.categories} */}
             اظهار {((pagination.currentPage - 1) * itemsPerPage) + 1}-{Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)} من {pagination.totalItems} فئات
           </div>
         </div>
-        {/* categories list */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+        <div className="flex justify-center flex-wrap gap-6">
           {categories.map((category)=> {
             return (
-              <div key={category._id} className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col">
+              <div key={category._id} className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col flex-1 min-w-[300px] max-w-sm">
                 <div className="relative h-48 w-full overflow-hidden">
                   <img 
-                    src={`http://localhost:5000${category.image}`} 
+                    src={`${apiUrl}${category.image}`} 
                     alt={category.name} 
-                    className="w-full h-full object-fill"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     onError={(e) => { e.currentTarget.src = avatar }}
                   />
                   <div 
@@ -194,26 +177,35 @@ function CategoriesList() {
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                     <h3 className="text-xl font-bold truncate">{category.name}</h3>
                   </div>
-                  <button
-                    onClick={() => confirmDelete(category._id)}
-                    disabled={deletingCategoryId === category._id}
-                    className="absolute top-3 right-3 p-2 rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-red-500/80 transition-colors"
-                    aria-label="Delete category"
-                  >
-                    {deletingCategoryId === category._id ? (
-                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                  </button>
                 </div>
                 <div className="p-6 flex-grow flex flex-col">
                   <p className="text-sm text-gray-600 line-clamp-3 flex-grow">{category.description}</p>
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button 
+                      onClick={() => navigate(`/categories/id=${category._id}/edit`)} 
+                      className="p-2 rounded-full text-gray-500 hover:bg-blue-100 hover:text-blue-600 transition-colors"
+                      aria-label="Edit category"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>
+                    </button>
+                    <button
+                      onClick={() => confirmDelete(category._id)}
+                      disabled={deletingCategoryId === category._id}
+                      className="p-2 rounded-full text-gray-500 hover:bg-red-100 hover:text-red-600 transition-colors disabled:opacity-50"
+                      aria-label="Delete category"
+                    >
+                      {deletingCategoryId === category._id ? (
+                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             )
