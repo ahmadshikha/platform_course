@@ -239,8 +239,7 @@ const teachersSlice = createSlice({
   name: 'teachers',
   initialState,
   reducers: {
-    // These reducers can be used for immediate UI updates if needed, 
-    // but for persistence, async thunks are preferred.
+
     setTeachers(state, action: PayloadAction<ITeacher[]>) {
       state.items = action.payload;
     },

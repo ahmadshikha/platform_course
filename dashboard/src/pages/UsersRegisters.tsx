@@ -9,7 +9,6 @@ export default function UsersRegisters() {
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
     const {items, error, status} = useSelector((s: RootState) => s.usersRegisters)
-    // console.log(error)
     const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>, id: string) => {
         const newStatus = e.target.value as UserRegister['status']
         if (id) {
@@ -33,7 +32,7 @@ export default function UsersRegisters() {
         dispatch(fetchUserRegisters({}))
         dispatch(clearError());
     }, [dispatch])
-  // Loading state
+
   if (status === 'loading') {
     return (
       <div className="space-y-4">

@@ -8,7 +8,7 @@ import ErrorDisplay from '../component/ErrorDisplay';
 interface IActivity {
     name: string;
     description: string;
-    date: string; // Using string for input compatibility
+    date: string;
     location: string;
 }
 
@@ -44,7 +44,6 @@ export default function ActivityForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const isMounted = useRef(false);
-    // TODO: Implement edit mode logic similar to other forms
     const isEditMode = false; 
 
     // useEffect(() => {
@@ -94,12 +93,10 @@ export default function ActivityForm() {
         try {
             await dispatch(addActivity({ ...form, date: new Date(form.date) })).unwrap();
             
-            // Reset form if not in edit mode
             if (!isEditMode) {
                 setForm({ name: '', description: '', date: '', location: '' });
             }
         } catch (error: any) {
-            // The error is now handled by the global error display from the slice.
         } finally {
             setIsLoading(false);
             window.scrollTo(0, 0);

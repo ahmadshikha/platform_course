@@ -23,10 +23,8 @@ function App() {
 	return (
 		<HashRouter>
 			<Routes>
-				{/* Public route - login rendered outside the main layout */}
 				<Route path="/login" element={<Login />} />
 
-				{/* Protected app routes rendered inside Layout */}
 				<Route path="/" element={<Layout />}>
 					{/* <Route index element={<Navigate to="/courses" replace />} /> */}
 					<Route path="/courses" element={<CourseList />} />

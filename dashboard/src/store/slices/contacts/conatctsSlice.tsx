@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { apiUrl } from '../../../const';
 
-// --- INTERFACES ---
 export interface IContact {
   _id: string;
   username: string;
@@ -31,13 +30,12 @@ const initialState: ContactsState = {
   error: null
 }
 
-// --- ASYNC THUNKS (CRUD OPERATIONS) ---
-// Thunk to fetch all contacts from a real API
+
 export const fetchContacts = createAsyncThunk(
   'contacts/fetchContacts',
   async (_, { rejectWithValue }) => {
     try {
-      // Replace with your actual API endpoint for fetching contacts
+
       const response = await fetch(`${apiUrl}/api/contact`, {
         method: "GET",
         credentials: 'include'
@@ -46,7 +44,6 @@ export const fetchContacts = createAsyncThunk(
         return rejectWithValue('فشل بتحميل قائمة التواصل');
       }
       const data = await response.json();
-      // console.log(data)
         return {
           contacts: data.data,
           pagination: {
@@ -56,18 +53,15 @@ export const fetchContacts = createAsyncThunk(
           }
         }
     } catch (error: any) {
-      // // console.log(error)
       return rejectWithValue('فشل بتحميل قائمة التواصل');
     }
   }
 );
 
-// Thunk to delete a specific contact from a real API
 export const deleteContact = createAsyncThunk(
   'contacts/deleteContact',
   async (id: string, { rejectWithValue }) => {
     try {
-      // Replace with your actual API endpoint for deleting a contact
       const response = await fetch(`${apiUrl}/api/contact/admin/contacts/${id}`, {
         method: 'DELETE',
         credentials: 'include'
@@ -79,7 +73,6 @@ export const deleteContact = createAsyncThunk(
         if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         return rejectWithValue("فشل حذف الرسالة")
       }
-      // The API should ideally return the ID of the deleted item
       return id;
     } catch (error: any) {
       return rejectWithValue("فشل حذف الرسالة")
@@ -87,7 +80,6 @@ export const deleteContact = createAsyncThunk(
   }
 );
 
-// --- REDUX SLICE ---
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
@@ -101,7 +93,7 @@ const contactsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Contacts
+
       .addCase(fetchContacts.pending, (state) => {
         state.status = 'loading';
       })
@@ -114,7 +106,7 @@ const contactsSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string || "فشل تحميل الرسائل";
       })
-      // Delete Contact
+
       .addCase(deleteContact.pending, (state) => {
         state.status = 'loading';
       })

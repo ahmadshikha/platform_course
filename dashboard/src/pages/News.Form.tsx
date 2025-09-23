@@ -89,7 +89,6 @@ export default function AddNewsForm() {
         eventDate: new Date(eventDate),
         imageURL: imageURL,
       }
-      // console.log(newsData)
       dispatch(addNews(newsData));
       setTitle('')
       setContent('')
@@ -112,24 +111,20 @@ export default function AddNewsForm() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      {/* Header row like Activities UI */}
       <div className="text-center">
         <h1 className="text-2xl font-bold">إضافة خبر جديد</h1>
       </div>
 
-      {/* Form card */}
       <div className="bg-white shadow-md rounded-xl p-8 border border-gray-100 space-y-6">
-        {/* Success message */}
+
         {showSuccessMessage && (
           <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
             <p className="text-sm text-green-600">تم إضافة الخبر بنجاح</p>
           </div>
         )}
 
-        {/* Global error message */}
         <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
-        {/* العنوان */}
         <div>
           <label className="block text-gray-700 font-medium mb-2">العنوان</label>
           <input
@@ -142,7 +137,6 @@ export default function AddNewsForm() {
           {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
         </div>
 
-        {/* المحتوى */}
         <div>
           <label className="block text-gray-700 font-medium mb-2">المحتوى</label>
           <textarea
@@ -154,8 +148,7 @@ export default function AddNewsForm() {
           {errors.content && <p className="text-red-500 text-sm mt-1">{errors.content}</p>}
         </div>
 
-        {/* التصنيف */}
-        <div>
+       <div>
           <label className="block text-gray-700 font-medium mb-2">التصنيف</label>
           <input
             type="text"
@@ -167,7 +160,6 @@ export default function AddNewsForm() {
           {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
         </div>
 
-        {/* تاريخ الحدث */}
         <div>
           <label className="block text-gray-700 font-medium mb-2">تاريخ الحدث</label>
           <input
@@ -179,28 +171,25 @@ export default function AddNewsForm() {
           {errors.eventDate && <p className="text-red-500 text-sm mt-1">{errors.eventDate}</p>}
         </div>
 
-        {/* رابط الصورة */}
         <div>
           <label className="block text-gray-700 font-medium mb-2">رابط الصورة</label>
           <input
             type="file"
             placeholder="ضع رابط الصورة هنا"
-            // value={form.imageURL}
             onChange={(e) => setImageURL(e.target)}
             className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           />
           {errors.imageURL && <p className="text-red-500 text-sm mt-1">{errors.imageURL}</p>}
         </div>
 
-        {/* زر الإرسال */}
-                <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
-                    <button onClick={handleAddNews} disabled={isLoading} className={`w-full sm:w-auto flex-1 inline-flex justify-center items-center rounded-lg px-4 py-3 text-sm font-semibold text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
-                        {isLoading ? "جاري الحفظ..." : "حفظ"}
-                    </button>
-                    <Link to="/news" className="w-full sm:w-auto flex-1 text-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">
-                        الغاء
-                    </Link>
-                </div>
+        <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+            <button onClick={handleAddNews} disabled={isLoading} className={`w-full sm:w-auto flex-1 inline-flex justify-center items-center rounded-lg px-4 py-3 text-sm font-semibold text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
+                {isLoading ? "جاري الحفظ..." : "حفظ"}
+            </button>
+            <Link to="/news" className="w-full sm:w-auto flex-1 text-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+                الغاء
+            </Link>
+        </div>
       </div>
     </div>
   );

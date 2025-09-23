@@ -14,7 +14,6 @@ interface CourseCardProps {
 export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
   // const { lang } = useSelector((s: RootState) => s.lang);
   let date = new Date(course.date);
-  // Use toLocaleDateString for better formatting and localization potential
   let dateString = date.toLocaleDateString('ar-EG', { day: '2-digit', month: '2-digit', year: 'numeric' });
   // Translation
   // const translate = {

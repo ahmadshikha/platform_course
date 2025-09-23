@@ -11,7 +11,7 @@ import { ITeacher } from '../store/slices/teachers/teachersSlice';
 import ErrorDisplay from "../component/ErrorDisplay";
 export function CourseForm() {
     const { id: idww } = useParams<{ id?: string }>();
-	const courseId = idww; // Rename `id` to `courseId` for consistency
+	const courseId = idww; 
     const [isEditMode, setIsEditMode] = useState(false)
     const [actionForm, setActionForm] = useState("اضافة كورس")
     
@@ -29,7 +29,6 @@ export function CourseForm() {
     const [description, setDescription] = useState("");
     const [details, setDetails] = useState("");
     const [teacher, setTeacher] = useState<ITeacher | null>(null);
-    // store selected category id as a string (or empty when none)
     const [categoryId, setCategoryId] = useState<string>("");
     const [isActive, setActive] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,36 +72,28 @@ export function CourseForm() {
     );
 
 
-    // Load course data in edit mode
     useEffect(() => {
         setErrors({});
         const url = window.location.href
         if(url.includes("/edit")) {
             setActionForm("تعديل كورس")
             setIsEditMode(true)
-			// console.log(11111, courseId)
             const course = courses.items.find(c => c._id === courseId);
             if (course) {
                 setId(course.id);
                 setTitle(course.title);
-                // setTitleEn(course.titleEn);
                 setType(course.type);
-                // setTypeEn(course.typeEn)
                 setDate(course.date ? new Date(course.date) : null);
                 setTime(course.time);
                 setDuration(course.duration);
                 setLocation(course.location);
-                // setLocationEn(course.locationEn);
                 setStatus(course.status);
                 setEnrolled(course.enrolled)
                 setPrice(course.price);
                 setSeats(course.seats);
                 setDescription(course.description);
                 setDetails(course.details)
-                // setDescriptionEn(course.descriptionEn);
-                // set teacher if present on the course
                 setTeacher((course as any).teacher || null);
-                // normalize categoryId to be the category _id string when editing
                 const courseCat = (course as any).categoryId;
                 setCategoryId(courseCat ? (courseCat._id || courseCat) : '');
                 setActive(course.isActive);
@@ -117,26 +108,19 @@ export function CourseForm() {
         }
     }, [isEditMode, courseId, courses.items]);
 
-    // Add validation logic
     const validateForm = () => {
-        // clear previous errors before validating to avoid showing stale messages
         const newErrors: { [key: string]: string } = {};
-        // console.log(teacher)
         if (!id.trim()) {
             newErrors.id = 'معرف الكورس مطلوب';
         }
         if (!title.trim()) {
             newErrors.title = 'العنوان مطلوب';
         }
-        // if (!titleEn.trim()) {
-        //     newErrors.titleEn = 'Title (English) is required';
-        // }
+
         if (!type.trim()) {
             newErrors.type = 'النوع مطلوب';
         }
-        // if (!typeEn.trim()) {
-        //     newErrors.typeEn = 'Type (English) is required';
-        // }
+
         if (!date) {
             newErrors.date = 'التاريخ مطلوب';
         }
@@ -149,9 +133,7 @@ export function CourseForm() {
         if (!location.trim()) {
             newErrors.location = 'الموقع مطلوب';
         }
-        // if (!locationEn.trim()) {
-        //     newErrors.locationEn = 'Location (English) is required';
-        // }
+
         if (!price.trim()) {
             newErrors.price = 'السعر مطلوب';
         }
@@ -161,24 +143,19 @@ export function CourseForm() {
         if (!details.trim()) {
             newErrors.details = 'تفاصيل الكورس مطلوبة';
         }
-        // if (!descriptionEn.trim()) {
-        //     newErrors.descriptionEn = 'Description (English) is required';
-        // }
+
         if (!teacher) {
             newErrors.teacher = 'الاستاذ مطلوب';
         }
 
         setErrors(newErrors);
-        // return whether the form is valid
         return Object.keys(newErrors).length === 0;
     };
 
-    // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         setSubmitError(null);
-        // clear any previous errors when starting a submit attempt
         setShowSuccessMessage(false);
         setErrors({});
 
@@ -188,37 +165,29 @@ export function CourseForm() {
         }
 
         try {
-            // Update courseData to include the full teacher object
-            // find selected category object (the API/store expects the full object)
             const selectedCategory = categoryId ? categories.find((c: any) => c._id === categoryId) : undefined;
 
             const courseData = {
                 id: id.trim(),
                 title: title.trim(),
-                // titleEn: titleEn.trim(),
                 type: type.trim(),
-                // typeEn: typeEn.trim(),
                 date: date,
                 time: time.trim(),
                 duration: duration.trim(),
                 location: location.trim(),
-                // locationEn: locationEn.trim(),
                 status,
                 price: price.trim(),
                 seats,
                 description: description.trim(),
                 details: details.trim(),
-                // descriptionEn: descriptionEn.trim(),
-                teacher, // Assign the full ITeacher object
-                // if a category is selected, ensure we pass the category object expected by the API/store
+                teacher,
                 categoryId: selectedCategory || undefined,
                 isActive
             };
-			// console.log(courseData)
+
             if (isEditMode && courseId) {
                 await dispatch(updateCourse({ courseId, courseData }));
             } else {
-                // Add additional fields only needed for new courses
                     const newCourseData = {
                     ...courseData,
                     enrolled: 0,
@@ -227,9 +196,7 @@ export function CourseForm() {
                 };
                 await dispatch(addCourse(newCourseData));
             }
-            // On successful submit, clear validation errors and navigate away
             setErrors({});
-            // navigate('/courses');
         } catch (error) {
             setSubmitError('Failed to create course. Please try again.');
         } finally {
@@ -248,10 +215,8 @@ export function CourseForm() {
     <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100`}>
 		<h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{actionForm}</h1>
 		
-		{/* Error Messages */}
 		<ErrorDisplay error={submitError || coursesError} onDismiss={() => { setSubmitError(null); dispatch(clearError()); }} />
 
-        {/* Success message */}
         {showSuccessMessage && (
             <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
                 <p className="text-sm text-green-600">تم حفظ الكورس بنجاح</p>
