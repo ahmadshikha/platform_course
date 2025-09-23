@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CategoryNavigation } from "@/components/CategoryNavigation";
-import { GoogleTranslate } from "@/components/GoogleTranslate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,9 +11,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, Mail, Phone, MapPin, BookOpen, CreditCard, FileText, CheckCircle, AlertCircle, ChevronRight, ChevronLeft } from "lucide-react";
+import { Calendar, User, Mail, Phone, MapPin, BookOpen, CheckCircle, AlertCircle, ChevronRight, ChevronLeft } from "lucide-react";
 
-// مكون Stepper البديل
+
 const CustomStepper = ({ currentStep, steps }) => {
   return (
     <div className="w-full mb-8">
@@ -46,32 +44,25 @@ const CustomStepper = ({ currentStep, steps }) => {
 };
 
 const CourseRegistration = () => {
-  const { t, i18n } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     participantType: 'individual',
-    title: '',
     firstName: '',
     lastName: '',
     birthDate: '',
     gender: '',
     nationality: '',
-    idNumber: '',
     streetAddress: '',
-    postalCode: '',
     city: '',
     country: '',
     phone: '',
     mobile: '',
     email: '',
-    confirmEmail: '',
-    courseNumber: 'U731063',
-    courseTitle: 'اختبار تحديد المستوى للمسار M/الشهادة المتوسطة/التأهيل',
+    confirmEmail:'',
+    courseNumber: '',
     participationReason: '',
     educationLevel: '',
-    occupation: '',
     companyName: '',
-    companyAddress: '',
     emergencyContact: {
       name: '',
       relationship: '',
@@ -79,20 +70,22 @@ const CourseRegistration = () => {
     },
     specialNeeds: '',
     additionalInfo: '',
-    // paymentMethod: 'creditCard',
     agreeTerms: false,
     agreeDataProcessing: false,
     receiveNewsletter: true
   });
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleNestedInputChange = (parent: string, field: string, value: string) => {
+  const handleNestedInputChange = (parent, field, value) => {
     setFormData(prev => ({
       ...prev,
       [parent]: {
@@ -110,18 +103,39 @@ const CourseRegistration = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Registration submitted:', formData);
-    // Here you would typically send the data to your backend
-    setCurrentStep(5); // Success step
-  };
+    setLoading(true);
+    setError('');
+  
+    try {
+      const response = await fetch('http://localhost:5000/api/userRegister', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
 
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(responseData.message || `فشل في التسجيل: ${response.status}`);
+      }
+  
+      setCurrentStep(5); 
+    } catch (err) {
+      setError(err.message || 'حدث خطأ أثناء التسجيل');
+    } finally {
+      setLoading(false);
+    }
+  };
   const steps = [
-    { id: 1, title: t('personalInfo', 'المعلومات الشخصية') },
-    { id: 2, title: t('courseDetails', 'تفاصيل الدورة') },
-    { id: 3, title: t('additionalInfo', 'معلومات إضافية') },
-    { id: 4, title: t('reviewSubmit', 'مراجعة وإرسال') }
+    { id: 1, title: 'المعلومات الشخصية' },
+    { id: 2, title: 'تفاصيل الدورة' },
+    { id: 3, title: 'معلومات إضافية' },
+    { id: 4, title: 'مراجعة وإرسال' }
   ];
 
   return (
@@ -130,23 +144,18 @@ const CourseRegistration = () => {
       <CategoryNavigation />
       
       <div className="container mx-auto px-4 py-8">
-        {/* Google Translate Widget */}
-        <div className="flex justify-end mb-6">
-          <GoogleTranslate />
-        </div>
-        
         <div className="max-w-4xl mx-auto">
-          {/* Header with progress */}
+   
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {t('registrationForm', 'نموذج التسجيل')} - Registration Form
+              نموذج التسجيل في الدورة
             </h1>
             <p className="text-gray-600">
-              {t('completeSteps', 'يرجى إكمال جميع الخطوات لتسجيل في الدورة')} - Please complete all steps to register for the course
+              يرجى إكمال جميع الخطوات لتسجيل في الدورة
             </p>
           </div>
 
-          {/* Stepper */}
+       
           <CustomStepper currentStep={currentStep} steps={steps} />
 
           <Card className="shadow-lg">
@@ -156,45 +165,45 @@ const CourseRegistration = () => {
                   {steps.find(step => step.id === currentStep)?.title}
                 </span>
                 <Badge variant="outline" className="text-sm">
-                  {t('step', 'خطوة')} {currentStep} {t('of', 'من')} 4
+                  خطوة {currentStep} من 4
                 </Badge>
               </CardTitle>
-              <CardDescription>
-                {currentStep === 1 && t('step1Desc', 'أدخل معلوماتك الشخصية الأساسية')}
-                {currentStep === 2 && t('step2Desc', 'حدد الدورة والمعلومات ذات الصلة')}
-                {currentStep === 3 && t('step3Desc', 'أضف أي معلومات إضافية')}
-                {currentStep === 4 && t('step4Desc', 'راجع معلوماتك وأرسل الطلب')}
-              </CardDescription>
             </CardHeader>
             <CardContent className="p-6">
+              {error && (
+                <div className="bg-red-50 p-4 rounded-lg border border-red-200 mb-6">
+                  <p className="text-red-600">{error}</p>
+                </div>
+              )}
+
               {currentStep === 5 ? (
                 // Success Step
                 <div className="text-center py-8">
                   <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    {t('registrationSuccess', 'تم التسجيل بنجاح!')}
+                    تم التسجيل بنجاح!
                   </h2>
                   <p className="text-gray-600 mb-6">
-                    {t('successMessage', 'تم تقديم طلب التسجيل الخاص بك بنجاح. سوف تتلقى تأكيدًا عبر البريد الإلكتروني قريبًا.')}
+                    تم تقديم طلب التسجيل الخاص بك بنجاح. سوف تتلقى تأكيدًا عبر البريد الإلكتروني قريبًا.
                   </p>
                   <div className="flex justify-center gap-4">
                     <Button asChild>
-                      <a href="/">{t('backToHome', 'العودة إلى الرئيسية')}</a>
+                      <a href="/">العودة إلى الرئيسية</a>
                     </Button>
                     <Button variant="outline" asChild>
-                      <a href="/courses">{t('browseMoreCourses', 'تصفح المزيد من الدورات')}</a>
+                      <a href="/courses">تصفح المزيد من الدورات</a>
                     </Button>
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-                  {/* Step 1: Personal Information */}
+                <form onSubmit={handleSubmit} className="space-y-6" dir="rtl">
+               
                   {currentStep === 1 && (
                     <div className="space-y-6">
                       <div className="space-y-3">
                         <Label className="text-lg font-semibold flex items-center">
                           <User className="ml-2 h-5 w-5" />
-                          {t('participantType', 'نوع المشارك')} - Participant Type
+                          نوع المشارك
                         </Label>
                         <RadioGroup
                           value={formData.participantType}
@@ -203,26 +212,26 @@ const CourseRegistration = () => {
                         >
                           <div className="flex items-center space-x-2 p-3 border rounded-lg hover:border-primary">
                             <RadioGroupItem value="individual" id="individual" />
-                            <Label htmlFor="individual" className="cursor-pointer">{t('individual', 'فرد')} - Individual</Label>
+                            <Label htmlFor="individual" className="cursor-pointer">فرد</Label>
                           </div>
                           <div className="flex items-center space-x-2 p-3 border rounded-lg hover:border-primary">
                             <RadioGroupItem value="company" id="company" />
-                            <Label htmlFor="company" className="cursor-pointer">{t('company', 'شركة')} - Company</Label>
+                            <Label htmlFor="company" className="cursor-pointer">شركة</Label>
                           </div>
                           <div className="flex items-center space-x-2 p-3 border rounded-lg hover:border-primary">
                             <RadioGroupItem value="student" id="student" />
-                            <Label htmlFor="student" className="cursor-pointer">{t('student', 'طالب')} - Student</Label>
+                            <Label htmlFor="student" className="cursor-pointer">طالب</Label>
                           </div>
                           <div className="flex items-center space-x-2 p-3 border rounded-lg hover:border-primary">
                             <RadioGroupItem value="other" id="other" />
-                            <Label htmlFor="other" className="cursor-pointer">{t('other', 'أخرى')} - Other</Label>
+                            <Label htmlFor="other" className="cursor-pointer">أخرى</Label>
                           </div>
                         </RadioGroup>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="firstName">{t('firstName', 'الاسم الأول')} * - First Name</Label>
+                          <Label htmlFor="firstName">الاسم الأول *</Label>
                           <Input
                             id="firstName"
                             value={formData.firstName}
@@ -231,7 +240,7 @@ const CourseRegistration = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="lastName">{t('lastName', 'اسم العائلة')} * - Last Name</Label>
+                          <Label htmlFor="lastName">اسم العائلة *</Label>
                           <Input
                             id="lastName"
                             value={formData.lastName}
@@ -243,7 +252,7 @@ const CourseRegistration = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="birthDate">{t('birthDate', 'تاريخ الميلاد')} - Birth Date</Label>
+                          <Label htmlFor="birthDate">تاريخ الميلاد</Label>
                           <Input
                             id="birthDate"
                             type="date"
@@ -252,7 +261,7 @@ const CourseRegistration = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>{t('gender', 'الجنس')} - Gender</Label>
+                          <Label>الجنس *</Label>
                           <RadioGroup
                             value={formData.gender}
                             onValueChange={(value) => handleInputChange('gender', value)}
@@ -260,16 +269,16 @@ const CourseRegistration = () => {
                           >
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="male" id="male" />
-                              <Label htmlFor="male">{t('male', 'ذكر')} - Male</Label>
+                              <Label htmlFor="male">ذكر</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="female" id="female" />
-                              <Label htmlFor="female">{t('female', 'أنثى')} - Female</Label>
+                              <Label htmlFor="female">أنثى</Label>
                             </div>
                           </RadioGroup>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="nationality">{t('nationality', 'الجنسية')} - Nationality</Label>
+                          <Label htmlFor="nationality">الجنسية</Label>
                           <Input
                             id="nationality"
                             value={formData.nationality}
@@ -279,58 +288,38 @@ const CourseRegistration = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="idNumber">{t('idNumber', 'رقم الهوية')} - ID Number</Label>
+                        <Label htmlFor="streetAddress">عنوان الشارع</Label>
                         <Input
-                          id="idNumber"
-                          value={formData.idNumber}
-                          onChange={(e) => handleInputChange('idNumber', e.target.value)}
+                          id="streetAddress"
+                          value={formData.streetAddress}
+                          onChange={(e) => handleInputChange('streetAddress', e.target.value)}
                         />
                       </div>
 
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold flex items-center">
-                          <MapPin className="ml-2 h-5 w-5" />
-                          {t('addressInfo', 'معلومات العنوان')} - Address Information
-                        </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="streetAddress">{t('streetAddress', 'عنوان الشارع')} - Street Address</Label>
+                          <Label htmlFor="city">المدينة *</Label>
                           <Input
-                            id="streetAddress"
-                            value={formData.streetAddress}
-                            onChange={(e) => handleInputChange('streetAddress', e.target.value)}
+                            id="city"
+                            value={formData.city}
+                            onChange={(e) => handleInputChange('city', e.target.value)}
+                            required
                           />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="postalCode">{t('postalCode', 'الرمز البريدي')} - Postal Code</Label>
-                            <Input
-                              id="postalCode"
-                              value={formData.postalCode}
-                              onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="city">{t('city', 'المدينة')} - City</Label>
-                            <Input
-                              id="city"
-                              value={formData.city}
-                              onChange={(e) => handleInputChange('city', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="country">{t('country', 'الدولة')} - Country</Label>
-                            <Input
-                              id="country"
-                              value={formData.country}
-                              onChange={(e) => handleInputChange('country', e.target.value)}
-                            />
-                          </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="country">الدولة *</Label>
+                          <Input
+                            id="country"
+                            value={formData.country}
+                            onChange={(e) => handleInputChange('country', e.target.value)}
+                            required
+                          />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="phone">{t('phone', 'هاتف')} - Phone</Label>
+                          <Label htmlFor="phone">هاتف</Label>
                           <Input
                             id="phone"
                             type="tel"
@@ -339,7 +328,7 @@ const CourseRegistration = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="mobile">{t('mobile', 'جوال')} - Mobile *</Label>
+                          <Label htmlFor="mobile">جوال *</Label>
                           <Input
                             id="mobile"
                             type="tel"
@@ -350,36 +339,35 @@ const CourseRegistration = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="email">{t('email', 'البريد الإلكتروني')} * - Email</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="confirmEmail">{t('confirmEmail', 'تأكيد البريد الإلكتروني')} * - Confirm Email</Label>
-                          <Input
-                            id="confirmEmail"
-                            type="email"
-                            value={formData.confirmEmail}
-                            onChange={(e) => handleInputChange('confirmEmail', e.target.value)}
-                            required
-                          />
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">البريد الإلكتروني *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="email"> تاكيد البريد الاكتروني*</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={formData.confirmEmail}
+                          onChange={(e) => handleInputChange('confirmEmail', e.target.value)}
+                          required
+                        />
                       </div>
                     </div>
                   )}
 
-                  {/* Step 2: Course Details */}
+              
                   {currentStep === 2 && (
                     <div className="space-y-6">
                       <div className="space-y-2">
-                        <Label htmlFor="courseNumber">{t('courseNumber', 'رقم الدورة')} * - Course Number</Label>
+                        <Label htmlFor="courseNumber">رقم الدورة *</Label>
                         <Input
                           id="courseNumber"
                           value={formData.courseNumber}
@@ -389,247 +377,156 @@ const CourseRegistration = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="courseTitle">{t('courseTitle', 'عنوان الدورة')} - Course Title</Label>
-                        <Input
-                          id="courseTitle"
-                          value={formData.courseTitle}
-                          onChange={(e) => handleInputChange('courseTitle', e.target.value)}
-                          readOnly
-                          className="bg-gray-100"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="participationReason">{t('participationReason', 'سبب المشاركة')} - Reason for Participation</Label>
+                        <Label htmlFor="participationReason">سبب المشاركة</Label>
                         <Textarea
                           id="participationReason"
                           value={formData.participationReason}
                           onChange={(e) => handleInputChange('participationReason', e.target.value)}
                           rows={3}
-                          placeholder={t('reasonPlaceholder', 'ما الذي دفعك للتسجيل في هذه الدورة؟')}
+                          placeholder="ما الذي دفعك للتسجيل في هذه الدورة؟"
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="educationLevel">{t('educationLevel', 'المستوى التعليمي')} - Education Level</Label>
-                          <Select
-                            value={formData.educationLevel}
-                            onValueChange={(value) => handleInputChange('educationLevel', value)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('selectEducation', 'اختر المستوى التعليمي')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="highschool">{t('highschool', 'ثانوية عامة')}</SelectItem>
-                              <SelectItem value="bachelor">{t('bachelor', 'بكالوريوس')}</SelectItem>
-                              <SelectItem value="master">{t('master', 'ماجستير')}</SelectItem>
-                              <SelectItem value="phd">{t('phd', 'دكتوراه')}</SelectItem>
-                              <SelectItem value="other">{t('other', 'أخرى')}</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="occupation">{t('occupation', 'المهنة')} - Occupation</Label>
-                          <Input
-                            id="occupation"
-                            value={formData.occupation}
-                            onChange={(e) => handleInputChange('occupation', e.target.value)}
-                          />
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="educationLevel">المستوى التعليمي</Label>
+                        <Select
+                          value={formData.educationLevel}
+                          onValueChange={(value) => handleInputChange('educationLevel', value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="اختر المستوى التعليمي" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="highschool">ثانوية عامة</SelectItem>
+                            <SelectItem value="bachelor">بكالوريوس</SelectItem>
+                            <SelectItem value="master">ماجستير</SelectItem>
+                            <SelectItem value="phd">دكتوراه</SelectItem>
+                            <SelectItem value="other">أخرى</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {formData.participantType === 'company' && (
-                        <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-                          <h3 className="text-lg font-semibold">{t('companyInfo', 'معلومات الشركة')} - Company Information</h3>
-                          <div className="space-y-2">
-                            <Label htmlFor="companyName">{t('companyName', 'اسم الشركة')} - Company Name</Label>
-                            <Input
-                              id="companyName"
-                              value={formData.companyName}
-                              onChange={(e) => handleInputChange('companyName', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="companyAddress">{t('companyAddress', 'عنوان الشركة')} - Company Address</Label>
-                            <Input
-                              id="companyAddress"
-                              value={formData.companyAddress}
-                              onChange={(e) => handleInputChange('companyAddress', e.target.value)}
-                            />
-                          </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="companyName">اسم الشركة</Label>
+                          <Input
+                            id="companyName"
+                            value={formData.companyName}
+                            onChange={(e) => handleInputChange('companyName', e.target.value)}
+                          />
                         </div>
                       )}
                     </div>
                   )}
 
-                  {/* Step 3: Additional Information */}
+                
                   {currentStep === 3 && (
                     <div className="space-y-6">
                       <div className="space-y-4 p-4 border rounded-lg">
                         <h3 className="text-lg font-semibold flex items-center">
                           <User className="ml-2 h-5 w-5" />
-                          {t('emergencyContact', 'جهة الاتصال في حالات الطوارئ')} - Emergency Contact
+                          جهة الاتصال في حالات الطوارئ
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label htmlFor="emergencyName">{t('fullName', 'الاسم الكامل')} - Full Name</Label>
+                            <Label htmlFor="emergencyName">الاسم الكامل *</Label>
                             <Input
                               id="emergencyName"
                               value={formData.emergencyContact.name}
                               onChange={(e) => handleNestedInputChange('emergencyContact', 'name', e.target.value)}
+                              required
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="emergencyRelationship">{t('relationship', 'العلاقة')} - Relationship</Label>
+                            <Label htmlFor="emergencyRelationship">العلاقة *</Label>
                             <Input
                               id="emergencyRelationship"
                               value={formData.emergencyContact.relationship}
                               onChange={(e) => handleNestedInputChange('emergencyContact', 'relationship', e.target.value)}
+                              required
                             />
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="emergencyPhone">{t('phoneNumber', 'رقم الهاتف')} - Phone Number</Label>
+                          <Label htmlFor="emergencyPhone">رقم الهاتف *</Label>
                           <Input
                             id="emergencyPhone"
                             type="tel"
                             value={formData.emergencyContact.phone}
                             onChange={(e) => handleNestedInputChange('emergencyContact', 'phone', e.target.value)}
+                            required
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="specialNeeds">{t('specialNeeds', 'احتياجات خاصة')} - Special Needs</Label>
+                        <Label htmlFor="specialNeeds">احتياجات خاصة</Label>
                         <Textarea
                           id="specialNeeds"
                           value={formData.specialNeeds}
                           onChange={(e) => handleInputChange('specialNeeds', e.target.value)}
                           rows={3}
-                          placeholder={t('specialNeedsPlaceholder', 'يرجى إخبارنا إذا كان لديك أي احتياجات خاصة تتطلب ترتيبات خاصة')}
+                          placeholder="يرجى إخبارنا إذا كان لديك أي احتياجات خاصة تتطلب ترتيبات خاصة"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="additionalInfo">{t('additionalInfo', 'معلومات إضافية')} - Additional Information</Label>
+                        <Label htmlFor="additionalInfo">معلومات إضافية</Label>
                         <Textarea
                           id="additionalInfo"
                           value={formData.additionalInfo}
                           onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
                           rows={3}
-                          placeholder={t('additionalInfoPlaceholder', 'أي معلومات أخرى ترغب في مشاركتها معنا')}
+                          placeholder="أي معلومات أخرى ترغب في مشاركتها معنا"
                         />
                       </div>
-
-                      {/* <div className="space-y-4">
-                        <h3 className="text-lg font-semibold flex items-center">
-                          <CreditCard className="ml-2 h-5 w-5" />
-                          {t('paymentMethod', 'طريقة الدفع')} - Payment Method
-                        </h3>
-                        <RadioGroup
-                          value={formData.paymentMethod}
-                          onValueChange={(value) => handleInputChange('paymentMethod', value)}
-                          className="grid grid-cols-2 gap-4"
-                        >
-                          <div className="flex items-center space-x-2 p-3 border rounded-lg hover:border-primary">
-                            <RadioGroupItem value="creditCard" id="creditCard" />
-                            <Label htmlFor="creditCard" className="cursor-pointer">{t('creditCard', 'بطاقة ائتمان')} - Credit Card</Label>
-                          </div>
-                          <div className="flex items-center space-x-2 p-3 border rounded-lg hover:border-primary">
-                            <RadioGroupItem value="bankTransfer" id="bankTransfer" />
-                            <Label htmlFor="bankTransfer" className="cursor-pointer">{t('bankTransfer', 'تحويل بنكي')} - Bank Transfer</Label>
-                          </div>
-                          <div className="flex items-center space-x-2 p-3 border rounded-lg hover:border-primary">
-                            <RadioGroupItem value="cash" id="cash" />
-                            <Label htmlFor="cash" className="cursor-pointer">{t('cash', 'نقدي')} - Cash</Label>
-                          </div>
-                          <div className="flex items-center space-x-2 p-3 border rounded-lg hover:border-primary">
-                            <RadioGroupItem value="installments" id="installments" />
-                            <Label htmlFor="installments" className="cursor-pointer">{t('installments', 'أقساط')} - Installments</Label>
-                          </div>
-                        </RadioGroup>
-                      </div> */}
                     </div>
                   )}
 
-                  {/* Step 4: Review and Submit */}
+            
                   {currentStep === 4 && (
                     <div className="space-y-6">
                       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                         <div className="flex items-start">
                           <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 ml-2" />
                           <p className="text-blue-800">
-                            {t('reviewWarning', 'يرجى مراجعة المعلومات التالية بعناية قبل الإرسال. لا يمكن تعديل المعلومات بعد الإرسال.')}
+                            يرجى مراجعة المعلومات التالية بعناية قبل الإرسال. لا يمكن تعديل المعلومات بعد الإرسال.
                           </p>
                         </div>
                       </div>
 
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold border-b pb-2">
-                          {t('personalInfo', 'المعلومات الشخصية')} - Personal Information
+                          المعلومات الشخصية
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <p className="font-medium">{t('fullName', 'الاسم الكامل')}:</p>
+                            <p className="font-medium">الاسم الكامل:</p>
                             <p>{formData.firstName} {formData.lastName}</p>
                           </div>
                           <div>
-                            <p className="font-medium">{t('birthDate', 'تاريخ الميلاد')}:</p>
-                            <p>{formData.birthDate || t('notProvided', 'غير مقدم')}</p>
+                            <p className="font-medium">الجنس:</p>
+                            <p>{formData.gender === 'male' ? 'ذكر' : 'أنثى'}</p>
                           </div>
                           <div>
-                            <p className="font-medium">{t('gender', 'الجنس')}:</p>
-                            <p>{formData.gender === 'male' ? t('male', 'ذكر') : formData.gender === 'female' ? t('female', 'أنثى') : t('notProvided', 'غير مقدم')}</p>
-                          </div>
-                          <div>
-                            <p className="font-medium">{t('nationality', 'الجنسية')}:</p>
-                            <p>{formData.nationality || t('notProvided', 'غير مقدم')}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold border-b pb-2">
-                          {t('contactInfo', 'معلومات الاتصال')} - Contact Information
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="font-medium">{t('email', 'البريد الإلكتروني')}:</p>
+                            <p className="font-medium">البريد الإلكتروني:</p>
                             <p>{formData.email}</p>
                           </div>
+                          
                           <div>
-                            <p className="font-medium">{t('mobile', 'جوال')}:</p>
+                            <p className="font-medium">جوال:</p>
                             <p>{formData.mobile}</p>
-                          </div>
-                          <div>
-                            <p className="font-medium">{t('address', 'العنوان')}:</p>
-                            <p>{formData.streetAddress}, {formData.postalCode} {formData.city}, {formData.country}</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold border-b pb-2">
-                          {t('courseInfo', 'معلومات الدورة')} - Course Information
+                          معلومات الدورة
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="font-medium">{t('courseNumber', 'رقم الدورة')}:</p>
-                            <p>{formData.courseNumber}</p>
-                          </div>
-                          <div>
-                            <p className="font-medium">{t('courseTitle', 'عنوان الدورة')}:</p>
-                            <p>{formData.courseTitle}</p>
-                          </div>
-                          {/* <div>
-                            <p className="font-medium">{t('paymentMethod', 'طريقة الدفع')}:</p>
-                            <p>
-                              {formData.paymentMethod === 'creditCard' ? t('creditCard', 'بطاقة ائتمان') :
-                               formData.paymentMethod === 'bankTransfer' ? t('bankTransfer', 'تحويل بنكي') :
-                               formData.paymentMethod === 'cash' ? t('cash', 'نقدي') : t('installments', 'أقساط')}
-                            </p>
-                          </div> */}
+                        <div>
+                          <p className="font-medium">رقم الدورة:</p>
+                          <p>{formData.courseNumber}</p>
                         </div>
                       </div>
 
@@ -638,39 +535,39 @@ const CourseRegistration = () => {
                           <Checkbox
                             id="agreeTerms"
                             checked={formData.agreeTerms}
-                            onCheckedChange={(checked) => handleInputChange('agreeTerms', checked as boolean)}
+                            onCheckedChange={(checked) => handleInputChange('agreeTerms', checked)}
                             required
                           />
                           <Label htmlFor="agreeTerms" className="cursor-pointer">
-                            {t('agreeTerms', 'أوافق على الشروط والأحكام')} - I agree to the terms and conditions *
+                            أوافق على الشروط والأحكام *
                           </Label>
                         </div>
                         <div className="flex items-start space-x-2">
                           <Checkbox
                             id="agreeDataProcessing"
                             checked={formData.agreeDataProcessing}
-                            onCheckedChange={(checked) => handleInputChange('agreeDataProcessing', checked as boolean)}
+                            onCheckedChange={(checked) => handleInputChange('agreeDataProcessing', checked)}
                             required
                           />
                           <Label htmlFor="agreeDataProcessing" className="cursor-pointer">
-                            {t('agreeDataProcessing', 'أوافق على معالجة بياناتي الشخصية وفقًا لسياسة الخصوصية')} - I agree to the processing of my personal data according to the privacy policy *
+                            أوافق على معالجة بياناتي الشخصية وفقًا لسياسة الخصوصية *
                           </Label>
                         </div>
                         <div className="flex items-start space-x-2">
                           <Checkbox
                             id="receiveNewsletter"
                             checked={formData.receiveNewsletter}
-                            onCheckedChange={(checked) => handleInputChange('receiveNewsletter', checked as boolean)}
+                            onCheckedChange={(checked) => handleInputChange('receiveNewsletter', checked)}
                           />
                           <Label htmlFor="receiveNewsletter" className="cursor-pointer">
-                            {t('receiveNewsletter', 'أرغب في تلقي النشرة الإخبارية والعروض الترويجية')} - I would like to receive the newsletter and promotional offers
+                            أرغب في تلقي النشرة الإخبارية والعروض الترويجية
                           </Label>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* Navigation Buttons */}
+               
                   <div className="flex justify-between pt-6">
                     <Button 
                       type="button" 
@@ -679,18 +576,18 @@ const CourseRegistration = () => {
                       disabled={currentStep === 1}
                       className="flex items-center"
                     >
-                      {i18n.language === 'ar' ? <ChevronRight className="ml-2 h-4 w-4" /> : <ChevronLeft className="mr-2 h-4 w-4" />}
-                      {t('previous', 'السابق')}
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                      السابق
                     </Button>
                     
                     {currentStep < 4 ? (
                       <Button type="button" onClick={nextStep} className="flex items-center">
-                        {t('next', 'التالي')}
-                        {i18n.language === 'ar' ? <ChevronLeft className="mr-2 h-4 w-4" /> : <ChevronRight className="ml-2 h-4 w-4" />}
+                        التالي
+                        <ChevronLeft className="mr-2 h-4 w-4" />
                       </Button>
                     ) : (
-                      <Button type="submit">
-                        {t('submitRegistration', 'إرسال التسجيل')}
+                      <Button type="submit" disabled={loading}>
+                        {loading ? 'جاري الإرسال...' : 'إرسال التسجيل'}
                       </Button>
                     )}
                   </div>

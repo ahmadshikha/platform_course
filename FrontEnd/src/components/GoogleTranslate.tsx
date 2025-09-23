@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Languages } from "lucide-react";
 
-// Type declaration for Google Translate
 declare global {
   interface Window {
     google: {
@@ -37,11 +36,9 @@ export const GoogleTranslate = () => {
       }
     };
 
-    // Check if Google Translate is already loaded
     if (typeof window.google !== 'undefined' && window.google.translate) {
       initializeTranslate();
     } else {
-      // Wait for Google Translate to load
       const checkGoogleTranslate = setInterval(() => {
         if (typeof window.google !== 'undefined' && window.google.translate) {
           clearInterval(checkGoogleTranslate);
@@ -49,7 +46,6 @@ export const GoogleTranslate = () => {
         }
       }, 100);
 
-      // Cleanup interval after 10 seconds
       setTimeout(() => {
         clearInterval(checkGoogleTranslate);
       }, 10000);
@@ -57,13 +53,17 @@ export const GoogleTranslate = () => {
   }, []);
 
   return (
-    <Card className="w-fit">
-      <CardContent className="p-3">
-        <div className="flex ">
+    <Card className="w-fit h-fit scale-75"> {/* تم إضافة scale-75 هنا */}
+      <CardContent className="p-2 "> {/* تم تقليل padding من p-3 إلى p-2 */}
+        <div className="flex">
           {/* <Languages className="w-4 h-4" /> */}
-         
         </div>
-        <div ref={translateRef} id="google_translate_element"></div>
+        <div 
+          ref={translateRef} 
+          id="google_translate_element" 
+          className="text-sm" /* إضافة حجم نص أصغر */
+          style={{ transform: 'scale(0.9)', transformOrigin: 'center' }} /* تحجيم إضافي */
+        ></div>
       </CardContent>
     </Card>
   );

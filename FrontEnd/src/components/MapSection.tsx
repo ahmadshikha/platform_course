@@ -35,7 +35,7 @@ export const MapSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-primary mb-4">
-            {t('navigation.contact')}
+            مواقعنا
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             اكتشف مواقعنا في جميع أنحاء سوريا واختر الفرع الأقرب إليك
@@ -43,7 +43,6 @@ export const MapSection = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* Syrian Regional Map - Interactive */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
             <div className="h-[500px] relative">
               <img 
@@ -53,7 +52,6 @@ export const MapSection = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
               
-              {/* Location markers with animation */}
               {locations.map((location, index) => (
                 <div 
                   key={index}
@@ -82,7 +80,6 @@ export const MapSection = () => {
             </div>
           </div>
 
-          {/* Location cards with tabs */}
           <div className="flex flex-col">
             <div className="flex space-x-2 mb-6 overflow-x-auto pb-2">
               {locations.map((location, index) => (

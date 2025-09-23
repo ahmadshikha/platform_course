@@ -17,7 +17,6 @@ export const LocationsSection = () => {
   return (
     <div className="bg-white py-8">
       <div className="container mx-auto px-4">
-        {/* District navigation */}
         <div className={`flex justify-center space-x-8 mb-8 ${i18n.language === 'ar' ? 'flex-row-reverse' : ''}`}>
           {/* {districts.map((district, index) => (
             <a
@@ -30,7 +29,6 @@ export const LocationsSection = () => {
           ))} */}
         </div>
 
-        {/* Locations grid */}
         <div className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 text-sm ${i18n.language === 'ar' ? 'text-right' : ''}`}>
           {locations.map((location) => (
             <div key={location}>

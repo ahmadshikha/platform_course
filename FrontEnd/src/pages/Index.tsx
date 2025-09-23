@@ -1,11 +1,11 @@
-import { Header } from "../components/Header";
+import { Header } from "@/components/Header";
 import { CategoryNavigation } from "../components/CategoryNavigation";
-import { HeroBanner } from "../components/HeroBanner";
-import { ProgramGrid } from "../components/ProgramGrid";
-import { NewsSection } from "../components/NewsSection";
-import { LocationsSection } from "../components/LocationsSection";
-import { MapSection } from "../components/MapSection";
-import { Footer } from "../components/Footer";
+import { HeroBanner } from "@/components/HeroBanner";
+import { ProgramGrid } from "@/components/ProgramGrid";
+import { NewsSection } from "@/components/NewsSection";
+import { LocationsSection } from "@/components/LocationsSection";
+import { MapSection } from "@/components/MapSection";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   return (
@@ -16,7 +16,7 @@ const Index = () => {
       <ProgramGrid />
       <NewsSection />
       <MapSection />
-      <LocationsSection />
+      {/* // <LocationsSection /> */}
       <Footer />
     </div>
   );
