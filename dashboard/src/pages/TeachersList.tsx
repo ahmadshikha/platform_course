@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../store/store';
-import { deleteTeacher, fetchTeachers, clearError } from '../store/slices/teachers/teachersSlice';
+import { deleteTeacher, fetchTeachers, clearError,clearStatus } from '../store/slices/teachers/teachersSlice';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 
+import ErrorDisplay from '../component/ErrorDisplay';
 import image from '../images/teacher-1758091670690-778911984.png'
+import { apiUrl } from '../const';
 
 function TeachersList() {
   const teachers = useSelector((s: RootState) => {
@@ -18,7 +20,6 @@ function TeachersList() {
   const error = useSelector((s: RootState) => s.teachers.error);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,18 +31,27 @@ function TeachersList() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   
   useEffect(() => {
-    dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }));
-    // console.log(pagination.currentPage === pagination.totalPages)
-    // Clear any existing errors when component mounts
-    dispatch(clearError());
-  }, []);
+      if(status == 'succeeded') {
+          dispatch(clearError());
+          dispatch(clearStatus())
+      }
+      if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+        setTimeout(() => {
+          navigate('/login');
+          dispatch(clearError());
+          dispatch(clearStatus())
+        }, 500);
+      }
+  }, [status, error]);
+
+  useEffect(() => {
+  dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }));
+    
+  }, [dispatch]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
-  // Clear errors when user interacts
-
 
   // Handle delete teacher
   const handleDeleteTeacher = async (teacherId: string) => {
@@ -85,7 +95,12 @@ function TeachersList() {
     setShowDeleteConfirm(null);
     setDeleteError(null);
   };
-
+  if(status === 'loading'){
+    return (
+    <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">
+      جاري تحميل الاساتذة....
+    </div>
+  )}
   // Helper function to get language-specific properties
   // const getLocalizedProperty = (teacher: any, property: string) => {
   //   if (lang === 'ar') {
@@ -102,28 +117,6 @@ function TeachersList() {
         <Link to="/teachers/new" className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">اضافة استاذ</Link>
       </div>
 
-      {/* Global error message */}
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-          <div className="flex">
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">حدث خطأ</h3>
-              <div className="mt-2 text-sm text-red-700">
-                <p>{error}</p>
-              </div>
-              <div className="mt-4">
-                <button
-                  onClick={()=> {dispatch(clearError()); dispatch(fetchTeachers({ page: currentPage, limit: itemsPerPage }))}}
-                  className="rounded-md bg-red-100 px-2 py-1 text-sm font-medium text-red-800 hover:bg-red-200"
-                >
-                  {/* {translations.teachers.dismiss} */}
-                  تجاهل
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Delete error message */}
       {/* {deleteError && (
@@ -147,19 +140,16 @@ function TeachersList() {
         </div>
       )} */}
 
-    {status === 'loading' && (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">جاري تحميل الاساتذة</div>
-    )}
 
-    {status === 'failed' && (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">خطا بنحميل الاساتذة</div>
-    )}
+    <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
+    {/* {status === 'failed' && (
+    )} */}
 
-    {status === 'succeeded' && teachers.length === 0 && (
+    {teachers.length === 0 && (
       <div className="rounded-lg text-center border border-gray-200 bg-white p-6 text-gray-500">لا يوجد اساتذة</div>
     )}
 
-    {status === 'succeeded' && teachers.length > 0 && (
+    {teachers.length > 0 && (
       <>
         {/* Pagination info */}
         <div className="flex items-center justify-between">
@@ -174,7 +164,7 @@ function TeachersList() {
           return (
           <div  key={t._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
             <div onClick={() => navigate(`/teacher-courses/id=${t._id}`)} className={`flex items-center gap-4 p-4 `}>
-              <img src={`http://localhost:5000${t.image}`} alt="الاسم"
+              <img src={`${apiUrl}${t.image}`} alt="الاسم"
               onError={(e)=> {
                 e.currentTarget.src = image
               }}
@@ -239,7 +229,7 @@ function TeachersList() {
               disabled={pagination.currentPage == 1}
               className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translations.teachers.previous}
+              السابق
             </button>
             
             {/* Page numbers */}
@@ -264,7 +254,7 @@ function TeachersList() {
               disabled={pagination.currentPage == pagination.totalPages}
               className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translations.teachers.next}
+              التالي
             </button>
           </div>
         )}

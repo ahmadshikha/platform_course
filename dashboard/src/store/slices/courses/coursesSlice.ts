@@ -65,18 +65,20 @@ const fetchCourses = createAsyncThunk(
       const url = `http://localhost:5000/api/courses/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const response = await fetch(url, {
         method: 'GET',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
       });
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Failed to fetch courses');
+        // console.log("🚀 ~ errorData:", errorData)
+        return rejectWithValue("فشل تحميل الدورات");
       }
       const result = await response.json();
       // console.log('courses')
       if (result.success === false) {
-        return rejectWithValue(result.message || 'Failed to fetch courses');
+        return rejectWithValue("فشل تحميل الدورات");
       }
 
       // If backend returns paginated structure, use it; otherwise fall back to list-only
@@ -89,7 +91,7 @@ const fetchCourses = createAsyncThunk(
 
       return { courses, pagination };
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'An error occurred');
+      return rejectWithValue("حدث خطأ نعمل على اصلاحه");
     }
   }
 );

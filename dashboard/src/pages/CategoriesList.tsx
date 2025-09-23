@@ -106,7 +106,25 @@ function CategoriesList() {
     setDeleteError(null);
   };
 
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
+          <h1 className="text-2xl font-bold">الفئات</h1>
 
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            {/* <p className="mt-2 text-sm text-gray-600">{translations.courses.loading}</p> */}
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل الفئات</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`space-y-4`}>
@@ -118,7 +136,7 @@ function CategoriesList() {
       </div>
 
       {/* Global error message */}
-      <ErrorDisplay error={error} onDismiss={clearErrors} />
+      <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
       {/* Delete error message */}
       {/* {deleteError && (
@@ -142,17 +160,8 @@ function CategoriesList() {
         </div>
       )} */}
 
-    {status === 'loading' && (
-      // <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">{translations.categories.loading}</div>
-      <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">جاري تحميل الفئات</div>
-    )}
 
-    {status === 'failed' && (
-      // <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">{translations.categories.failed}</div>
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-600">فشل بتحميل الفئات</div>
-    )}
-
-    {status !== "loading" && status !== "failed" && categories.length === 0 && (
+    {categories.length === 0 && (
       // <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">{translations.categories.noCategories}</div>
       <div className="rounded-lg border border-gray-200 bg-white p-6 text-gray-500">لايوجد فئات</div>
     )}
@@ -167,30 +176,28 @@ function CategoriesList() {
           </div>
         </div>
         {/* categories list */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {categories.map((category)=> {
             return (
               <div key={category._id} className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col">
-                <div onClick={() => navigate(`/category-courses/id=${category._id}`)} className="cursor-pointer">
-                  <div className="relative h-48 w-full overflow-hidden">
-                    <img 
-                      src={`http://localhost:5000${category.image}`} 
-                      alt={category.name} 
-                      className=""
-                      onError={(e) => { e.currentTarget.src = avatar }}
-                    />
-                    {/* <div className="absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-30 transition-opacity duration-300"></div> */}
+                <div className="relative h-48 w-full overflow-hidden">
+                  <img 
+                    src={`http://localhost:5000${category.image}`} 
+                    alt={category.name} 
+                    className="w-full h-full object-fill"
+                    onError={(e) => { e.currentTarget.src = avatar }}
+                  />
+                  <div 
+                    onClick={() => navigate(`/category-courses/id=${category._id}`)} 
+                    className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent cursor-pointer"
+                  ></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                    <h3 className="text-xl font-bold truncate">{category.name}</h3>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate">{category.name}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">{category.description}</p>
-                  </div>
-                </div>
-                <div className="mt-auto bg-gray-50/70 px-6 py-3 border-t border-gray-200 flex items-center justify-end">
                   <button
                     onClick={() => confirmDelete(category._id)}
                     disabled={deletingCategoryId === category._id}
-                    className="p-2 rounded-full text-gray-500 hover:bg-red-100 hover:text-red-600 transition-colors"
+                    className="absolute top-3 right-3 p-2 rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-red-500/80 transition-colors"
                     aria-label="Delete category"
                   >
                     {deletingCategoryId === category._id ? (
@@ -204,6 +211,9 @@ function CategoriesList() {
                       </svg>
                     )}
                   </button>
+                </div>
+                <div className="p-6 flex-grow flex flex-col">
+                  <p className="text-sm text-gray-600 line-clamp-3 flex-grow">{category.description}</p>
                 </div>
               </div>
             )

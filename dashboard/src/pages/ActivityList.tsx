@@ -12,6 +12,7 @@ export default function ActivityList() {
   const navigate = useNavigate()
   useEffect(() => {
     dispatch(fetchActivities(undefined));
+    // clearError()
   }, [dispatch]);
   useEffect(() => {
     if(status == 'succeeded') {
@@ -27,8 +28,21 @@ export default function ActivityList() {
     }
   }, [status, error]);
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">النشاطات</h1>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل النشاطات</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

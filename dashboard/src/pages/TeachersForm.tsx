@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 
 import en from '../lang/en.json'
 import ar from '../lang/ar.json'
+import ErrorDisplay from "../component/ErrorDisplay";
 
 export type Education = {
   degree: string;
@@ -121,11 +122,11 @@ export function TeachersForm() {
 
   // Clear Redux errors when component mounts
   useEffect(() => {
-    dispatch(clearError());
-    dispatch(clearStatus());
-  }, [dispatch]);
+    // dispatch(clearError());
+    // dispatch(clearStatus());
+  }, []);
 
-  // Clear errors when user starts typing
+
   useEffect(() => {
         if(status == 'succeeded') {
             setShowSuccessMessage(true);
@@ -267,11 +268,7 @@ export function TeachersForm() {
       } else {
         // console.log(teacherData)
         await dispatch(addTeacher(teacherData)).unwrap()
-      }
-      
-      // Clear Redux errors after successful operation
-      dispatch(clearError())
-      
+      }      
       // Reset form after successful submission
       if (!isEditMode) {
         setName('')
@@ -295,9 +292,10 @@ export function TeachersForm() {
       setErrors({ general: error || "خطأاثناء حفظ الاستاذ" })
     } finally {
       setIsLoading(false)
+      window.scrollTo(0, 0);
       if(status !== 'failed') {
           setTimeout(() => {
-              navigate('/teachers');
+            navigate('/teachers');
           }, 3000);
       }
     }
@@ -308,18 +306,14 @@ export function TeachersForm() {
     <div className={`max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 border border-gray-100`}>
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">{isEditMode ? "تعديل بيانات الأستاذ" : "إضافة أستاذ جديد"}</h1>
         {/* Global error message */}
-        {errors.general && (
+        {/* {errors.general && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-600">{errors.general}</p>
           </div>
-        )}
+        )} */}
 
         {/* Redux error message */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
+        <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
         {showSuccessMessage && (
             <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
                 <p className="text-sm text-green-600">تم الحفظ بنجاح</p>

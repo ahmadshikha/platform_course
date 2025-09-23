@@ -57,17 +57,19 @@ export default function ActivityForm() {
     //     };
     // }, [dispatch]);
 
-//   useEffect(() => {
-//     if (isMounted.current && status === "succeeded") {
-//       setShowSuccessMessage(true);
-//       const timer = setTimeout(() => {
-//         setShowSuccessMessage(false);
-//       }, 3000);
-//       return () => clearTimeout(timer);
-//     } else if (status !== "succeeded") {
-//       setShowSuccessMessage(false);
-//     }
-//   }, [status]);
+  useEffect(() => {
+    if(status == 'succeeded') {
+      dispatch(clearError());
+      dispatch(clearStatus())
+    }
+    if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+      setTimeout(() => {
+        navigate('/login');
+        dispatch(clearError());
+        dispatch(clearStatus())
+      }, 500);
+    }
+  }, [status, error]);
 
 
     const validateForm = () => {
@@ -100,9 +102,10 @@ export default function ActivityForm() {
             // The error is now handled by the global error display from the slice.
         } finally {
             setIsLoading(false);
+            window.scrollTo(0, 0);
             if(status !== 'failed') {
                 setTimeout(() => {
-                    // navigate('/activities');
+                    navigate('/activities');
                 }, 3000);
 
             }

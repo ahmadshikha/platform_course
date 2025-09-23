@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "../store/store"
-import { fetchUserRegisters, updateUserRegisterStatus, UserRegister, clearError } from '../store/slices/usersRegisters/usersRegisterSlice'
+import { fetchUserRegisters, updateUserRegisterStatus, UserRegister, clearError,clearStatus } from '../store/slices/usersRegisters/usersRegisterSlice'
 import { useNavigate } from 'react-router-dom'
 import ErrorDisplay from '../component/ErrorDisplay'
 
 export default function UsersRegisters() {
+    const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
     const {items, error, status} = useSelector((s: RootState) => s.usersRegisters)
     // console.log(error)
@@ -15,13 +16,44 @@ export default function UsersRegisters() {
             dispatch(updateUserRegisterStatus({id, status: newStatus }))
         }
     }
-    
+    useEffect(() => {
+        if(status == 'succeeded') {
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }
+        if(error == 'يجب تسجيل الدخول اولاً' || error == "انتهت صلاحية الجلسة ..") {
+        setTimeout(() => {
+            navigate('/login');
+            dispatch(clearError());
+            dispatch(clearStatus())
+        }, 500);
+        }
+    }, [status, error]);
     useEffect(()=> {
-        dispatch(fetchUserRegisters())
+        dispatch(fetchUserRegisters({}))
+        dispatch(clearError());
     }, [dispatch])
-
+  // Loading state
+  if (status === 'loading') {
     return (
-        <div className="p-6 space-y-6 min-h-screen">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          {/* <h1 className="text-xl font-semibold">{translations.courses.title}</h1> */}
+          <h1 className="text-2xl font-bold">الحجوزات</h1>
+
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            {/* <p className="mt-2 text-sm text-gray-600">{translations.courses.loading}</p> */}
+            <p className="mt-2 text-sm text-gray-600">جاري تحميل الحجوزات</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+    return (
+        <div className="md:p-6 md:space-y-6 min-h-screen">
             <div className="container mx-auto max-w-7xl">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-2xl font-bold">حجوزات الطلاب</h1>
@@ -29,11 +61,11 @@ export default function UsersRegisters() {
 
                 <ErrorDisplay error={error} onDismiss={() => dispatch(clearError())} />
 
-                {status === 'loading' && (
+                {/* {status === 'loading' && (
                     <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">
                         جاري تحميل الحجوزات...
                     </div>
-                )}
+                )} */}
 
                 {status === 'succeeded' && items.length === 0 && (
                     <div className="rounded-lg text-center border border-gray-200 bg-white p-6 text-gray-500">
@@ -42,13 +74,11 @@ export default function UsersRegisters() {
                 )}
 
                 {items.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="flex flex-wrap gap-6">
                         {items.map((r) => (
-                            <UserRegisterCard
-                                key={r._id} 
-                                onChangeStatus={onChangeStatus}
-                                reg={r}
-                            />
+                            <div key={r._id} className="flex-1 min-w-[350px]">
+                                <UserRegisterCard onChangeStatus={onChangeStatus} reg={r} />
+                            </div>
                         ))}
                     </div>
                 )}
@@ -67,8 +97,8 @@ function UserRegisterCard({ reg, onChangeStatus }: { reg: UserRegister, onChange
     const currentStatusStyle = statusClasses[reg.status || 'معلق'] || statusClasses['معلق'];
 
     return (
-        <article className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col">
-            <div className="p-6 flex-grow">
+        <article className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col h-full">
+            <div className="p-3 sm:p-6 flex-grow">
                 <div className="flex items-start space-x-4 rtl:space-x-reverse">
                     {/* Avatar */}
                     <div className="flex-shrink-0">

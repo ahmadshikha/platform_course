@@ -42,8 +42,8 @@ export interface UserRegister {
     _id?: string;
 }
 
-export const fetchUserRegisters = createAsyncThunk<UserRegister[]>(`${apiUrl}/api/userRegister`,
-    async (_, {rejectWithValue}) => {
+export const fetchUserRegisters = createAsyncThunk<UserRegister[],{},{rejectValue: string}>(`${apiUrl}/api/userRegister`,
+    async (_,{rejectWithValue}) => {
     try {      
       const url = `${apiUrl}/api/userRegister`;
       const res = await fetch(url, {
@@ -56,7 +56,7 @@ export const fetchUserRegisters = createAsyncThunk<UserRegister[]>(`${apiUrl}/ap
       console.log(res)
       if(!res.ok) {
         const errorData = await res.json();
-        return rejectWithValue(errorData.message || 'Failed to fetch users Registration');
+        return rejectWithValue('فشل تحميل الحجوزات');
       }
       
       const data = await res.json();
@@ -64,7 +64,7 @@ export const fetchUserRegisters = createAsyncThunk<UserRegister[]>(`${apiUrl}/ap
         return data.data;
 
     } catch(e) {
-      return rejectWithValue(e.message || 'Failed to fetch Users Registration');
+      return rejectWithValue("فشل تحميل الحجوزات");
     }
 })
 // update user register status by id in params
@@ -106,10 +106,9 @@ export const updateUserRegisterStatus = createAsyncThunk<
 );
 
 export interface UserRegisterState {
-    items: UserRegister[]
- 
-    status: 'idle' | 'loading' | 'succeeded' | 'failed';
-    error: string | null;
+  items: UserRegister[]
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
 }
 // Minimal slice to store an array of user registrations
 const initialState: UserRegisterState = {
@@ -136,16 +135,18 @@ const usersRegisterSlice = createSlice({
                 state.items[idx].status = status;
             }
         },
+        clearStatus(state) {
+          state.status = 'idle';
+        },
         clearError(state) {
-          state.error = null;
-          state.status = "succeeded"
-            
+          state.error = null; 
         }
     },
   extraReducers: (builder) => {
     builder
     .addCase(fetchUserRegisters.pending, (state) => {
       state.status = 'loading';
+      state.error = null;
     })
     .addCase(fetchUserRegisters.fulfilled, (state, action) => {
       state.status = 'succeeded';
@@ -159,6 +160,10 @@ const usersRegisterSlice = createSlice({
       // console.log(action.payload)
       
       // state.items = action.payload
+    })
+    .addCase(fetchUserRegisters.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload || 'فشل تحميل التسجيلات';
     })
     .addCase(updateUserRegisterStatus.pending, (state) => {
       // keep previous status but mark loading if desired
@@ -196,6 +201,6 @@ const usersRegisterSlice = createSlice({
   }
 });
 
-export const { addRegister, removeRegister, updateRegisterStatus, clearError } = usersRegisterSlice.actions;
+export const { addRegister, removeRegister, updateRegisterStatus, clearError, clearStatus } = usersRegisterSlice.actions;
 
 export default usersRegisterSlice.reducer;

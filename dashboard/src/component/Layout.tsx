@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from '../store/store';
 import en from '../lang/en.json';
 import ar from '../lang/ar.json';
 import { useDispatch } from 'react-redux';
-import { authUser } from '../store/slices/login/logging';
+import { authUser, clearError, clearStatus } from '../store/slices/login/logging';
 
 export default function Layout({ children }: PropsWithChildren) {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,6 +16,8 @@ export default function Layout({ children }: PropsWithChildren) {
 	// const { lang } = useSelector((s: RootState) => s.lang);
 	const location = useLocation();
 	useEffect(() => {
+		dispatch(clearError())
+		dispatch(clearStatus())
 		if(islogged) {
 		dispatch(authUser())
 		}
@@ -86,9 +88,9 @@ export default function Layout({ children }: PropsWithChildren) {
 				</div>
 			)}
 
-			<div className="flex">
+			<div className="sm:grid sm:grid-cols-[16rem_1fr]">
 				{/* Desktop sidebar */}
-				<aside className="hidden sm:block w-64 border-r border-gray-200 bg-white min-h-[calc(100vh-56px)]">
+				<aside className="hidden sm:block border-r border-gray-200 bg-white min-h-[calc(100vh-56px)]">
 					<div className="p-4">
 						<div className="text-xs font-semibold text-gray-500 uppercase mb-2">القائمة</div>
 						<nav className="space-y-1">
@@ -103,7 +105,7 @@ export default function Layout({ children }: PropsWithChildren) {
 					</div>
 				</aside>
 
-				<main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
+				<main className="p-3 md:px-8 md:py-6">
 					{/* When on /courses, render layout without nested content */}
 					<Outlet />
 					{/* {location.pathname === '/courses' ? null : <Outlet />} */}

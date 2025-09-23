@@ -103,6 +103,7 @@ export const fetchTeachers = createAsyncThunk<{teachers: ITeacher[], pagination?
       const url = `${apiUrl}/api/teachers/${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const res = await fetch(url, {
         method: 'GET',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -193,6 +194,8 @@ export const updateTeacher = createAsyncThunk<ITeacher, IUpdateTeacher>('teacher
       
       if (!response.ok) {
         const errorData = await response.json();
+        // console.log("🚀 ~ errorData:", errorData)
+        if(errorData.message == "Teacher not found") return rejectWithValue("هذا المعلم غير موجود ")
         if (errorData.message == "unauthenticated") return rejectWithValue('يجب تسجيل الدخول اولاً');
         if (errorData.message == "token expired") return rejectWithValue("انتهت صلاحية الجلسة ..");
         return rejectWithValue('فشل تعديل استاذ');
@@ -270,14 +273,15 @@ const teachersSlice = createSlice({
       })
       .addCase(fetchTeachers.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch teachers';
+        state.error = action.payload as string || "فشل تحميل بيانات الاستاذ";
       })
       .addCase(addTeacher.fulfilled, (state, action: PayloadAction<ITeacher>) => {
         state.status = 'succeeded';
         state.items.push(action.payload);
       })
       .addCase(addTeacher.rejected, (state, action) => {
-        state.error = (action.payload as string) || action.error.message || 'Failed to add teacher';
+        state.status = 'failed';
+        state.error = action.payload as string  || 'فشل اضافة الاستاذ';
       })
 
 
@@ -289,13 +293,14 @@ const teachersSlice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(updateTeacher.rejected, (state, action) => {
-        state.error = (action.payload as string) || action.error.message || 'Failed to update teacher';
+        state.status = 'failed';
+        state.error = (action.payload as string) || 'فشل تعديل بيانات الاستاذ';
       })
       .addCase(deleteTeacher.fulfilled, (state, action: PayloadAction<string>) => {
         state.items = state.items.filter(teacher => teacher._id !== action.payload);
       })
       .addCase(deleteTeacher.rejected, (state, action) => {
-        state.error = (action.payload as string) || action.error.message || 'Failed to delete teacher';
+        state.error = (action.payload as string) || 'فشل حذف الاستاذ';
       });
   },
 });
